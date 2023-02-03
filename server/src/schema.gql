@@ -1,0 +1,97 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  """ID"""
+  id: String!
+  username: String!
+  email: String!
+  password: String!
+  avatar: String!
+}
+
+type Post {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Auth {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Query {
+  users: [User!]!
+  user(id: Int!): User!
+  posts: [Post!]!
+  post(id: Int!): Post!
+  auth(id: Int!): Auth!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(id: Int!): User!
+  createPost(createPostInput: CreatePostInput!): Post!
+  updatePost(updatePostInput: UpdatePostInput!): Post!
+  removePost(id: Int!): Post!
+  createAuth(createAuthInput: CreateAuthInput!): Auth!
+  updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
+  removeAuth(id: Int!): Auth!
+}
+
+input CreateUserInput {
+  """ID"""
+  id: String!
+
+  """User username"""
+  username: String!
+
+  """User email address"""
+  email: String!
+
+  """User password"""
+  password: String!
+
+  """User display photo (avatar)"""
+  avatar: String!
+}
+
+input UpdateUserInput {
+  id: Int!
+
+  """User username"""
+  username: String
+
+  """User email address"""
+  email: String
+
+  """User password"""
+  password: String
+
+  """User display photo (avatar)"""
+  avatar: String
+}
+
+input CreatePostInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdatePostInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateAuthInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateAuthInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
