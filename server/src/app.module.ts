@@ -4,11 +4,12 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { AppController } from './app.controller';
+// import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
+import { IsUniqueConstraint } from './common/is-unique';
 
 @Module({
   imports: [
@@ -28,13 +29,14 @@ import { AuthModule } from './auth/auth.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true
+      sortSchema: true,
+
     }),
     UsersModule,
     PostsModule,
     AuthModule],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [AppService, IsUniqueConstraint],
   exports: [TypeOrmModule]
 })
 export class AppModule {}

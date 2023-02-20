@@ -10,22 +10,15 @@ export class Like {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
-  @Column({
-    nullable: true
-  })
+  @Field(() => Post, { description: "Post that was liked" })
   @ManyToOne(type => Post, post => post.likes)
   post: Post;
 
-  @Field()
-  @Column({
-    nullable: true
-  })
+  @Field(() => Comment, { description: "Comment that was liked" })
   @ManyToOne(type => Comment)
   comment: Comment; 
 
   @Field()
-  @Column()
   @OneToOne(type => User)
   owner: User;
 

@@ -1,13 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
 import { HashService } from './hash/hash.service';
 import { JwtService } from "@nestjs/jwt";
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
+import { JwtKeyService } from './jwt/jwt-key.service';
+import { CreateUserInput } from '../users/dto/create-user.input';
+import { JwtPayload } from './jwt/jwt.payload';
 
 @Injectable()
 export class AuthService {
 
-  login(user: User) {
+  async login(user: User) {
 
     return {
       access_token: this.jwtService.sign({
@@ -21,7 +24,8 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly hashService: HashService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly jwtKeyService: JwtKeyService
   ) {}
 
   async validator () {
@@ -35,7 +39,19 @@ export class AuthService {
       return user;
     }
     return null;
+  }
 
+  async create (createUserInput: CreateUserInput) {
+    const existingUser = await this.usersService.findOne(createUserInput.username);
+
+    if(existingUser) throw new HttpException("User already exists!", HttpStatus.BAD_REQUEST);
+
+    return this.usersService.create(createUserInput);
+  }
+
+  async validateUserByPayload (userPayload: JwtPayload) {
+    
+    return await this.usersService.getByPayload(userPayload);
   }
 
 }

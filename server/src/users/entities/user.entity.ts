@@ -1,5 +1,6 @@
 import { ObjectType, Field, Int
  } from '@nestjs/graphql';
+import { IsUnique } from '../../common/is-unique';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @ObjectType()
@@ -18,24 +19,34 @@ export class User {
     this.username = username;
   }
 
-  @Field(() => String, { description: "ID" } )
+  @Field(() => String, { description: "ID"})
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Field()
-  @Column()
+  @Column({
+    unique: true,
+    length: 255
+  })
   username: string;
 
   @Field()
-  @Column()
+  @Column({
+    unique: true,
+    length: 255
+  })
   email: string;
 
   @Field()
   @Column()
   password: string;
 
-  @Field()
-  @Column()
+  @Field({
+    nullable: true
+  })
+  @Column({
+    nullable: true
+  })
   avatar: string;
 
   @CreateDateColumn() 

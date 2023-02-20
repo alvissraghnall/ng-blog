@@ -16,19 +16,17 @@ export class Post {
   })
   title: string;
 
-  @Field()
+  @Field(() => [Comment], { description: "Comments on post"})
   @OneToMany(type => Comment, comment => comment.post, {
     nullable: false
   })
   comments: Comment[];
 
-  @Field()
+  @Field(() => [Like], { description: "Likes on post"})
   @OneToMany(type => Like, like => like.post, {
     nullable: false
   })
   likes: Like[];
-
-
   
 
   @CreateDateColumn() 

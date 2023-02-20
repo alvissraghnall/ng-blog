@@ -19,7 +19,10 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
     }
 
     async beforeInsert(event: InsertEvent<User>) {
+        const { password } = event.entity;
         console.log(`BEFORE USER INSERTED: `, event.entity);
-        event.entity.password = await this.hashService.hashPassword(event.entity.password);
+        const newPwd = await this.hashService.hashPassword(password);
+        event.entity.password = newPwd;
+        console.log(`PASSWORD NOW: `, event.entity);
     }
 }

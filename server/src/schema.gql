@@ -2,81 +2,123 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  """ID"""
-  id: String!
-  username: String!
-  email: String!
-  password: String!
-  avatar: String!
-}
+type Comment {
+  """Comment likes"""
+  Likes: [Like!]!
 
-type Post {
+  """Author of blog comment"""
+  author: String!
+
   """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-type Auth {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-type Query {
-  users: [User!]!
-  user(id: Int!): User!
-  posts: [Post!]!
-  post(id: Int!): Post!
-  auth(id: Int!): Auth!
-}
-
-type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(id: Int!): User!
-  createPost(createPostInput: CreatePostInput!): Post!
-  updatePost(updatePostInput: UpdatePostInput!): Post!
-  removePost(id: Int!): Post!
-  createAuth(createAuthInput: CreateAuthInput!): Auth!
-  updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
-  removeAuth(id: Int!): Auth!
-}
-
-input CreateUserInput {
-  """ID"""
-  id: String!
-
-  """User username"""
-  username: String!
-
-  """User email address"""
-  email: String!
-
-  """User password"""
-  password: String!
-
-  """User display photo (avatar)"""
-  avatar: String!
-}
-
-input UpdateUserInput {
   id: Int!
 
-  """User username"""
-  username: String
+  """Post that was commented on"""
+  post: Post!
+  text: String!
+}
 
-  """User email address"""
-  email: String
+input CreateCommentInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
 
-  """User password"""
-  password: String
-
-  """User display photo (avatar)"""
-  avatar: String
+input CreateLikeInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
 }
 
 input CreatePostInput {
   """Example field (placeholder)"""
   exampleField: Int!
+}
+
+input CreateUserInput {
+  """User display photo (avatar)"""
+  avatar: String
+
+  """User email address"""
+  email: String!
+
+  """User password"""
+  password: String!
+
+  """Username"""
+  username: String!
+}
+
+type Like {
+  """Comment that was liked"""
+  comment: Comment!
+
+  """Likes Collection ID"""
+  id: Int!
+  owner: User!
+
+  """Post that was liked"""
+  post: Post!
+}
+
+type LoginResponse {
+  access_token: String!
+  user: User!
+}
+
+input LoginUserInput {
+  password: String!
+  username: String!
+}
+
+type Mutation {
+  createComment(createCommentInput: CreateCommentInput!): Comment!
+  createLike(createLikeInput: CreateLikeInput!): Like!
+  createPost(createPostInput: CreatePostInput!): Post!
+  login(loginUserInput: LoginUserInput!): LoginResponse!
+  removeComment(id: Int!): Comment!
+  removeLike(id: Int!): Like!
+  removePost(id: Int!): Post!
+  removeUser(id: Int!): User!
+  signup(createUserInput: CreateUserInput!): User!
+  updateComment(updateCommentInput: UpdateCommentInput!): Comment!
+  updateLike(updateLikeInput: UpdateLikeInput!): Like!
+  updatePost(updatePostInput: UpdatePostInput!): Post!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+}
+
+type Post {
+  """Comments on post"""
+  comments: [Comment!]!
+
+  """Blog Post ID"""
+  id: Int!
+
+  """Likes on post"""
+  likes: [Like!]!
+
+  """Blog Post Title"""
+  title: String!
+}
+
+type Query {
+  comment(id: Int!): Comment!
+  comments: [Comment!]!
+  like(id: Int!): Like!
+  likes: [Like!]!
+  post(id: Int!): Post!
+  posts: [Post!]!
+  user(username: String!): User!
+  users: [User!]!
+}
+
+input UpdateCommentInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateLikeInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }
 
 input UpdatePostInput {
@@ -85,13 +127,27 @@ input UpdatePostInput {
   id: Int!
 }
 
-input CreateAuthInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+input UpdateUserInput {
+  """User display photo (avatar)"""
+  avatar: String
+
+  """User email address"""
+  email: String
+  id: ID!
+
+  """User password"""
+  password: String
+
+  """Username"""
+  username: String
 }
 
-input UpdateAuthInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+type User {
+  avatar: String
+  email: String!
+
+  """ID"""
+  id: String!
+  password: String!
+  username: String!
 }

@@ -1,7 +1,7 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Post } from 'src/posts/entities/post.entity';
-import { Like } from 'src/posts/likes/entities/like.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Post } from '../../entities/post.entity';
+import { Like } from '../../likes/entities/like.entity';
+import { User } from '../../../users/entities/user.entity';
 import { CreateDateColumn, UpdateDateColumn, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @ObjectType()
@@ -15,7 +15,7 @@ export class Comment {
   @Column({})
   text: string;
 
-  @Field()
+  @Field(() => Post, { description: "Post that was commented on" })
   @ManyToOne(type => Post, post => post.comments)
   post: Post;
 

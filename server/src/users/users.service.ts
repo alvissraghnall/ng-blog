@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
+import { JwtPayload } from '../auth/jwt/jwt.payload';
 import { Repository } from 'typeorm';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -10,7 +11,7 @@ export class UsersService {
 
   constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) {}
   
-  create(createUserInput: CreateUserInput) {
+  async create(createUserInput: CreateUserInput) {
     const { 
       email, 
       password,
@@ -19,7 +20,10 @@ export class UsersService {
    } = createUserInput;
     const newUser = new User(email, username, password, avatar);
 
-    const savedUser = this.usersRepository.save(newUser);
+    console.log("new user", newUser);
+    const savedUser = await this.usersRepository.save(newUser);
+    console.log("saved user", savedUser);
+
     return savedUser;
   }
 
@@ -27,8 +31,18 @@ export class UsersService {
     return `This action returns all users`;
   }
 
+  async find(id: string) {
+    return await this.usersRepository.findOneBy({
+      id
+    });
+  }
+
   findOne(username: string) {
     return this.usersRepository.findOneBy({ username });
+  }
+
+  async getByPayload ({ sub }: JwtPayload) {
+    return await this.find(sub);
   }
 
   update(id: string, updateUserInput: UpdateUserInput) {
