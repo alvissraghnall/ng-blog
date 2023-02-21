@@ -2,6 +2,7 @@ import { ObjectType, Field, Int
  } from '@nestjs/graphql';
 import { IsUnique } from '../../common/is-unique';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @ObjectType()
 @Entity()
@@ -39,6 +40,7 @@ export class User {
 
   @Field()
   @Column()
+  @Exclude()
   password: string;
 
   @Field({

@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { ClassSerializerInterceptor, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { CreateUserInput } from '../users/dto/create-user.input';
 import { User } from '../users/entities/user.entity';
@@ -14,6 +14,7 @@ export class AuthResolver {
 
   @Mutation(() => LoginResponse)
   @UseGuards(GqlAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   login (@Args('loginUserInput') loginUserInput: LoginUserInput, @Context() context: any) {
     console.log(context);
     return this.authService.login(context.user);

@@ -11,7 +11,6 @@ import { JwtPayload } from './jwt/jwt.payload';
 export class AuthService {
 
   async login(user: User) {
-
     return {
       access_token: this.jwtService.sign({
         username: user.username,
@@ -25,7 +24,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly hashService: HashService,
     private readonly jwtService: JwtService,
-    private readonly jwtKeyService: JwtKeyService
+    private readonly jwtKeyService: JwtKeyService,
   ) {}
 
   async validator () {
@@ -34,8 +33,9 @@ export class AuthService {
 
   async validateUser(username: string, password: string): Promise<any> {    
     const user = await this.usersService.findOne(username);
+    console.log(user);
 
-    if (user && user.password === password) {
+    if (user && await this.hashService.comparePassword(password, user.password)) {
       return user;
     }
     return null;

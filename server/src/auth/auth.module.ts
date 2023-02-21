@@ -21,7 +21,7 @@ import { LocalStrategy } from './strategy/local.strategy';
         return {
           privateKey: await keyService.getPrivKey(),
           publicKey: await keyService.getPubKey(), 
-          signOptions: { expiresIn: '10d', algorithm: 'RS256', iss: "ng-blog" },
+          signOptions: { expiresIn: '10d', algorithm: 'RS256', issuer: "ng-blog" },
           verifyOptions: { algorithms: ["RS256"] },
         };
       },
