@@ -38,7 +38,6 @@ export class User {
   })
   email: string;
 
-  @Field()
   @Column()
   @Exclude()
   password: string;

@@ -1,26 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { JwtResponsePayload } from 'auth/jwt/jwt-response.payload';
+import { Repository } from 'typeorm';
+import { User } from 'users/entities/user.entity';
+import { UsersService } from 'users/users.service';
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
+import { Post } from './entities/post.entity';
+import { Category } from './enum/category.enum';
 
 @Injectable()
 export class PostsService {
-  create(createPostInput: CreatePostInput) {
-    return 'This action adds a new post';
+
+  constructor(
+    @InjectRepository(Post) private readonly postsRepository: Repository<Post>,
+    private readonly usersService: UsersService
+  ) {}
+
+  async create(createPostInput: CreatePostInput, user: User) {
+    const { title, content, category, desc, image } = createPostInput;
+    console.log(user);
+
+    const newPost = new Post(
+      title, content, image, desc, category, user
+    );
+
+    return await this.postsRepository.save(newPost);
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  find(cat?: Category): Promise<Post[]> {
+    return cat 
+      ? 
+      this.postsRepository.find({
+        where: { category: cat },
+        relations: ["author", "likes", "comments"]
+      }) 
+      : this.postsRepository.find({
+        relations: ["author", "likes", "comments"]
+      });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  findOne(id: number): Promise<Post> {
+    return this.postsRepository.findOneBy({ id });
   }
 
-  update(id: number, updatePostInput: UpdatePostInput) {
-    return `This action updates a #${id} post`;
+  update(updatePostInput: UpdatePostInput, user: User) {
+    const { 
+      id,
+      title,
+      image,
+      desc,
+      content,
+      category
+    } = updatePostInput;
+    const post = new Post(title, content,  image, desc, category, user);
+    post.id = id;
+    return this.postsRepository.save(post);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async remove(id: number) {
+    const post = await this.postsRepository.findOneBy({id});
+    if(!post) throw new NotFoundException("Post with id: " + id + " does not exist, and hence cannot be deleted.");
+    return this.postsRepository.remove(post);
   }
 }

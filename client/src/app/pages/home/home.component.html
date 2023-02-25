@@ -1,7 +1,7 @@
 <main>
     <section class="mt-12 flex flex-col gap-40 mx-7">
         <div class="posts">
-            <div *ngFor="let post of posts; index as index" class="flex">
+            <div *ngFor="let post of posts; index as index; let odd = odd" class="flex" [class.odd]="odd">
                 <div class="flex-2">
                     <img src="{{post.img}}" alt="Blog post image" class="w-full object-cover max-h-96" />
                 </div>
@@ -17,3 +17,5 @@
         </div>
     </section>
 </main>
+
+

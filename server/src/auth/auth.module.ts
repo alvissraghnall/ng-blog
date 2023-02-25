@@ -14,14 +14,15 @@ import { LocalStrategy } from './strategy/local.strategy';
 
 @Module({
   imports: [
-    PassportModule,
+    PassportModule.register({ defaultStrategy: "jwt" }),
     JwtModule.registerAsync({
       imports: [ConfigModule, JwtKeyModule],
       useFactory: async (configService: ConfigService, keyService: JwtKeyService) => {
+        console.log(configService.get<string>("JWT_EXP_IN"));
         return {
           privateKey: await keyService.getPrivKey(),
           publicKey: await keyService.getPubKey(), 
-          signOptions: { expiresIn: '10d', algorithm: 'RS256', issuer: "ng-blog" },
+          signOptions: { expiresIn: configService.get<string>("JWT_EXP_IN"), algorithm: 'RS256', issuer: "ng-blog" },
           verifyOptions: { algorithms: ["RS256"] },
         };
       },
@@ -29,9 +30,10 @@ import { LocalStrategy } from './strategy/local.strategy';
       inject: [ConfigService, JwtKeyService]
     }),
     UsersModule,
-    HashModule
+    HashModule,
+    JwtKeyModule
   ],
-  providers: [JwtStrategy, AuthService, LocalStrategy, AuthResolver, JwtKeyService ],
-  exports: []
+  providers: [ AuthService, LocalStrategy, AuthResolver, JwtKeyService, JwtStrategy ],
+  exports: [AuthService, JwtKeyService]
 })
 export class AuthModule {}

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { HashService } from './hash/hash.service';
 import { JwtService } from "@nestjs/jwt";
@@ -15,6 +15,9 @@ export class AuthService {
       access_token: this.jwtService.sign({
         username: user.username,
         sub: user.id
+      }, {
+        algorithm: "RS256",
+        privateKey: await this.jwtKeyService.getPrivKey(),
       }),
       user
     }
@@ -44,7 +47,7 @@ export class AuthService {
   async create (createUserInput: CreateUserInput) {
     const existingUser = await this.usersService.findOne(createUserInput.username);
 
-    if(existingUser) throw new HttpException("User already exists!", HttpStatus.BAD_REQUEST);
+    if(existingUser) throw new ConflictException("User already exists!");
 
     return this.usersService.create(createUserInput);
   }

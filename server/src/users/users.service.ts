@@ -28,7 +28,7 @@ export class UsersService {
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.usersRepository.find();
   }
 
   async find(id: string) {

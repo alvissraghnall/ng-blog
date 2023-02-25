@@ -2,15 +2,25 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+enum Category {
+  CINEMA
+  CUISINE
+  DIY
+  FASHION
+  LIFESTYLE
+  TECHNOLOGY
+  TRAVEL
+}
+
 type Comment {
-  """Comment likes"""
-  Likes: [Like!]!
-
   """Author of blog comment"""
-  author: String!
+  author: User!
 
-  """Example field (placeholder)"""
+  """Comment ID"""
   id: Int!
+
+  """Comment likes"""
+  likes: [Like!]!
 
   """Post that was commented on"""
   post: Post!
@@ -18,23 +28,44 @@ type Comment {
 }
 
 input CreateCommentInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """ID of Post that was commented on"""
+  postId: Int!
+
+  """Comment text content"""
+  text: String!
 }
 
 input CreateLikeInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """Comment with like"""
+  commentId: Int
+
+  """Post with like"""
+  postId: Int
 }
 
 input CreatePostInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """Blog post content"""
+  category: Category!
+
+  """Blog post content"""
+  content: String!
+
+  """Blog post description"""
+  desc: String!
+
+  """Blog post image"""
+  image: String!
+
+  """Blog post title"""
+  title: String!
 }
 
 input CreateUserInput {
   """User display photo (avatar)"""
   avatar: String
+
+  """User confirm password"""
+  confirmPassword: String!
 
   """User email address"""
   email: String!
@@ -46,16 +77,21 @@ input CreateUserInput {
   username: String!
 }
 
+enum EntityOwnsLike {
+  COMMENT
+  POST
+}
+
 type Like {
   """Comment that was liked"""
-  comment: Comment!
+  comment: Comment
 
   """Likes Collection ID"""
   id: Int!
   owner: User!
 
   """Post that was liked"""
-  post: Post!
+  post: Post
 }
 
 type LoginResponse {
@@ -79,17 +115,31 @@ type Mutation {
   removeUser(id: Int!): User!
   signup(createUserInput: CreateUserInput!): User!
   updateComment(updateCommentInput: UpdateCommentInput!): Comment!
-  updateLike(updateLikeInput: UpdateLikeInput!): Like!
   updatePost(updatePostInput: UpdatePostInput!): Post!
   updateUser(updateUserInput: UpdateUserInput!): User!
 }
 
 type Post {
+  """Owner of posts"""
+  author: User!
+
+  """Blog post content"""
+  category: String!
+
   """Comments on post"""
   comments: [Comment!]!
 
+  """Blog post content"""
+  content: String!
+
+  """Blog post description"""
+  desc: String!
+
   """Blog Post ID"""
   id: Int!
+
+  """Blog post image"""
+  image: String!
 
   """Likes on post"""
   likes: [Like!]!
@@ -99,37 +149,51 @@ type Post {
 }
 
 type Query {
+  auth: String!
   comment(id: Int!): Comment!
-  comments: [Comment!]!
+  comments(postId: Int!): [Comment!]!
   like(id: Int!): Like!
-  likes: [Like!]!
+  likes(entity: EntityOwnsLike!, id: Int!): [Like!]!
   post(id: Int!): Post!
-  posts: [Post!]!
+  posts(cat: Category): [Post!]
   user(username: String!): User!
   users: [User!]!
 }
 
 input UpdateCommentInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  """ID of comment to be updated."""
   id: Int!
-}
 
-input UpdateLikeInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  """Comment text content"""
+  text: String!
 }
 
 input UpdatePostInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  """Blog post content"""
+  category: Category
+
+  """Blog post content"""
+  content: String
+
+  """Blog post description"""
+  desc: String
+
+  """Post id to be updated."""
   id: Int!
+
+  """Blog post image"""
+  image: String
+
+  """Blog post title"""
+  title: String
 }
 
 input UpdateUserInput {
   """User display photo (avatar)"""
   avatar: String
+
+  """User confirm password"""
+  confirmPassword: String
 
   """User email address"""
   email: String
@@ -148,6 +212,5 @@ type User {
 
   """ID"""
   id: String!
-  password: String!
   username: String!
 }

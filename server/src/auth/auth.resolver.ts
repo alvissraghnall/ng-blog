@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { LoginUserInput } from './dto/login-user.input';
 import { LoginResponse } from './dto/login.response';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 
 @Resolver(() => User)
@@ -25,10 +26,11 @@ export class AuthResolver {
     return this.authService.create(createAuthInput);
   }
 
-//   @Query(() => [User], { name: 'auth' })
-//   findAll() {
-//     return this.authService.findAll();
-//   }
+  @Query(() => String, { name: 'auth' })
+  // @UseGuards(JwtAuthGuard)
+  findAll() {
+    return "God's boy.";
+  }
 
 //   @Query(() => User, { name: 'auth' })
 //   findOne(@Args('id', { type: () => Int }) id: number) {

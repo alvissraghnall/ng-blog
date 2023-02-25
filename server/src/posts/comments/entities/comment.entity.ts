@@ -7,7 +7,18 @@ import { CreateDateColumn, UpdateDateColumn, Column, Entity, ManyToOne, OneToMan
 @ObjectType()
 @Entity()
 export class Comment {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
+
+  constructor(
+    text: string,
+    author: User,
+    post: Post
+  ) {
+    this.text = text;
+    this.author = author;
+    this.post = post;
+  }
+
+  @Field(() => Int, { description: 'Comment ID' })
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,17 +30,18 @@ export class Comment {
   @ManyToOne(type => Post, post => post.comments)
   post: Post;
 
-  @Field(() => String, { description: "Author of blog comment" })
-  @OneToOne(type => User)
+  @Field(() => User, { description: "Author of blog comment" })
+  @ManyToOne(type => User, {
+    eager: true
+  })
   author: User;
 
   @Field(() => [Like], { description: "Comment likes" })
   @OneToMany(type => Like, like => like.comment, {
-    nullable: false
+    nullable: false,
+    eager: true
   })
-  Likes: Like[];
-
-  
+  likes: Like[];
 
   @CreateDateColumn() 
   createdAt: Date;
