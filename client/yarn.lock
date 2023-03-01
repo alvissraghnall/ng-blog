@@ -1430,6 +1430,13 @@
   dependencies:
     tslib "^2.2.0"
 
+"@ng-icons/material-icons@^23.1.0":
+  version "23.1.0"
+  resolved "https://registry.yarnpkg.com/@ng-icons/material-icons/-/material-icons-23.1.0.tgz#5875708d90ba7fe60a07e77c5aa1465e65c9eaf0"
+  integrity sha512-GPjifSnQUMsAyifqlzcM8ILKqo/l1WcBGJUz/wZBOkCltjEJvE9p9b2eSUfEGtfmK+2VfC5H6ZL4Wm/BHCHlcA==
+  dependencies:
+    tslib "^2.2.0"
+
 "@ngtools/webpack@14.2.10":
   version "14.2.10"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-14.2.10.tgz#d33ff1147d01bd1f5d936a3d1744c81a28e2ca6a"

@@ -16,7 +16,7 @@ import { ModalModule } from './modal/modal.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GraphQLModule } from './graphql.module';
 import { HttpClientModule } from '@angular/common/http';
-import { SimpleModalModule } from 'ngx-simple-modal';
+import { NgIconsModule } from '@ng-icons/core';
 
 @NgModule({
   declarations: [
@@ -37,6 +37,9 @@ import { SimpleModalModule } from 'ngx-simple-modal';
     ReactiveFormsModule,
     GraphQLModule,
     HttpClientModule,
+    // NgIconsModule.withIcons({
+    //   featherAirplay
+    // })
   ],
   providers: [],
   bootstrap: [AppComponent]
