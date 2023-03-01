@@ -20,9 +20,15 @@ const routes: Routes = [
 {
   path: '',
   component: LayoutComponent,
+  pathMatch: "prefix",
   // redirectTo: 'home',
   // pathMatch: 'full',
   children: [
+    {
+      path: "",
+      redirectTo: "/home",
+      pathMatch: "full"
+    },
     {
       path: 'home',
       component: HomeComponent

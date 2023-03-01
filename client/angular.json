@@ -2,8 +2,12 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
+  "cli": {
+    "analytics": false,
+    "packageManager": "yarn"
+  },
   "projects": {
-    "ng-news": {
+    "ng-blog": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ng-news",
+            "outputPath": "dist/ng-blog",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -23,7 +27,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "./node_modules/ngx-simple-modal/styles/simple-modal.css"
             ],
             "scripts": []
           },
@@ -64,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "ng-news:build:production"
+              "browserTarget": "ng-blog:build:production"
             },
             "development": {
-              "browserTarget": "ng-news:build:development"
+              "browserTarget": "ng-blog:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -75,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ng-news:build"
+            "browserTarget": "ng-blog:build"
           }
         },
         "test": {

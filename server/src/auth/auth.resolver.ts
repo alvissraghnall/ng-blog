@@ -1,5 +1,6 @@
 import { ClassSerializerInterceptor, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
+import { Public } from 'common/public.decorator';
 import { CreateUserInput } from '../users/dto/create-user.input';
 import { User } from '../users/entities/user.entity';
 import { AuthService } from './auth.service';
@@ -14,6 +15,7 @@ export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @Mutation(() => LoginResponse)
+  @Public()
   @UseGuards(GqlAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   login (@Args('loginUserInput') loginUserInput: LoginUserInput, @Context() context: any) {
@@ -22,6 +24,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => User)
+  @Public()
   signup(@Args('createUserInput') createAuthInput: CreateUserInput) {
     return this.authService.create(createAuthInput);
   }

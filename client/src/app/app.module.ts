@@ -12,7 +12,11 @@ import { FooterComponent } from './components/footer/footer.component';
 import { CreateComponent } from './pages/create/create.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { PostDetailsComponent } from './pages/post-details/post-details.component';
+import { ModalModule } from './modal/modal.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { GraphQLModule } from './graphql.module';
+import { HttpClientModule } from '@angular/common/http';
+import { SimpleModalModule } from 'ngx-simple-modal';
 
 @NgModule({
   declarations: [
@@ -30,7 +34,9 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    GraphQLModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
