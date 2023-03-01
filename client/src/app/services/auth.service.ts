@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { CREATE_USER } from '../graphql/auth.queries';
+import { BehaviorSubject } from 'rxjs';
+import { CREATE_USER, LOGIN_USER } from '../graphql/auth.queries';
 import { CreateUserInput } from '../models/inputs/create-user.input';
+import { LoginUserInput } from '../models/inputs/login-user.input';
+import { KeyStorageService } from './key-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +14,11 @@ export class AuthService {
   loading = false;
   errors!: any[];
   responseData: any;
+  isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
-    private readonly apollo: Apollo
+    private readonly apollo: Apollo,
+    private readonly keyStorageService: KeyStorageService
   ) { }
 
   signup (input: CreateUserInput, loadingVar: boolean) {
@@ -27,35 +32,50 @@ export class AuthService {
     });
   }
 
-  login() {
-
+  login(input: LoginUserInput) {
+    return this.apollo.mutate({
+      mutation: LOGIN_USER,
+      variables: {
+        input
+      },
+      errorPolicy: 'all'
+    });
   }
 
-  private setSession(expiresAt: number) {
-    const expiresAt = moment().add(authResult.expiresIn,'second');
-
-    localStorage.setItem('id_token', authResult.idToken);
-    localStorage.setItem("expires_at", JSON.stringify(expiresAt.valueOf()) );
+  private setSession(token: string) {
+    this.keyStorageService.setToken(token);
   } 
 
-  logout() {
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("expires_at");
+  logout(): void {
+    this.keyStorageService.removeToken();
+    this.apollo.client.resetStore();
+    this.isAuthenticated.next(false);
   }
 
   public isLoggedIn() {
-      return moment().isBefore(this.getExpiration());
+    return this.keyStorageService.getToken() !== null
+      && this.apollo.query({
+        query: 
+      })
+    ;
   }
 
   isLoggedOut() {
-      return !this.isLoggedIn();
+    return !this.isLoggedIn();
   }
 
-  getExpiration() {
-      const expiration = localStorage.getItem("expires_at");
-      const expiresAt = JSON.parse(expiration);
-      return moment(expiresAt);
-  }    
+  getLoading(): boolean {
+    return this.loading;
+  }
+
+  getResponseData (): any {
+    return this.responseData;
+  }
+
+  getError(): any {
+    return this.errors;
+  }
+  
 }
   /**
    * errors: Array [ {…} ]
@@ -74,16 +94,3 @@ message: Array [ "username already exists" ]
 ​​​​​
 statusCode: 400
    */
-
-  getLoading(): boolean {
-    return this.loading;
-  }
-
-  getResponseData (): any {
-    return this.responseData;
-  }
-
-  getError(): any {
-    return this.errors;
-  }
-}

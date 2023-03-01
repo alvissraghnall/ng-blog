@@ -35,6 +35,11 @@ export class AuthResolver {
     return "God's boy.";
   }
 
+  @Query(() => Boolean, { name: 'check-jwt' })
+  checkJwt () {
+    return true;
+  }
+
 //   @Query(() => User, { name: 'auth' })
 //   findOne(@Args('id', { type: () => Int }) id: number) {
 //     return this.authService.findOne(id);
