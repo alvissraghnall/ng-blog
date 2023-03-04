@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Apollo } from 'apollo-angular';
+import { Category } from 'src/app/models/enum/category.enum';
+import { PostService } from 'src/app/services/post.service';
 import { Post } from "../../models/Post.model";
 
 
@@ -7,38 +11,40 @@ import { Post } from "../../models/Post.model";
   templateUrl: './home.component.html',
   styles: [`.img-cont::after { content: "" }`]
 })
-export class HomeComponent implements OnInit {
-
+export class HomeComponent implements OnInit, OnChanges {
+  category?: string | null = null;
+  
   posts: Post[] = [
-    {
-      id: 1,
-      title: 'Post 1',
-      desc: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestias voluptates architecto, tenetur dolores quia debitis molestiae facere nesciunt, officiis recusandae laboriosam, repellendus officia! Dicta, fuga. Facere maiores commodi reprehenderit? Odit? Quisquam, quod. ",
-      image: "../../../assets/phone-bg-02.jpg"
-    },
-    {
-      id: 2,
-      title: 'Post 2',
-      desc: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestias voluptates architecto, tenetur dolores quia debitis molestiae facere nesciunt, officiis recusandae laboriosam, repellendus officia! Dicta, fuga. Facere maiores commodi reprehenderit? Odit? Quisquam, quod. ",
-      image: "../../../assets/phone-bg.jpg"
-    },
-    {
-      id: 3,
-      title: 'Post 3',
-      desc: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestias voluptates architecto, tenetur dolores quia debitis molestiae facere nesciunt, officiis recusandae laboriosam, repellendus officia! Dicta, fuga. Facere maiores commodi reprehenderit? Odit? Quisquam, quod. ",
-      image: "../../../assets/Pivo-Pod-review-9.jpeg"
-    },
-    {
-      id: 4,
-      title: 'Post 4',
-      desc: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestias voluptates architecto, tenetur dolores quia debitis molestiae facere nesciunt, officiis recusandae laboriosam, repellendus officia! Dicta, fuga. Facere maiores commodi reprehenderit? Odit? Quisquam, quod. ",
-      image: "../../../assets/razor-kishi.jpeg"
-    },
   ];
 
-  constructor() { }
+  constructor(
+    private readonly apollo: Apollo,
+    private readonly postService: PostService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
+  ) { 
+    this.router.onSameUrlNavigation = 'reload';
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  }
 
   ngOnInit(): void {
+    this.category = this.route.snapshot.queryParamMap.get("category")?.toUpperCase();
+    let indexOfCat = Object.values(Category).indexOf(this.category as unknown as Category)
+    const catEnum = Object.keys(Category)[indexOfCat];
+    console.log(catEnum);
+    
+    this.postService.getPosts(Category[catEnum as keyof typeof Category])
+      .subscribe(
+        (results: any) => {
+          console.log(results);
+          this.posts = results.data?.posts;
+        }
+      )
+  }
+
+  ngOnChanges () {
+    console.log("changes");
+    
   }
 
 }

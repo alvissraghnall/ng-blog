@@ -8,6 +8,7 @@ import { JwtResponsePayload } from "auth/jwt/jwt-response.payload";
 import { IS_PUBLIC_KEY } from "common/public.decorator";
 import { IncomingMessage } from "http";
 import { User } from 'users/entities/user.entity';
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -47,7 +48,12 @@ export class JwtAuthGuard implements CanActivate {
             return true;
         } catch (error) {
             console.log(error);
-            throw error;
+            if (error instanceof jwt.JsonWebTokenError) {
+                throw new UnauthorizedException("Invalid JWT Token provided.");
+            } else if (error instanceof jwt.TokenExpiredError) {
+                throw new UnauthorizedException("Expired JWT Token.");
+            }
+            throw new UnauthorizedException(error.message);
         }
     }
 

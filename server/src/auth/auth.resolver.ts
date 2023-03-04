@@ -35,7 +35,7 @@ export class AuthResolver {
     return "God's boy.";
   }
 
-  @Query(() => Boolean, { name: 'check-jwt' })
+  @Query(() => Boolean, { name: 'checkJwt' })
   checkJwt () {
     return true;
   }

@@ -8,6 +8,8 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
 import { CreateComponent } from './pages/create/create.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { PostDetailsComponent } from './pages/post-details/post-details.component';
+import { UserComponent } from './pages/user/user.component';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -35,11 +37,17 @@ const routes: Routes = [
     },
     {
       path: 'create',
-      component: CreateComponent
+      component: CreateComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'post/:id',
       component: PostDetailsComponent
+    },
+    {
+      path: 'user',
+      component: UserComponent,
+      canActivate: [AuthGuard]
     }
   ]
 }, {

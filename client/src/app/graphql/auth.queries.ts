@@ -24,8 +24,6 @@ export const LOGIN_USER = gql`
     }
 `;
 
-export const AUTH_USER_TOKEN = gql`
-    check-jwt {
-        
-    }
+export const CHECK_AUTH_USER_TOKEN = gql`
+    { checkJwt }
 `;

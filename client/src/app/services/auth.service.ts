@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject } from 'rxjs';
-import { CREATE_USER, LOGIN_USER } from '../graphql/auth.queries';
+import { BehaviorSubject, take } from 'rxjs';
+import { CHECK_AUTH_USER_TOKEN, CREATE_USER, LOGIN_USER } from '../graphql/auth.queries';
 import { CreateUserInput } from '../models/inputs/create-user.input';
 import { LoginUserInput } from '../models/inputs/login-user.input';
 import { KeyStorageService } from './key-storage.service';
@@ -42,7 +42,7 @@ export class AuthService {
     });
   }
 
-  private setSession(token: string) {
+  setSession(token: string) {
     this.keyStorageService.setToken(token);
   } 
 
@@ -52,12 +52,27 @@ export class AuthService {
     this.isAuthenticated.next(false);
   }
 
-  public isLoggedIn() {
-    return this.keyStorageService.getToken() !== null
-      && this.apollo.query({
-        query: 
-      })
-    ;
+  public async isLoggedIn() {
+    const token = this.keyStorageService.getToken();
+    return token !== null
+      && await this.checkToken(token);
+  }
+
+  private checkToken (token: string) {
+    let isValid = false;
+    return new Promise<boolean>(resolve => {
+      this.apollo.query({
+        query: CHECK_AUTH_USER_TOKEN,
+        errorPolicy: 'all',
+      }).pipe(
+        take(1)
+      ).subscribe((result: any) => {
+        isValid = !!result.data;
+        if (result.errors) isValid = false;
+
+        resolve(isValid);
+      });
+    });
   }
 
   isLoggedOut() {

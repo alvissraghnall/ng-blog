@@ -10,6 +10,9 @@ import { JwtPayload } from './jwt/jwt.payload';
 @Injectable()
 export class AuthService {
 
+  private readonly USER_NOT_FOUND = "USER_NOT_FOUND";
+  private readonly PASSWORD_MISMATCH = "PASSWORD_MISMATCH";
+
   async login(user: User) {
     return {
       access_token: this.jwtService.sign({
@@ -34,14 +37,17 @@ export class AuthService {
     //
   }
 
-  async validateUser(username: string, password: string): Promise<any> {    
+  async validateUser(username: string, password: string): Promise<User | string> {    
     const user = await this.usersService.findOne(username);
     console.log(user);
 
-    if (user && await this.hashService.comparePassword(password, user.password)) {
+    if (!await this.hashService.comparePassword(password, user.password)) {
+      return this.PASSWORD_MISMATCH;
+    }
+    if (user) {
       return user;
     }
-    return null;
+    return this.USER_NOT_FOUND;
   }
 
   async create (createUserInput: CreateUserInput) {

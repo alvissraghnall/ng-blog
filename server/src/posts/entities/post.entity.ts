@@ -68,8 +68,10 @@ export class Post {
   author: User;  
 
   @CreateDateColumn() 
+  @Field(() => Date, { description: "post creation date" })
   createdAt: Date;
   
+  @Field(() => Date, { description: "post update date" })
   @UpdateDateColumn() 
   updatedAt: Date;
 

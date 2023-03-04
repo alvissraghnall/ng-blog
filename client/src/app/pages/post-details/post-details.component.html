@@ -1,1 +1,39 @@
-<p>post-details works!</p>
+<main>
+    <div class="flex gap-14">
+        <div class="flex-[5] flex flex-col gap-7">
+            <img class="w-full h-80 object-cover" src="../../../assets/phone-bg.jpg" alt="">
+            <div class="flex items-center gap-2.5 text-sm">
+                <img class="w-12 h-12 rounded-full object-cover" src="../../../assets/razor-kishi.jpeg" alt="">
+                <div class="info">
+                    <span class="font-bold"> James </span>
+                    <p> 2 months ago </p>
+                </div>
+                <div class="flex gap-1.5">
+                    <a 
+                        [routerLink]="['/create']"
+                        [queryParams]="{ edit: true }"
+                        routerLinkActive="router-link-active"
+                    >
+                        <ng-icon name="heroPencilSquare" color="blue" size="20">
+                        
+                        </ng-icon>
+                    </a>
+
+                    <!-- delete button -->
+                    <ng-icon class="cursor-pointer" name="heroTrash" color="red" size="20">
+
+                    </ng-icon>
+                </div>
+            </div>
+            <h1 class="text-[#333] text-4xl font-serif font-bold pl-1.5">
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Labore impedit minus laboriosam veniam?
+            </h1>
+            <p class="text-justify leading-7 pl-1.5">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptas, quia quidem dicta doloremque animi dolor! Voluptas accusantium odit veniam laborum. Excepturi fugit ab atque voluptatum distinctio consectetur deleniti numquam aperiam beatae itaque velit dolor libero iusto vero eius alias similique, dolore recusandae omnis saepe facere in asperiores inventore. Officiis possimus neque voluptatem velit temporibus quaerat eligendi laudantium, quisquam aut exercitationem, enim placeat facilis deserunt qui quia officia animi. Praesentium nesciunt explicabo debitis consequuntur dolorem cumque sapiente officia consectetur corporis, quibusdam quas quia doloribus hic, iure porro eveniet suscipit minus ipsam ad. Temporibus mollitia iste obcaecati corporis error, tempora repellat quibusdam vitae hic exercitationem nisi similique omnis earum repudiandae ex modi voluptates! Deserunt sed voluptates doloribus temporibus possimus impedit ipsum repellat natus eius inventore veritatis iure maxime eaque ipsa culpa, asperiores excepturi eum, nemo recusandae ullam repellendus totam. Ab deserunt consectetur officiis ipsa recusandae, reiciendis dicta suscipit! Ad aspernatur, et dicta in, eos obcaecati deleniti neque consequuntur optio porro culpa molestiae. Impedit voluptas quam debitis cum ipsa ratione voluptatum asperiores. <br><br> quis dolorum provident libero, minus veniam distinctio tenetur magnam quas, dignissimos deleniti nihil excepturi. Corporis facilis et iste! Corrupti sed id ea consequuntur blanditiis dolore rem at! Maiores quibusdam cupiditate excepturi obcaecati quis enim asperiores aperiam quaerat dolor eos est eveniet, similique, ea aliquam? Eaque repellendus corrupti, expedita, illum ullam magnam voluptas placeat officia eveniet aliquam dolores accusantium fugiat eius beatae, quis laboriosam impedit. <br><br> Sequi fugiat animi labore praesentium iste, dolores ipsa, officiis sit, vero neque eos mollitia quae doloribus dolorem sed. Suscipit ex magni quidem vero nostrum numquam, commodi eaque obcaecati quam expedita ab quas cumque vel corporis illo laborum eveniet quasi molestiae quaerat. Consequatur, hic? Facilis dolor natus deserunt ipsum eos incidunt asperiores, sequi dolorem minus ut dignissimos repudiandae, quo eum. Consequatur repudiandae sunt incidunt eaque porro ut nesciunt eos voluptatibus atque, placeat nobis exercitationem praesentium ipsa unde nihil illo eligendi quo quaerat qui officia iste similique provident cumque? Impedit harum eos laboriosam molestiae veniam, hic nulla nam modi sit voluptatibus dolorum tenetur ipsa, nobis eaque quas eveniet illum consequatur quidem dolores! Ducimus, unde atque repellendus assumenda blanditiis quos quis maiores exercitationem eos numquam ea. <br><br> Esse quasi natus distinctio nisi magni molestiae facere, neque accusantium minima sunt minus, assumenda tenetur voluptas amet nam adipisci voluptate eos nobis inventore doloribus. Nihil eaque eveniet enim debitis quisquam fugit porro, placeat cupiditate, expedita impedit ab tenetur veritatis dicta atque eius omnis voluptatibus doloribus provident voluptate iure doloremque magni? Provident facilis aspernatur aliquid neque odio dicta quod, consequatur dolore veniam mollitia adipisci iste eveniet explicabo error dignissimos modi quidem natus voluptas deleniti tenetur id, voluptatum eos! Quas cum delectus perspiciatis magni totam cumque ullam unde consectetur laboriosam. Nihil molestias esse expedita quaerat accusantium eveniet debitis, soluta inventore, cumque delectus voluptatem aperiam mollitia facilis accusamus consequuntur ex et iure quis incidunt illo. Quam consequuntur optio recusandae, eaque rerum tempora consectetur accusamus ipsam ullam velit praesentium vitae ab tempore perspiciatis sint, ipsum repellendus, reprehenderit quibusdam veniam quod.
+            </p>
+        </div>
+        <div class="flex-[2]">
+            <app-post-menu class=" flex flex-col gap-6"></app-post-menu>
+        </div>
+    </div>
+</main>
