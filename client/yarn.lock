@@ -4528,6 +4528,13 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+ngx-quill@^20.0.1:
+  version "20.0.1"
+  resolved "https://registry.yarnpkg.com/ngx-quill/-/ngx-quill-20.0.1.tgz#b27f6f8b3302115cc316d53a19c7c89fade3a94e"
+  integrity sha512-X02Me3RYuQgoOHXzYrkdi4aaDHPkyTZTUib+2amKxAMpM9LEOh/QYrFjudreQJtih6rhV6kRorO5AS4UueX9Mw==
+  dependencies:
+    tslib "^2.3.0"
+
 ngx-simple-modal@^1.4.17:
   version "1.4.17"
   resolved "https://registry.yarnpkg.com/ngx-simple-modal/-/ngx-simple-modal-1.4.17.tgz#fc1a5bfdbce998fc21df28f2f8efe2644d2592a7"

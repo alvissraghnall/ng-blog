@@ -24,6 +24,7 @@
     "@ng-icons/material-icons": "^23.1.0",
     "apollo-angular": "4.2.1",
     "graphql": "^16",
+    "ngx-quill": "^20.0.1",
     "ngx-simple-modal": "^1.4.17",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
