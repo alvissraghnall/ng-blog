@@ -1,24 +1,63 @@
 
-<div class="flex gap-5 mt-5">
+<div class="flex gap-5 mt-5 mx-3">
     <div class="flex-[5]">
-        content
+        <form [formGroup]="templateForm" class="flex-col gap-5 flex">
+            <input 
+                auto-complete="off" 
+                type="text" 
+                placeholder="Blog Post Title" 
+                formControlName="title"
+                class="border border-solid border-zinc-400/50 outline-none p-2.5"
+            />
+            <div class="border border-solid border-zinc-500/40 overflow-scroll h-80">
+
+                <quill-editor formControlName="textEditor" [styles]="{ height: '100%' }"  (onContentChanged)="handleContentChange($event)" class="border-none h-full">
+                    
+                </quill-editor>
+            </div>
+
+            <!-- <button (click)="alert(templateForm.get('textEditor').value)">
+
+            </button> -->
+        </form>
     </div>
     <div class="flex-[2] flex flex-col gap-5">
-        <div class="item">
-            <h1 class="capitalize">publish</h1>
-            <span>
-                <b>Status: </b> Draft
-            </span>
-            <input type="file" id="file" class="hidden" />
-            <label for="file">Upload Image</label>
-
-            <div class="">
-                <button>
-
-                </button>
-                <button>
+        <div class="border border-solid border-zinc-500/60 p-2.5 flex-1 text-xs text-[#a09292]">
+            <h1 class="capitalize text-xl font-semibold font-mono my-4">publish</h1>
+            <div class="flex flex-col h-full justify-evenly">
+                <div class="flex flex-col justify-between h-1/4">
+                    <span>
+                        <b>Status: </b> Draft
+                    </span>
+                    <span><b>Visibility:</b>Public</span>
                     
-                </button>
+                    <input type="file" id="file" class="hidden" />
+                    <label for="file" class="underline cursor-pointer">Upload Image</label> 
+                </div>
+                <div class="h-1/2">
+                    
+                    <label for="category" class="block mb-2 text-sm font-medium text-[#a09090]"> Category</label>
+                    <select name="category" id="category" class="border border-gray-300 rounded-md focus:ring-blue-400 focus:border-blue-500 w-full p-2.5 drop-shadow-md bg-gray-50 text-gray-900 text-sm duration-300 cursor-pointer">
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="FASHION">FASHION</option>
+                        <option value="CUISINE">CUISINE</option>
+                        <option value="TECHNOLOGY">TECHNOLOGY</option>
+                        <option value="DIY">DIY</option>
+                        <option value="LIFESTYLE">LIFESTYLE</option>
+                        <option value="TRAVEL">TRAVEL</option>
+                        <option value="CINEMA">CINEMA</option>
+                    </select>
+                
+                    <div class="flex justify-between mt-8 mx-3">
+                        <button class="cursor-pointer p-3 text-cyan-400 bg-white/60 border border-solid border-cyan-500 rounded">
+                            Save as Draft
+                        </button>
+                        <button class="cursor-pointer p-3 bg-cyan-400 rounded text-white border border-solid border-gray-200">
+                            Upload
+                        </button>
+                    </div>
+                </div>
+            
             </div>
         </div>
     </div>

@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+import { ContentChange } from 'ngx-quill';
+import Quill from 'quill';
+import BlotFormatter from 'quill-blot-formatter';
+
+
+Quill.register('modules/blotFormatter', BlotFormatter)
 
 @Component({
   selector: 'app-create',
@@ -7,9 +14,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateComponent implements OnInit {
 
-  constructor() { }
+  templateForm: FormGroup;
+  quillEditorModules = {};
+
+  constructor() { 
+    this.templateForm = new FormGroup({
+      textEditor: new FormControl(""),
+      title: new FormControl(""),
+    });
+    this.quillEditorModules = {
+      blotFormatter: {}
+    };
+  }
 
   ngOnInit(): void {
+  }
+
+  handleContentChange($event: ContentChange) {
+    console.log($event);
   }
 
 }

@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { LoginUserInput } from 'src/app/models/inputs/login-user.input';
 import { LoginResponse } from 'src/app/models/response/login.response';
+import { User } from 'src/app/models/User.model';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -121,8 +122,9 @@ export class LoginComponent implements OnInit {
     private readonly router: Router
   ) { }
 
-  onSuccess (token: string) {
+  onSuccess (token: string, user: User) {
     this.authService.setSession(token);
+    this.authService.setCurrentUser(user);
   }
 
   onSubmit(form: FormGroup) {
@@ -153,7 +155,7 @@ export class LoginComponent implements OnInit {
           this.showToastFn()
 
           if(this.responseData) {
-            this.onSuccess(this.responseData.access_token);
+            this.onSuccess(this.responseData.access_token, this.responseData.user);
             setTimeout(() => {
               this.router.navigateByUrl("/user");
             }, 5000)

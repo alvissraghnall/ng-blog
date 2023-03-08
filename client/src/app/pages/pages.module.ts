@@ -10,9 +10,12 @@ import { CreateComponent } from './create/create.component';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgIconsModule } from '@ng-icons/core';
-import { heroPencilSquare, heroTrash } from "@ng-icons/heroicons/outline"
+import { 
+  heroPencilSquare, 
+  heroTrash 
+} from "@ng-icons/heroicons/outline";
 import { ComponentsModule } from '../components/components.module';
-
+import { QuillModule } from 'ngx-quill'
 
 @NgModule({
   declarations: [
@@ -30,9 +33,10 @@ import { ComponentsModule } from '../components/components.module';
     RouterModule,
     NgIconsModule.withIcons({
       heroPencilSquare,
-      heroTrash
+      heroTrash,
     }),
-    ComponentsModule
+    ComponentsModule,
+    QuillModule.forRoot()
   ],
   exports: [
     UserComponent,
@@ -45,3 +49,9 @@ import { ComponentsModule } from '../components/components.module';
   ],
 })
 export class PagesModule { }
+
+
+
+// https://api.cloudinary.com/v1_1/${cloudName}/upload
+// curl https://api.cloudinary.com/v1_1/<CLOUD_NAME>/image/upload -X POST --data 'file=<FILE>&timestamp=<TIMESTAMP>&api_key=<API_KEY>&signature=<SIGNATURE>'
+// curl https://api.cloudinary.com/v1_1/demo/image/upload -X POST -F 'file=@/path/to/sample.jpg' -F 'timestamp=173719931' -F 'api_key=436464676' -F 'signature=a781d61f86a6f818af'

@@ -4,7 +4,9 @@ import { BehaviorSubject, take } from 'rxjs';
 import { CHECK_AUTH_USER_TOKEN, CREATE_USER, LOGIN_USER } from '../graphql/auth.queries';
 import { CreateUserInput } from '../models/inputs/create-user.input';
 import { LoginUserInput } from '../models/inputs/login-user.input';
+import { User } from '../models/User.model';
 import { KeyStorageService } from './key-storage.service';
+import { UserStorageService } from './user-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +17,15 @@ export class AuthService {
   errors!: any[];
   responseData: any;
   isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  currentUser?: User;
 
   constructor(
     private readonly apollo: Apollo,
-    private readonly keyStorageService: KeyStorageService
-  ) { }
+    private readonly keyStorageService: KeyStorageService,
+    private readonly userStorageService: UserStorageService
+  ) { 
+    this.currentUser = this.userStorageService.getCurrentUser();
+  }
 
   signup (input: CreateUserInput, loadingVar: boolean) {
     return this.apollo.mutate({
@@ -30,6 +36,15 @@ export class AuthService {
       errorPolicy: 'all'
       
     });
+  }
+
+  getCurrentUser() {
+    return this.currentUser;
+  }
+
+  setCurrentUser (user: User) {
+    this.userStorageService.setCurrentUser(user);
+    this.currentUser = user;
   }
 
   login(input: LoginUserInput) {
@@ -48,8 +63,10 @@ export class AuthService {
 
   logout(): void {
     this.keyStorageService.removeToken();
+    this.userStorageService.removeCurrentUser();
     this.apollo.client.resetStore();
     this.isAuthenticated.next(false);
+    // this.r
   }
 
   public async isLoggedIn() {
@@ -77,6 +94,7 @@ export class AuthService {
 
   isLoggedOut() {
     return !this.isLoggedIn();
+    // this.isAuthenticated.
   }
 
   getLoading(): boolean {

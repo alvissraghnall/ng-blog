@@ -76,6 +76,26 @@
                   Password and Confirm Password must match!
                 </div>
               </div>
+
+              <div class="relative mt-3">
+                <p class="font-mono text-zinc-900/40 text-sm font-normal block mb-1.5">Pick an avatar:</p>
+                <div class="flex flex-wrap gap-2">
+                  <div class="relative cursor-pointer" *ngFor="let av of avatars">
+                    <img [src]="av" alt="" class="rounded-full h-11 w-11 hover:opacity-40 hover:bg-slate-600 ease-in duration-150 transition-all" (click)="chooseAvatar($event)" [ngClass]="{'bg-slate-300 opacity-20': av === selectedAvatar}">
+                    <div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-center" *ngIf="av === selectedAvatar">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>                    
+                    </div>
+                  </div>
+                </div>
+                <div class="flex place-content-center mt-3 cursor-pointer" (click)="refreshAvatars()">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                  </svg>
+                </div>
+              </div>
+
               <div class="relative">
                 <button 
                   class="py-3 px-5 mr-2 text-sm font-medium bg-blue-500 rounded-lg border border-blue-500 hover:bg-gray-100 hover:text-blue-700 text-white/80 focus:z-10 focus:ring-2 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 inline-flex items-center outline-none"

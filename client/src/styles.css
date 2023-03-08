@@ -1,4 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
+@import '~quill/dist/quill.snow.css';
 
 @tailwind base;
 @tailwind components;
@@ -7,3 +8,13 @@
 .oddPost {
     @apply flex-row-reverse;
 }
+
+/* 
+    "./node_modules/quill/dist/quill.core.css",
+    "./node_modules/quill/dist/quill.snow.css"
+     "./node_modules/quill/dist/quill.bubble.css",
+            
+
+     "./node_modules/quill/dist/quill.min.js"
+            
+*/

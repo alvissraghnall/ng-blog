@@ -7,6 +7,7 @@ import { CREATE_USER } from 'src/app/graphql/auth.queries';
 import { ModalComponent } from 'src/app/modal/modal/modal.component';
 import { CreateUserInput } from 'src/app/models/inputs/create-user.input';
 import { AuthService } from 'src/app/services/auth.service';
+import { GenerateRandomAvatarService } from 'src/app/services/generate-random-avatar.service';
 import { ModalService } from 'src/app/services/modal.service';
 
 
@@ -23,13 +24,16 @@ export class RegisterComponent implements OnInit {
   displayModal: boolean = false;
   responseData: any;
   requestErrors: any;
+  selectedAvatar: string | null = null;
+  avatars = this.generateRandomAvatarService.generateAvatars();
   
   constructor(
     private readonly fb: FormBuilder,
     private readonly apollo: Apollo,
     protected readonly authService: AuthService,
     // protected readonly modalService: ModalService<ModalComponent<RegisterComponent>>,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly generateRandomAvatarService: GenerateRandomAvatarService
   ) { }
 
   onSubmit(form: FormGroup) {
@@ -44,7 +48,8 @@ export class RegisterComponent implements OnInit {
       username: form.value.username,
       email: form.value.email,
       password: form.value.password,
-      confirmPassword: form.value.confirmPassword
+      confirmPassword: form.value.confirmPassword,
+      avatar: this.selectedAvatar
     }
 
     this.authService.signup(
@@ -75,6 +80,7 @@ export class RegisterComponent implements OnInit {
       password: ["", [Validators.required, Validators.minLength(8)]],
       confirmPassword: ["", [Validators.required, Validators.minLength(8)]],
       username: ["", [Validators.required, Validators.minLength(3)]],
+      // avatar: ["", [Validators.required, Validators.pattern(/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/)]]
     });
     
     this.signupForm.addValidators(
@@ -103,5 +109,13 @@ export class RegisterComponent implements OnInit {
 
   createCompareValidator (pwd: AbstractControl, conPwd: AbstractControl) {
     return () => pwd.value !== conPwd.value ? { match_error: "Password and confirm password fields must match." } : null;
+  }
+
+  refreshAvatars () {
+    this.avatars = this.generateRandomAvatarService.generateAvatars();
+  }
+
+  chooseAvatar ($event: Event) {
+    this.selectedAvatar = ($event.target as HTMLImageElement).src;
   }
 }
