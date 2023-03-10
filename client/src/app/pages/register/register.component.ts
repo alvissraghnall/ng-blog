@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Apollo } from 'apollo-angular';
 import { SimpleModalService } from 'ngx-simple-modal';
 import { CREATE_USER } from 'src/app/graphql/auth.queries';
-import { ModalComponent } from 'src/app/modal/modal/modal.component';
+import { ModalComponent } from 'src/app/modal/modal.component';
 import { CreateUserInput } from 'src/app/models/inputs/create-user.input';
 import { AuthService } from 'src/app/services/auth.service';
 import { GenerateRandomAvatarService } from 'src/app/services/generate-random-avatar.service';

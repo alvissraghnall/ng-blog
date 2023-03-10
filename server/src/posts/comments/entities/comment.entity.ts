@@ -43,6 +43,7 @@ export class Comment {
   })
   likes: Like[];
 
+  @Field(() => Date, { description: "Comment Created Date" })
   @CreateDateColumn() 
   createdAt: Date;
   

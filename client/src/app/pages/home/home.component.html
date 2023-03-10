@@ -1,7 +1,7 @@
 <main>
     <section class="">
         <div class="mt-12 flex flex-col gap-40 mx-7">
-            <div *ngFor="let post of posts; index as index; let odd = odd" class="flex gap-24" [class.oddPost]="odd">
+            <a [routerLink]="['/post', index]" routerLinkActive="router-link-active"  *ngFor="let post of posts; index as index; let odd = odd" class="flex gap-24 no-underline text-zinc-800" [class.oddPost]="odd">
                 <div class="flex-[2] img-cont relative after:content-none after:w-full after:h-full after:bg-emerald-300 after:absolute after:top-5 after:right-5 after:z-[-1]" [ngClass]="{'after:h-full': !post.image}">
                     <img src="{{post.image}}" class="w-full object-cover max-h-96 cursor-pointer" />
                 </div>
@@ -13,7 +13,7 @@
                     <p class="text-lg">{{post.desc}}</p>
                     <button class="w-max rounded-lg py-2.5 px-5 border bg-[#eee] border-teal-300 text-teal-500 hover:bg-teal-400 hover:text-[#eee] cursor-pointer outline-none"> Read more... </button>
                 </div>
-            </div>
+            </a>
         </div>
     </section>
 </main>

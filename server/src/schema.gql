@@ -16,6 +16,9 @@ type Comment {
   """Author of blog comment"""
   author: User!
 
+  """Comment Created Date"""
+  createdAt: DateTime!
+
   """Comment ID"""
   id: Int!
 
@@ -167,7 +170,7 @@ type Query {
   like(id: Int!): Like!
   likes(entity: EntityOwnsLike!, id: Int!): [Like!]!
   post(id: Int!): Post!
-  posts(cat: Category): [Post!]
+  posts(authorId: String, cat: Category): [Post!]
   user(username: String!): User!
   users: [User!]!
 }

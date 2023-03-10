@@ -28,20 +28,40 @@ export class PostsService {
     return await this.postsRepository.save(newPost);
   }
 
-  find(cat?: Category): Promise<Post[]> {
-    return cat 
-      ? 
-      this.postsRepository.find({
-        where: { category: cat },
-        relations: ["author", "likes", "comments"]
-      }) 
-      : this.postsRepository.find({
-        relations: ["author", "likes", "comments"]
-      });
+  find(cat?: Category, authorId?: string): Promise<Post[]> {
+    // return cat 
+    //   ? 
+    //   this.postsRepository.find({
+    //     where: { category: cat },
+    //     relations: ["author", "likes", "comments"]
+    //   }) 
+    //   : ( authorId ?
+    //     this.postsRepository.find({
+    //       where: { author: { id: authorId } },
+    //       relations: ["author", "likes", "comments"]
+    //     }) :
+    return this.postsRepository.find({
+      relations: ["author", "likes", "comments"],
+      where: cat && authorId ? { category: cat, author: { id: authorId } } : (
+        cat ? { category: cat } : (
+          authorId ? { author: { id: authorId } } : undefined
+        )
+      )
+    });
+      // );
   }
 
+  // getByAuthorId (id: string): Promise<Post[]> {
+  //   return this.postsRepository.find({
+  //     where: 
+  //   })
+  // }
+
   findOne(id: number): Promise<Post> {
-    return this.postsRepository.findOneBy({ id });
+    return this.postsRepository.findOne({
+      where: { id },
+      relations: ["author", "likes", "comments", "comments.likes", "likes.owner", "comments.author", "comments.likes.owner", "comments.likes" ]
+    });
   }
 
   update(updatePostInput: UpdatePostInput, user: User) {

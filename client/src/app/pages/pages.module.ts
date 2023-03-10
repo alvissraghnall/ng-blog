@@ -12,7 +12,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgIconsModule } from '@ng-icons/core';
 import { 
   heroPencilSquare, 
-  heroTrash 
+  heroTrash,
 } from "@ng-icons/heroicons/outline";
 import { ComponentsModule } from '../components/components.module';
 import { QuillModule } from 'ngx-quill'

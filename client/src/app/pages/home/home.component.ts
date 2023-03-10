@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit, OnChanges {
       .subscribe(
         (results: any) => {
           console.log(results);
-          this.posts = results.data?.posts;
+          this.posts = (results.data?.posts as Post[]).slice(0, 7);
         }
       )
   }

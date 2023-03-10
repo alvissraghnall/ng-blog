@@ -24,14 +24,24 @@ export class PostsResolver {
 
   @Public()
   @Query(() => [Post], { name: 'posts', nullable: true })
-  async find(@Args("cat", { type: () => Category, nullable: true }) cat?: Category) {
-    return await this.postsService.find(cat);
+  async find(
+    @Args("cat", { type: () => Category, nullable: true }) cat?: Category,
+    @Args("authorId", { type: () => String, nullable: true }) authorId?: string
+    ) {
+    return await this.postsService.find(cat, authorId);
   }
+
+  // @Public()
+  // @Query(() => [Post], { name: "postsByAuthor" })
+  // findByAuthor (@Args("id", { type: () => String }) id: string) {
+
+  // }
 
   @Public()
   @Query(() => Post, { name: 'post' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.postsService.findOne(id);
+  async findOne(@Args('id', { type: () => Int }) id: number) {
+    console.log(await this.postsService.findOne(id));
+    return await this.postsService.findOne(id);
   }
 
   @Mutation(() => Post)

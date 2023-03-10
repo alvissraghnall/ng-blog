@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ModalComponent } from './modal/modal.component';
+import { ModalComponent } from './modal.component';
 import { SimpleModalModule } from 'ngx-simple-modal';
 
 
