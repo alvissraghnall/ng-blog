@@ -12,6 +12,7 @@ import { JwtKeyModule } from 'auth/jwt/jwt-key.module';
 import { JwtKeyService } from 'auth/jwt/jwt-key.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from 'auth/guards/jwt-auth.guard';
+import { CloudinaryModule } from 'cloudinary/cloudinary.module';
 
 @Module({
   providers: [
@@ -28,6 +29,7 @@ import { JwtAuthGuard } from 'auth/guards/jwt-auth.guard';
     CommentsModule, 
     TypeOrmModule.forFeature([Post]), 
     UsersModule,
+    CloudinaryModule,
     JwtKeyModule,
   ],
   exports: [

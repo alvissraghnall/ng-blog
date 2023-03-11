@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
 import { IsUniqueConstraint } from './common/is-unique';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -30,11 +31,15 @@ import { IsUniqueConstraint } from './common/is-unique';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-
+      cors: {
+        origin: 'http://localhost:4200',
+        credentials: true
+      }
     }),
     UsersModule,
     PostsModule,
-    AuthModule],
+    AuthModule,
+    CloudinaryModule],
   controllers: [],
   providers: [AppService, IsUniqueConstraint],
   exports: [TypeOrmModule]

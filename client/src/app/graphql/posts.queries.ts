@@ -68,4 +68,23 @@ export class PostsQueries {
             }
         `;
     }
+
+    static CREATE_POST () {
+        return gql`
+            mutation createPost ($input: CreatePostInput!) {
+                createPost (createPostInput: $input) {
+                    content
+                    category
+                    id
+                    desc
+                    title
+                    author {
+                        id
+                        username
+                    }
+                    createdAt
+                }
+            }
+        `;
+    }
 }

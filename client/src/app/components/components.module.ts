@@ -6,6 +6,7 @@ import { LayoutComponent } from './layout/layout.component';
 import { RouterModule } from '@angular/router';
 import { PostMenuComponent } from './post-menu/post-menu.component';
 import { ToastComponent } from './toast/toast.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { ToastComponent } from './toast/toast.component';
     FooterComponent,
     LayoutComponent,
     PostMenuComponent,
-    ToastComponent
+    ToastComponent,
+    FileUploadComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +26,8 @@ import { ToastComponent } from './toast/toast.component';
     NavbarComponent,
     FooterComponent,
     LayoutComponent,
-    PostMenuComponent
+    PostMenuComponent,
+    FileUploadComponent
   ],
 })
 export class ComponentsModule { }

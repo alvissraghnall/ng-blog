@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtResponsePayload } from 'auth/jwt/jwt-response.payload';
+import { v2 } from 'cloudinary';
+import { CloudinaryService } from 'cloudinary/cloudinary.service';
 import { Repository } from 'typeorm';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
@@ -14,7 +16,8 @@ export class PostsService {
 
   constructor(
     @InjectRepository(Post) private readonly postsRepository: Repository<Post>,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(createPostInput: CreatePostInput, user: User) {
@@ -64,7 +67,7 @@ export class PostsService {
     });
   }
 
-  update(updatePostInput: UpdatePostInput, user: User) {
+  async update(updatePostInput: UpdatePostInput, user: User) {
     const { 
       id,
       title,
@@ -73,7 +76,7 @@ export class PostsService {
       content,
       category
     } = updatePostInput;
-    const post = new Post(title, content,  image, desc, category, user);
+    const post = new Post(title, content, image, desc, category, user);
     post.id = id;
     return this.postsRepository.save(post);
   }

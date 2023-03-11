@@ -1,12 +1,19 @@
 
-<div class="flex gap-5 mt-5 mx-3">
+<form [formGroup]="templateForm" (submit)="uploadPost($event)" class="flex gap-5 mt-5 mx-3">
     <div class="flex-[5]">
-        <form [formGroup]="templateForm" class="flex-col gap-5 flex">
+        <div class="flex-col gap-5 flex">
             <input 
                 auto-complete="off" 
                 type="text" 
                 placeholder="Blog Post Title" 
                 formControlName="title"
+                class="border border-solid border-zinc-400/50 outline-none p-2.5"
+            />
+            <input 
+                auto-complete="off" 
+                type="text" 
+                placeholder="Blog Post Description" 
+                formControlName="desc"
                 class="border border-solid border-zinc-400/50 outline-none p-2.5"
             />
             <div class="border border-solid border-zinc-500/40 overflow-scroll h-80">
@@ -19,7 +26,7 @@
             <!-- <button (click)="alert(templateForm.get('textEditor').value)">
 
             </button> -->
-        </form>
+        </div>
     </div>
     <div class="flex-[2] flex flex-col gap-5">
         <div class="border border-solid border-zinc-500/60 p-2.5 flex-1 text-xs text-[#a09292]">
@@ -29,33 +36,31 @@
                     <span>
                         <b>Status: </b> Draft
                     </span>
-                    <span><b>Visibility:</b>Public</span>
+                    <span><b>Visibility: </b>Public</span>
                     
-                    <input type="file" id="file" class="hidden" />
-                    <label for="file" class="underline cursor-pointer">Upload Image</label> 
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
-                    </svg>                      
+                    <app-file-upload requiredFileType="image/png, image/jpg, image/jpeg" (selectedFileEvent)="selectFile($event)">
+                        
+                    </app-file-upload>          
                 </div>
                 <div class="h-1/2">
                     
                     <label for="category" class="block mb-2 text-sm font-medium text-[#a09090]"> Category</label>
-                    <select name="category" id="category" class="border border-gray-300 rounded-md focus:ring-blue-400 focus:border-blue-500 w-full p-2.5 drop-shadow-md bg-gray-50 text-gray-900 text-sm duration-300 cursor-pointer">
+                    <select 
+                        name="category" 
+                        id="category" 
+                        class="border border-gray-300 rounded-md focus:ring-blue-400 focus:border-blue-500 w-full p-2.5 drop-shadow-md bg-gray-50 text-gray-900 text-sm duration-300 cursor-pointer"
+                        formControlName="category"
+                    >
                         <option value="" disabled selected>Select a category</option>
-                        <option value="FASHION">FASHION</option>
-                        <option value="CUISINE">CUISINE</option>
-                        <option value="TECHNOLOGY">TECHNOLOGY</option>
-                        <option value="DIY">DIY</option>
-                        <option value="LIFESTYLE">LIFESTYLE</option>
-                        <option value="TRAVEL">TRAVEL</option>
-                        <option value="CINEMA">CINEMA</option>
+                        <option *ngFor="let opt of categoryOptions" [value]="opt">{{opt}}</option>
+                        
                     </select>
                 
                     <div class="flex justify-between mt-8 mx-3">
                         <button class="cursor-pointer p-3 text-cyan-400 bg-white/60 border border-solid border-cyan-500 rounded">
                             Save as Draft
                         </button>
-                        <button class="cursor-pointer p-3 bg-cyan-400 rounded text-white border border-solid border-gray-200">
+                        <button class="cursor-pointer p-3 bg-cyan-400 rounded text-white border border-solid border-gray-200" type="submit" [disabled]="!templateForm.valid || !selectFile">
                             Upload
                         </button>
                     </div>
@@ -64,4 +69,4 @@
             </div>
         </div>
     </div>
-</div>
+</form>
