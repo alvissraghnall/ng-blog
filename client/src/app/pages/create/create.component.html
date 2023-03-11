@@ -1,28 +1,59 @@
 
-<form [formGroup]="templateForm" (submit)="uploadPost($event)" class="flex gap-5 mt-5 mx-3">
+<form [formGroup]="templateForm" (submit)="onSubmit($event)" class="flex gap-5 mt-5 mx-3">
     <div class="flex-[5]">
         <div class="flex-col gap-5 flex">
-            <input 
-                auto-complete="off" 
-                type="text" 
-                placeholder="Blog Post Title" 
-                formControlName="title"
-                class="border border-solid border-zinc-400/50 outline-none p-2.5"
-            />
-            <input 
-                auto-complete="off" 
-                type="text" 
-                placeholder="Blog Post Description" 
-                formControlName="desc"
-                class="border border-solid border-zinc-400/50 outline-none p-2.5"
-            />
-            <div class="border border-solid border-zinc-500/40 overflow-scroll h-80">
+            <div >
+                <input 
+                    auto-complete="off" 
+                    type="text" 
+                    placeholder="Blog Post Title" 
+                    formControlName="title"
+                    class="border border-solid border-zinc-400/50 outline-none p-2.5 w-full"
+                    [ngClass]="{'bg-green-50 border-green-500 text-green-900 placeholder-green-700 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block dark:bg-green-100 dark:border-green-400': templateForm.get('title')?.valid, 'bg-red-50 border-red-500 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block dark:bg-red-100 dark:border-red-400': templateForm.get('title')?.invalid && templateForm.get('title')?.touched }"
+                />
+                <p 
+                    class="mt-2 text-sm dark:text-red-500"
+                    [ngClass]="templateForm.get('title')?.dirty && templateForm.get('title')?.invalid && templateForm.get('title')?.touched ? 'text-red-600' : 'text-green-600'"
+                    *ngIf="templateForm.get('title')?.dirty && templateForm.get('title')?.invalid && templateForm.get('title')?.touched"
+                >
+                    <span class="font-medium">Oops!</span> 
+                    Value must have at least 6 characters and at most 60!
+                </p>
+            </div>
+            <div>
+                <input 
+                    auto-complete="off" 
+                    type="text" 
+                    placeholder="Blog Post Description" 
+                    formControlName="desc"
+                    class="w-full border border-solid border-zinc-400/50 outline-none p-2.5"
+                    [ngClass]="{'bg-green-50 border-green-500 text-green-900 placeholder-green-700 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block dark:bg-green-100 dark:border-green-400': templateForm.get('desc')?.valid, 'bg-red-50 border-red-500 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block dark:bg-red-100 dark:border-red-400': templateForm.get('desc')?.invalid && templateForm.get('desc')?.touched }"
+                />
+                <p 
+                    class="mt-2 text-sm dark:text-red-500"
+                    [ngClass]="templateForm.get('desc')?.dirty && templateForm.get('desc')?.invalid && templateForm.get('desc')?.touched ? 'text-red-600' : 'text-green-600'"
+                    *ngIf="templateForm.get('desc')?.dirty && templateForm.get('desc')?.invalid && templateForm.get('desc')?.touched"
+                >
+                    <span class="font-medium">Oops!</span> 
+                    Description must have at least 11 characters and at most 85!
+                </p>
+            </div>
+            <div class="border border-solid overflow-scroll h-80" [ngClass]="{'bg-green-50 border-green-500 text-green-900 placeholder-green-700 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block dark:bg-green-100 dark:border-green-400': templateForm.get('textEditor')?.valid, 'bg-red-50 border-red-500 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block dark:bg-red-100 dark:border-red-400': templateForm.get('textEditor')?.invalid && templateForm.get('textEditor')?.touched, 'border-zinc-400/50': templateForm.get('textEditor')?.invalid }">
 
-                <quill-editor formControlName="textEditor" [styles]="{ height: '100%' }"  (onContentChanged)="handleContentChange($event)" class="border-none h-full">
+                <quill-editor formControlName="textEditor" [styles]="{ height: '100%' }"  (onContentChanged)="handleContentChange($event)" class="border-none h-full" 
+                >
                     
                 </quill-editor>
+                
             </div>
-
+            <p 
+                class="mt-1 text-sm dark:text-red-500"
+                [ngClass]="templateForm.get('textEditor')?.dirty && templateForm.get('textEditor')?.invalid && templateForm.get('textEditor')?.touched ? 'text-red-600' : 'text-green-600'"
+                *ngIf="templateForm.get('textEditor')?.dirty && templateForm.get('textEditor')?.invalid && templateForm.get('textEditor')?.touched"
+            >
+                <span class="font-medium">Oops!</span> 
+                Post Content must have at least 65 characters!
+            </p>
             <!-- <button (click)="alert(templateForm.get('textEditor').value)">
 
             </button> -->

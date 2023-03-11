@@ -16,37 +16,41 @@ import {
 } from "@ng-icons/heroicons/outline";
 import { ComponentsModule } from '../components/components.module';
 import { QuillModule } from 'ngx-quill'
+import { PipesModule } from "../pipes/pipes.module";
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
-  declarations: [
-    UserComponent,
-    RegisterComponent,
-    LoginComponent,
-    HomeComponent,
-    PageNotFoundComponent,
-    CreateComponent,
-    PostDetailsComponent,
-  ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-    NgIconsModule.withIcons({
-      heroPencilSquare,
-      heroTrash,
-    }),
-    ComponentsModule,
-    QuillModule.forRoot()
-  ],
-  exports: [
-    UserComponent,
-    RegisterComponent,
-    LoginComponent,
-    HomeComponent,
-    PageNotFoundComponent,
-    CreateComponent,
-    PostDetailsComponent,
-  ],
+    declarations: [
+        UserComponent,
+        RegisterComponent,
+        LoginComponent,
+        HomeComponent,
+        PageNotFoundComponent,
+        CreateComponent,
+        PostDetailsComponent,
+        ProfileComponent,
+    ],
+    exports: [
+        UserComponent,
+        RegisterComponent,
+        LoginComponent,
+        HomeComponent,
+        PageNotFoundComponent,
+        CreateComponent,
+        PostDetailsComponent,
+    ],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        RouterModule,
+        NgIconsModule.withIcons({
+            heroPencilSquare,
+            heroTrash,
+        }),
+        ComponentsModule,
+        QuillModule.forRoot(),
+        PipesModule
+    ]
 })
 export class PagesModule { }
 

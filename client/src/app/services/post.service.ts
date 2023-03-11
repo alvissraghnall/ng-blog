@@ -46,7 +46,7 @@ export class PostService {
 
   uploadPostImage (fd: FormData) {
     const token = this.keyStorageService.getToken();
-    return this.http.post<FormData>(
+    return this.http.post<{url: string}>(
       this.UPLOAD_URI, fd, {
         headers: {
           "Authorization": `Bearer ${token}`

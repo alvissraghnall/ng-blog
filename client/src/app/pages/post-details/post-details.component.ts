@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Post } from 'src/app/models/Post.model';
+import { User } from 'src/app/models/User.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { PostService } from 'src/app/services/post.service';
 
 @Component({
@@ -11,10 +13,12 @@ import { PostService } from 'src/app/services/post.service';
 export class PostDetailsComponent implements OnInit {
 
   post?: Post;
+  currentUser?: User
 
   constructor(
     private readonly postService: PostService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -29,6 +33,7 @@ export class PostDetailsComponent implements OnInit {
         }
       );
     console.log(this.post);
+    this.currentUser = this.authService.getCurrentUser();
   }
 
 }

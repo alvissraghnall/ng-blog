@@ -9,6 +9,7 @@ import { ModalModule } from './modal/modal.module';
 import { GraphQLModule } from './graphql.module';
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentsModule } from './components/components.module';
+import { PipesModule } from './pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { ComponentsModule } from './components/components.module';
     GraphQLModule,
     HttpClientModule,
     PagesModule,
-    ComponentsModule
+    ComponentsModule,
+    PipesModule
   ],
   providers: [],
   bootstrap: [AppComponent]

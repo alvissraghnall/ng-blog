@@ -18,5 +18,8 @@ export class CloudinaryController {
         console.log(body);
         const res = await this.cloudinaryService.uploadImage(file);
         console.log(res);
+        return {
+            url: res.url
+        };
     }
 }

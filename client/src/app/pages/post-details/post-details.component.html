@@ -6,9 +6,9 @@
                 <img class="w-12 h-12 rounded-full object-cover ml-2" [src]="post?.author?.avatar" alt="">
                 <div class="info">
                     <span class="font-bold"> {{post?.author?.username}} </span>
-                    <p> 2 months ago </p>
+                    <p> {{post?.createdAt | timeSince }} </p>
                 </div>
-                <div class="flex gap-1.5">
+                <div class="flex gap-1.5" *ngIf="post?.author?.id === currentUser?.id">
                     <a 
                         [routerLink]="['/create']"
                         [queryParams]="{ edit: true }"
