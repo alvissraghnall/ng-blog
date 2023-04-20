@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CreateLikeInput } from './dto/create-like.input';
@@ -20,10 +20,17 @@ export class LikesService {
   async create(createLikeInput: CreateLikeInput, user: User) {
     console.log(createLikeInput);
     
-    const cmt = createLikeInput.commentId ? await this.dataSource.getRepository(Comment).findOneBy({ id: createLikeInput.commentId }) : null;
-    const post = createLikeInput.postId ? await this.dataSource.getRepository(Post).findOneBy({id: createLikeInput.postId}) : null;
+    const cmt = createLikeInput.commentId ? await this.dataSource.getRepository(Comment).findOne({ where: { id: createLikeInput.commentId }, relations: ["likes", "likes.owner"] }) : null;
+    const post = createLikeInput.postId ? await this.dataSource.getRepository(Post).findOne({ where: {id: createLikeInput.postId}, relations: ["likes", "likes.owner"] }) : null;
 
-    if (!cmt && !post) throw new BadRequestException("Neither comment nor post provided in request");
+    if (!cmt && !post) throw new NotFoundException("Neither comment nor post provided in request");
+
+    const alreadyLiked = post ? post.likes.some(like => like.owner.id === user.id) : cmt.likes.some(like => like.owner.id === user.id);
+
+    if (alreadyLiked) {
+      this.likesRepository.remove(post.likes)
+      throw new ConflictException(`User has already liked post with ID ${post.id || cmt.id}`);
+    }
 
     const newLike = new Like();
     newLike.comment = cmt;
