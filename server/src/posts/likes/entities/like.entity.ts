@@ -2,10 +2,11 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Comment } from '../../../posts/comments/entities/comment.entity';
 import { Post } from '../../../posts/entities/post.entity';
 import { User } from '../../../users/entities/user.entity';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 
 @ObjectType()
 @Entity()
+@Unique(["owner", "post", "comment"])
 export class Like {
   @Field(() => Int, { description: "Likes Collection ID" })
   @PrimaryGeneratedColumn()

@@ -13,7 +13,14 @@ import { NgIconsModule } from '@ng-icons/core';
 import { 
   heroPencilSquare, 
   heroTrash,
+  heroHandThumbUp,
+  heroShare,
+  heroChatBubbleLeft,
+  heroChatBubbleOvalLeftEllipsis
 } from "@ng-icons/heroicons/outline";
+import {
+    matCommentOutline
+} from "@ng-icons/material-icons/outline";
 import { ComponentsModule } from '../components/components.module';
 import { QuillModule } from 'ngx-quill'
 import { PipesModule } from "../pipes/pipes.module";
@@ -46,6 +53,11 @@ import { ProfileComponent } from './profile/profile.component';
         NgIconsModule.withIcons({
             heroPencilSquare,
             heroTrash,
+            heroHandThumbUp,
+            heroShare,
+            matCommentOutline,
+            heroChatBubbleLeft,
+            heroChatBubbleOvalLeftEllipsis
         }),
         ComponentsModule,
         QuillModule.forRoot(),

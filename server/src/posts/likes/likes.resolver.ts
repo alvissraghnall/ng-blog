@@ -5,6 +5,7 @@ import { CreateLikeInput } from './dto/create-like.input';
 import { UpdateLikeInput } from './dto/update-like.input';
 import { User } from 'users/entities/user.entity';
 import { EntityOwnsLike } from 'posts/enum/entity-owns-like.enum';
+import { QueryFailedError, TypeORMError } from 'typeorm';
 
 @Resolver(() => Like)
 export class LikesResolver {
@@ -12,7 +13,16 @@ export class LikesResolver {
 
   @Mutation(() => Like)
   createLike(@Args('createLikeInput') createLikeInput: CreateLikeInput, @Context() ctx: any) {
-    return this.likesService.create(createLikeInput, ctx.req.user as User);
+    try {
+      const createdLike = this.likesService.create(createLikeInput, ctx.req.user as User);
+      return createdLike;
+      
+    } catch (error) {
+      if (error instanceof QueryFailedError && (error as any).code === '23505') {
+        console.log(error + "\n\n\n");
+      }
+      console.log(error);
+    }
   }
 
   @Query(() => [Like], { name: 'likes' })

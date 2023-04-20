@@ -55,5 +55,17 @@ export class PostService {
     );
   }
 
+  likePost (id: number) {
+    return this.apollo.mutate({
+      mutation: PostsQueries.LIKE_POST(),
+      errorPolicy: 'all',
+      variables: {
+        input: {
+          postId: id
+        }
+      }
+    })
+  }
+
 }
 

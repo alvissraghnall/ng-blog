@@ -87,4 +87,18 @@ export class PostsQueries {
             }
         `;
     }
+
+    static LIKE_POST () {
+        return gql`
+            mutation createLike($input: CreateLikeInput!) {
+                createLike (createLikeInput: $input) {
+                    id
+                    owner {
+                        id
+                        username
+                    }
+                }
+            }
+        `;
+    }
 }

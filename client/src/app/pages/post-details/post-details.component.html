@@ -31,6 +31,26 @@
             <p class="text-justify leading-7 pl-1.5">
                 {{ post?.content }}
             </p>
+
+            <div class="flex gap-1 items-center justify-center p-1 mx-auto rounded-2xl ring-1 ring-transparent border-[.5px] border-solid border-neutral-700 w-fit">
+                <span class="mx-1 w-8 h-8 hover:scale-110 cursor-pointer duration-100 transition-all hover:text-slate-400 text-slate-300 flex justify-center items-center">
+                    <ng-icon name="heroHandThumbUp" class="text-neutral-600 hover:text-neutral-700 active:-rotate-[60deg] transition-all duration-100" size="20" (click)="likePost(post?.id ?? 0)">
+                        
+                    </ng-icon>
+                    <span class="text-slate-800 font-mono font-medium ml-0.5">{{ post?.likes?.length }}</span>
+                </span>
+                <span class="mx-1 w-8 h-8 hover:scale-110 cursor-pointer duration-100 transition-all hover:text-slate-400 text-slate-300 flex justify-center items-center">
+                    <ng-icon name="heroChatBubbleOvalLeftEllipsis" class="text-neutral-600 hover:text-neutral-700 active:-rotate-[360deg] duration-1000 transition-all" size="20">
+                        
+                    </ng-icon>
+                    <span class="text-slate-800 font-mono font-medium ml-0.5">{{ post?.comments?.length }}</span>
+                </span>
+                <!-- <span class="mx-1 w-8 h-8 hover:scale-125 cursor-pointer duration-100 transition-all hover:text-slate-400 text-slate-300 flex justify-center items-center">
+                    <ng-icon name="heroShare" class="text-neutral-600 hover:text-neutral-700 active:-rotate-180 duration-1000 transition-all" size="20">
+                        
+                    </ng-icon>
+                </span> -->
+            </div>
         </div>
         <div class="flex-[2]">
             <app-post-menu class=" flex flex-col gap-6" [post]="post"></app-post-menu>

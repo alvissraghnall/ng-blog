@@ -12,7 +12,7 @@ import { PostService } from 'src/app/services/post.service';
 })
 export class PostDetailsComponent implements OnInit {
 
-  post?: Post;
+  _post?: Post;
   currentUser?: User
 
   constructor(
@@ -24,16 +24,41 @@ export class PostDetailsComponent implements OnInit {
   ngOnInit(): void {
     const postId = Number(this.route.snapshot.paramMap.get("id"));
     console.log(postId, this.post);
+    this.getPost(postId);
     
-    this.postService.getPost(postId)
+    console.log(this.post);
+    this.currentUser = this.authService.getCurrentUser();
+  }
+
+  getPost (id: number) {
+    this.postService.getPost(id)
       .subscribe(
         (results: any) => {
           console.log(results);
           this.post = results.data?.post;
         }
       );
-    console.log(this.post);
-    this.currentUser = this.authService.getCurrentUser();
   }
+
+  get post (): Post | undefined {
+    return this._post;
+  }
+
+  set post (post: Post | undefined) {
+    this._post = post;
+  }
+
+  likePost (postId: number) {
+    this.postService.likePost(postId)
+      .subscribe(
+        (result: any) => {
+          console.log(result);
+          if (result.data?.createLike) {
+            this.getPost(postId);
+          }
+        }
+      )
+  }
+
 
 }
