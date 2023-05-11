@@ -22,8 +22,8 @@ type Comment {
   """Comment ID"""
   id: Int!
 
-  """Comment likes"""
-  likes: [Like!]!
+  """Likes on Comment"""
+  likes: [User!]
 
   """Post that was commented on"""
   post: Post!
@@ -96,6 +96,8 @@ type Like {
 
   """Likes Collection ID"""
   id: Int!
+
+  """User who liked post."""
   owner: User!
 
   """Post that was liked"""
@@ -116,6 +118,8 @@ type Mutation {
   createComment(createCommentInput: CreateCommentInput!): Comment!
   createLike(createLikeInput: CreateLikeInput!): Like!
   createPost(createPostInput: CreatePostInput!): Post!
+  likeComment(commentId: Int!): Comment!
+  likePost(postId: Int!): Post!
   login(loginUserInput: LoginUserInput!): LoginResponse!
   removeComment(id: Int!): Comment!
   removeLike(id: Int!): Like!
@@ -128,14 +132,14 @@ type Mutation {
 }
 
 type Post {
-  """Owner of posts"""
+  """Owner of post"""
   author: User!
 
   """Blog post content"""
   category: String!
 
   """Comments on post"""
-  comments: [Comment!]!
+  comments: [Comment!]
 
   """Blog post content"""
   content: String!
@@ -153,7 +157,7 @@ type Post {
   image: String!
 
   """Likes on post"""
-  likes: [Like!]!
+  likes: [User!]
 
   """Blog Post Title"""
   title: String!

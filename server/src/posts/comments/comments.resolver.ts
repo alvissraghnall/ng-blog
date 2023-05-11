@@ -4,6 +4,8 @@ import { Comment } from './entities/comment.entity';
 import { CreateCommentInput } from './dto/create-comment.input';
 import { UpdateCommentInput } from './dto/update-comment.input';
 import { User } from 'users/entities/user.entity';
+import { NotFoundException } from '@nestjs/common';
+import { CurrentUser } from 'common/current-user.decorator';
 
 @Resolver(() => Comment)
 export class CommentsResolver {
@@ -12,6 +14,31 @@ export class CommentsResolver {
   @Mutation(() => Comment)
   createComment(@Args('createCommentInput') createCommentInput: CreateCommentInput, @Context() context: any) {
     return this.commentsService.create(createCommentInput, context.req.user as User);
+  }
+
+  @Mutation(() => Comment)
+  async likeComment (@Args('commentId', { type: () => Int }) commentId: number, @CurrentUser() currUser: User) {
+    console.log("Curr User: ", currUser);
+    const comment = await this.commentsService.findOne(commentId);
+    
+    let savedComment: Comment;
+
+    if (!comment) throw new NotFoundException("Comment with ID: " + commentId + " not found!");
+
+    const likesIndex = comment.likes.findIndex(like => like.id === currUser.id);
+    console.log(comment.likes);
+
+    if (likesIndex === -1) {
+      comment.likes.push(currUser);
+      console.log("Comment likes post-append: ", comment.likes);
+    } else {
+      comment.likes.splice(likesIndex, 1)[0];
+      console.log("Comment likes post-delete: ", comment.likes);
+    }
+    savedComment = await this.commentsService.add(comment);
+
+    console.log(savedComment.likes, comment.likes);
+    return savedComment;
   }
 
   @Query(() => [Comment], { name: 'comments' })

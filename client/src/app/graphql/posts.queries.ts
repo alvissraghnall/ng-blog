@@ -3,7 +3,7 @@ import { Category } from "../models/enum/category.enum";
 
 export class PostsQueries {
 
-    static GET_POSTS (cat?: Category, authorId?: string) {
+    static GET_POSTS(cat?: Category, authorId?: string) {
         let args = ``;
         args += cat ? '(cat:' + cat + ')' : '';
         args += authorId ? '(authorId:' + authorId + ')' : '';
@@ -25,7 +25,7 @@ export class PostsQueries {
         `;
     }
 
-    static GET_POST (id: number) {
+    static GET_POST(id: number) {
         return gql`
             {
                 post (id: ${id}) {
@@ -41,11 +41,7 @@ export class PostsQueries {
                     }
                     createdAt
                     likes {
-                        id
-                        owner {
-                            id
-                            username
-                        }
+                        username
                     }
                     comments {
                         text
@@ -58,10 +54,7 @@ export class PostsQueries {
                         id
                         likes {
                             id
-                            owner {
-                                username
-                                id
-                            }
+                            username
                         }
                     }
                 }
@@ -69,7 +62,7 @@ export class PostsQueries {
         `;
     }
 
-    static CREATE_POST () {
+    static CREATE_POST() {
         return gql`
             mutation createPost ($input: CreatePostInput!) {
                 createPost (createPostInput: $input) {
@@ -88,12 +81,16 @@ export class PostsQueries {
         `;
     }
 
-    static LIKE_POST () {
+    static LIKE_POST() {
         return gql`
-            mutation createLike($input: CreateLikeInput!) {
-                createLike (createLikeInput: $input) {
+            mutation likePost ($input: Int!) {
+                likePost(postId: $input) {
+                    author {
+                        id
+                    }
                     id
-                    owner {
+                    title
+                    likes {
                         id
                         username
                     }

@@ -13,6 +13,7 @@ import { JwtKeyService } from 'auth/jwt/jwt-key.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from 'auth/guards/jwt-auth.guard';
 import { CloudinaryModule } from 'cloudinary/cloudinary.module';
+import { LikesService } from './likes/likes.service';
 
 @Module({
   providers: [

@@ -51,4 +51,8 @@ export class CommentsService {
     const comment = await this.commentsRepository.findOneBy({id});
     return this.commentsRepository.remove(comment);
   }
+
+  add (comment: Comment) {
+    return this.commentsRepository.save(comment);
+  }
 }

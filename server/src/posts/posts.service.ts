@@ -63,8 +63,11 @@ export class PostsService {
   findOne(id: number): Promise<Post> {
     return this.postsRepository.findOne({
       where: { id },
-      relations: ["author", "likes", "comments", "comments.likes", "likes.owner", "comments.author", "comments.likes.owner", "comments.likes" ]
     });
+  }
+
+  save (post: Post) {
+    return this.postsRepository.save(post);
   }
 
   async update(updatePostInput: UpdatePostInput, user: User) {

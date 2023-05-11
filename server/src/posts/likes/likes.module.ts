@@ -8,6 +8,7 @@ import { PostsModule } from 'posts/posts.module';
 @Module({
   imports: [TypeOrmModule.forFeature([Like]),
   ],
-  providers: [LikesResolver, LikesService]
+  providers: [LikesResolver, LikesService],
+  exports: [LikesService]
 })
 export class LikesModule {}

@@ -44,7 +44,7 @@ export class JwtAuthGuard implements CanActivate {
                 .getRepository(User)
                 .findOneBy({id: user.sub});
 
-            console.log(user, request.user);
+            console.log("gqlauth guard: ", user, request.user);
             return true;
         } catch (error) {
             console.log(error);

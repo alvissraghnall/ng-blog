@@ -1,8 +1,10 @@
 import { ObjectType, Field, Int
  } from '@nestjs/graphql';
 import { IsUnique } from '../../common/is-unique';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Post } from 'posts/entities/post.entity';
+import { Comment } from 'posts/comments/entities/comment.entity';
 
 @ObjectType()
 @Entity()
@@ -49,6 +51,17 @@ export class User {
     nullable: true
   })
   avatar: string;
+
+  @ManyToOne(type => Post, post => post.likes, {
+    nullable: true,
+    cascade: true
+  })
+  postLikes: Post[]
+
+  @ManyToOne(type => Comment, comment => comment.likes, {
+    cascade: true
+  })
+  commentLikes: Comment[]
 
   @CreateDateColumn() 
   createdAt: Date;

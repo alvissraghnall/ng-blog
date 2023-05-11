@@ -25,10 +25,10 @@ export class LikesService {
 
     if (!cmt && !post) throw new NotFoundException("Neither comment nor post provided in request");
 
-    const alreadyLiked = post ? post.likes.some(like => like.owner.id === user.id) : cmt.likes.some(like => like.owner.id === user.id);
+    const alreadyLiked = post ? post.likes.some(like => like.id === user.id) : cmt.likes.some(like => like.id === user.id);
 
     if (alreadyLiked) {
-      this.likesRepository.remove(post.likes)
+      // return { ...this.likesRepository.remove(post.likes)[0], message: "Like removed successfully!", id: post.id ?? cmt.id };
       throw new ConflictException(`User has already liked post with ID ${post.id || cmt.id}`);
     }
 
@@ -65,5 +65,9 @@ export class LikesService {
     const like = await this.likesRepository.findOneBy({id});
     if(!like) throw new BadRequestException(`Like with ID: ${id} does not exist!`);
     return this.likesRepository.remove(like);
+  }
+
+  saveLike (like: Like) {
+    return this.likesRepository.save(like);
   }
 }

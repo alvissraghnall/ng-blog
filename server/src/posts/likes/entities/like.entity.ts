@@ -21,12 +21,14 @@ export class Like {
     cascade: true,
     onUpdate: 'CASCADE'
   })
-  @JoinColumn()
   comment?: Comment; 
 
-  @Field()
+  @Field(() => User, { description: "User who liked post." })
   @ManyToOne(type => User)
   owner: User;
+
+  // @Column()
+  // isLike: boolean;
   
 
   @CreateDateColumn() 

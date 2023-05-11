@@ -49,21 +49,25 @@ export class Post {
   @Column({ enum: Category })
   category: Category;
 
-  @Field(() => [Comment], { description: "Comments on post"})
+  @Field(() => [Comment], { description: "Comments on post", nullable: true })
   @OneToMany(type => Comment, comment => comment.post, {
-    nullable: true
+    nullable: true,
+    eager: true
   })
   comments: Comment[];
 
-  @Field(() => [Like], { description: "Likes on post"})
-  @OneToMany(type => Like, like => like.post, {
-    nullable: true
+  @Field(() => [User], { description: "Likes on post", nullable: true })
+  @OneToMany(type => User, user => user.postLikes, {
+    nullable: true,
+    eager: true
   })
-  likes: Like[];
+  likes: User[];
 
-  @Field(() => User, { description: "Owner of posts", nullable: false })
+  @Field(() => User, { description: "Owner of post", nullable: false })
   @ManyToOne(type => User, user => user.id, {
-    nullable: false
+    nullable: false,
+    cascade: true,
+    eager: true
   })
   author: User;  
 

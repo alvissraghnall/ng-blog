@@ -36,12 +36,12 @@ export class Comment {
   })
   author: User;
 
-  @Field(() => [Like], { description: "Comment likes" })
-  @OneToMany(type => Like, like => like.comment, {
-    nullable: false,
+  @Field(() => [User], { description: "Likes on Comment", nullable: true })
+  @OneToMany(type => User, user => user.postLikes, {
+    nullable: true,
     eager: true
   })
-  likes: Like[];
+  likes: User[];
 
   @Field(() => Date, { description: "Comment Created Date" })
   @CreateDateColumn() 
