@@ -17,3 +17,14 @@ export const CREATE_COMMENT = gql`
         }
     }
 `;
+
+export const LIKE_COMMENT = gql`
+    mutation likeComment ($input: Int!) {
+        likeComment (commentId: $input) {
+            id
+            likes {
+                id
+            }
+        }
+    }
+`;

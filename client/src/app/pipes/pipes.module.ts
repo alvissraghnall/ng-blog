@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TimeSincePipe } from './time-since.pipe';
 
-
-
 @NgModule({
   declarations: [
     TimeSincePipe
