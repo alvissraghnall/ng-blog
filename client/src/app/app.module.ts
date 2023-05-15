@@ -10,6 +10,7 @@ import { GraphQLModule } from './graphql.module';
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentsModule } from './components/components.module';
 import { PipesModule } from './pipes/pipes.module';
+import { ToastService, AngularToastifyModule } from 'angular-toastify'; 
 
 @NgModule({
   declarations: [
@@ -22,9 +23,10 @@ import { PipesModule } from './pipes/pipes.module';
     HttpClientModule,
     PagesModule,
     ComponentsModule,
-    PipesModule
+    PipesModule,
+    AngularToastifyModule
   ],
-  providers: [],
+  providers: [ToastService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

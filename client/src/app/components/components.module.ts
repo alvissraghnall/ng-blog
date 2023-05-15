@@ -7,7 +7,8 @@ import { RouterModule } from '@angular/router';
 import { PostMenuComponent } from './post-menu/post-menu.component';
 import { ToastComponent } from './toast/toast.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
-
+import { PostCommentsComponent } from './post-comments/post-comments.component';
+import { PipesModule } from "../pipes/pipes.module";
 
 @NgModule({
   declarations: [
@@ -16,11 +17,13 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
     LayoutComponent,
     PostMenuComponent,
     ToastComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    PostCommentsComponent
   ],
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    PipesModule
   ],
   exports:  [
     NavbarComponent,

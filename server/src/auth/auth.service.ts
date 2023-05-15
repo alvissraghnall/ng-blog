@@ -41,14 +41,15 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<User | string> {    
     const user = await this.usersService.findOne(username);
     console.log(user);
+    
+    if (!user) {
+      return this.USER_NOT_FOUND;
+    }
 
     if (!await this.hashService.comparePassword(password, user.password)) {
       return this.PASSWORD_MISMATCH;
     }
-    if (user) {
-      return user;
-    }
-    return this.USER_NOT_FOUND;
+    return user;
   }
 
   async create (createUserInput: CreateUserInput) {

@@ -25,6 +25,7 @@ import { ComponentsModule } from '../components/components.module';
 import { QuillModule } from 'ngx-quill'
 import { PipesModule } from "../pipes/pipes.module";
 import { ProfileComponent } from './profile/profile.component';
+import { AngularToastifyModule } from 'angular-toastify';
 
 @NgModule({
     declarations: [
@@ -61,7 +62,8 @@ import { ProfileComponent } from './profile/profile.component';
         }),
         ComponentsModule,
         QuillModule.forRoot(),
-        PipesModule
+        PipesModule,
+        AngularToastifyModule
     ]
 })
 export class PagesModule { }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastService } from 'angular-toastify';
 import { Post } from 'src/app/models/Post.model';
 import { User } from 'src/app/models/User.model';
 import { AuthService } from 'src/app/services/auth.service';
@@ -18,7 +19,9 @@ export class PostDetailsComponent implements OnInit {
   constructor(
     private readonly postService: PostService,
     private readonly route: ActivatedRoute,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly _toastService: ToastService,
+    private readonly router: Router
   ) { }
 
   ngOnInit(): void {
@@ -53,12 +56,23 @@ export class PostDetailsComponent implements OnInit {
       .subscribe(
         (result: any) => {
           console.log(result);
-          if (result.data?.createLike) {
+          if ((result.errors as any[]).find(item => (item.extensions.response.message as string).includes("Expired JWT"))) {
+            this._toastService.error("Your session has expired. Please login again.");
+            this.logout();
+          } else if ((result.errors as any[]).find(item => (item.extensions.response.message as string).includes("Invalid JWT"))) {
+            this._toastService.error("Something went wrong with your session. You are required to login.");
+            this.logout();
+          }
+
+          if (result.data?.likePost) {
             this.getPost(postId);
           }
         }
       )
   }
 
-
+  logout(): void {
+    this.authService.logout();
+    setTimeout(() => this.router.navigate(["/login"]), 5000);
+  }
 }

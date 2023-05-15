@@ -20,6 +20,9 @@ export class PostsQueries {
                         username
                     }
                     createdAt
+                    likes {
+                        username
+                    }
                 }
             }
         `;

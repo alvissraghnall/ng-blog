@@ -48,10 +48,10 @@ export class JwtAuthGuard implements CanActivate {
             return true;
         } catch (error) {
             console.log(error);
-            if (error instanceof jwt.JsonWebTokenError) {
-                throw new UnauthorizedException("Invalid JWT Token provided.");
-            } else if (error instanceof jwt.TokenExpiredError) {
+            if (error instanceof jwt.TokenExpiredError) {
                 throw new UnauthorizedException("Expired JWT Token.");
+            } else if (error instanceof jwt.JsonWebTokenError) {
+                throw new UnauthorizedException("Invalid JWT Token provided.");
             }
             throw new UnauthorizedException(error.message);
         }

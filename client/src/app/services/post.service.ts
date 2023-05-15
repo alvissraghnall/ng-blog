@@ -60,9 +60,7 @@ export class PostService {
       mutation: PostsQueries.LIKE_POST(),
       errorPolicy: 'all',
       variables: {
-        input: {
-          postId: id
-        }
+        input: id
       }
     })
   }

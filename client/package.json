@@ -24,6 +24,7 @@
     "@ng-icons/core": "^23.1.0",
     "@ng-icons/heroicons": "^23.1.0",
     "@ng-icons/material-icons": "^23.1.0",
+    "angular-toastify": "^1.0.5",
     "apollo-angular": "4.2.1",
     "graphql": "^16",
     "ng-helmet": "^2.0.1",
