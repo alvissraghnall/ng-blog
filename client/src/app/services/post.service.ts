@@ -7,6 +7,8 @@ import { CreatePostInput } from '../models/inputs/create-post.input';
 import { Post } from '../models/Post.model';
 import { KeyStorageService } from './key-storage.service';
 
+type FetchPolicy = 'cache-first' | 'no-cache' | 'cache-only' | 'standby' | 'network-only'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,10 +28,11 @@ export class PostService {
     })
   }
 
-  getPost (idx: number) {
+  getPost (idx: number, fetchPolicy: FetchPolicy) {
     return this.apollo.query({
       query: PostsQueries.GET_POST(idx),
-      errorPolicy: "all"
+      errorPolicy: "all",
+      fetchPolicy
     });
     // this.apollo.
   }

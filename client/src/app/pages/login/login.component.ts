@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginUserInput } from 'src/app/models/inputs/login-user.input';
 import { LoginResponse } from 'src/app/models/response/login.response';
 import { User } from 'src/app/models/User.model';
@@ -119,7 +119,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     protected readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) { }
 
   onSuccess (token: string, user: User) {
@@ -157,11 +158,16 @@ export class LoginComponent implements OnInit {
           if(this.responseData) {
             this.onSuccess(this.responseData.access_token, this.responseData.user);
             setTimeout(() => {
-              this.router.navigateByUrl("/user");
+              this.navigateOnSuccess();
             }, 5000)
           }
         }
       )
+  }
+
+  navigateOnSuccess (): void {
+    const prevUrl = this.route.snapshot.queryParamMap.get("url");
+    this.router.navigateByUrl(prevUrl ?? "/posts");
   }
 
   showToastFn () {

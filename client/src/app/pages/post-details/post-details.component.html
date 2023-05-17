@@ -1,65 +1,85 @@
 <main>
-    <div class="flex gap-14">
-        <div class="flex-[5] flex flex-col gap-7">
-            <img class="w-full h-80 object-cover" src="../../../assets/phone-bg.jpg" alt="">
-            <div class="flex items-center gap-2.5 text-sm">
-                <img class="w-12 h-12 rounded-full object-cover ml-2" [src]="post?.author?.avatar" alt="">
-                <div class="info">
-                    <span class="font-bold"> {{post?.author?.username}} </span>
-                    <p> {{post?.createdAt | timeSince }} </p>
-                </div>
-                <div class="flex gap-1.5" *ngIf="post?.author?.id === currentUser?.id">
-                    <a 
-                        [routerLink]="['/create']"
-                        [queryParams]="{ edit: true }"
-                        routerLinkActive="router-link-active"
-                    >
-                        <ng-icon name="heroPencilSquare" color="blue" size="20">
-                        
-                        </ng-icon>
-                    </a>
+    <div *ngIf="loading; else content" class="flex items-center justify-center h-screen">
+        <div class="border-gray-900 border-b-2 border-t-2 w-16 h-16 rounded-full animate-spin"></div>
 
-                    <!-- delete button -->
-                    <ng-icon class="cursor-pointer" name="heroTrash" color="red" size="20">
+    </div>
 
-                    </ng-icon>
-                </div>
-            </div>
-            <h1 class="text-[#333] text-4xl font-serif font-bold pl-1.5">
-                {{ post?.title }}
-            </h1>
-            <p class="text-justify leading-7 pl-1.5">
-                {{ post?.content }}
-            </p>
+    <ng-template #content>
+        <div *ngIf="requestError; else postContent" class="w-full font-semibold text-lg text-slate-700">
+            {{ requestError }}
+        </div>
 
-            <div class="flex gap-1 items-center justify-center p-1 mx-auto rounded-2xl ring-1 ring-transparent border-[.5px] border-solid border-neutral-700 w-fit">
-                <span class="mx-1 w-8 h-8 hover:scale-110 cursor-pointer duration-100 transition-all hover:text-slate-400 text-slate-300 flex justify-center items-center">
-                    <ng-icon name="heroHandThumbUp" class="text-neutral-600 hover:text-neutral-700 active:-rotate-[60deg] transition-all duration-100" size="20" (click)="likePost(post?.id ?? 0)">
-                        
-                    </ng-icon>
-                    <span class="text-slate-800 font-mono font-medium ml-0.5">{{ post?.likes?.length }}</span>
-                </span>
-                <span class="mx-1 w-8 h-8 hover:scale-110 cursor-pointer duration-100 transition-all hover:text-slate-400 text-slate-300 flex justify-center items-center">
-                    <ng-icon name="heroChatBubbleOvalLeftEllipsis" class="text-neutral-600 hover:text-neutral-700 active:-rotate-[360deg] duration-1000 transition-all" size="20">
-                        
-                    </ng-icon>
-                    <span class="text-slate-800 font-mono font-medium ml-0.5">{{ post?.comments?.length }}</span>
-                </span>
-                <!-- <span class="mx-1 w-8 h-8 hover:scale-125 cursor-pointer duration-100 transition-all hover:text-slate-400 text-slate-300 flex justify-center items-center">
+        <ng-template #postContent>
+
+            <div class="flex gap-14" [ngClass]="{'hidden': !post}">
+                <div class="flex-[5] flex flex-col gap-7">
+                    <img class="w-full h-80 object-cover" src="../../../assets/phone-bg.jpg" alt="">
+                    <div class="flex items-center gap-2.5 text-sm">
+                        <img class="w-12 h-12 rounded-full object-cover ml-2" [src]="post?.author?.avatar" alt="">
+                        <div class="info">
+                            <span class="font-bold"> {{post?.author?.username}} </span>
+                            <p> {{post?.createdAt | timeSince }} </p>
+                        </div>
+                        <div class="flex gap-1.5" *ngIf="post?.author?.id === currentUser?.id">
+                            <a [routerLink]="['/create']" [queryParams]="{ edit: true }"
+                                routerLinkActive="router-link-active">
+                                <ng-icon name="heroPencilSquare" color="blue" size="20">
+
+                                </ng-icon>
+                            </a>
+
+                            <!-- delete button -->
+                            <ng-icon class="cursor-pointer" name="heroTrash" color="red" size="20">
+
+                            </ng-icon>
+                        </div>
+                    </div>
+                    <h1 class="text-[#333] text-4xl font-serif font-bold pl-1.5">
+                        {{ post?.title }}
+                    </h1>
+                    <p class="text-justify leading-7 pl-1.5">
+                        {{ post?.content }}
+                    </p>
+
+                    <div
+                        class="flex gap-1 items-center justify-center p-1 mx-auto rounded-2xl ring-1 ring-transparent border-[.5px] border-solid border-neutral-700 w-fit">
+                        <span
+                            class="mx-1 w-8 h-8 hover:scale-110 cursor-pointer duration-100 transition-all hover:text-slate-400 text-slate-300 flex justify-center items-center">
+                            <ng-icon name="heroHandThumbUp"
+                                class="text-neutral-600 hover:text-neutral-700 active:-rotate-[60deg] transition-all duration-100"
+                                size="20" (click)="likePost(post?.id ?? 0)">
+
+                            </ng-icon>
+                            <span class="text-slate-800 font-mono font-medium ml-0.5">{{ post?.likes?.length }}</span>
+                        </span>
+                        <span
+                            class="mx-1 w-8 h-8 hover:scale-110 cursor-pointer duration-100 transition-all hover:text-slate-400 text-slate-300 flex justify-center items-center">
+                            <ng-icon name="heroChatBubbleOvalLeftEllipsis"
+                                class="text-neutral-600 hover:text-neutral-700 active:-rotate-[360deg] duration-1000 transition-all"
+                                size="20" (click)="showComments()">
+
+                            </ng-icon>
+                            <span class="text-slate-800 font-mono font-medium ml-0.5">{{ post?.comments?.length
+                                }}</span>
+                        </span>
+                        <!-- <span class="mx-1 w-8 h-8 hover:scale-125 cursor-pointer duration-100 transition-all hover:text-slate-400 text-slate-300 flex justify-center items-center">
                     <ng-icon name="heroShare" class="text-neutral-600 hover:text-neutral-700 active:-rotate-180 duration-1000 transition-all" size="20">
                         
                     </ng-icon>
                 </span> -->
+                    </div>
+                </div>
+                <div class="flex-[2]">
+                    <app-post-menu class=" flex flex-col gap-6" [post]="post"></app-post-menu>
+                </div>
             </div>
-        </div>
-        <div class="flex-[2]">
-            <app-post-menu class=" flex flex-col gap-6" [post]="post"></app-post-menu>
-        </div>
-    </div>
+        </ng-template>
+    </ng-template>
 
-    <lib-toastify-toast-container
-        [transition]="'slide'"
-        [iconLibrary]="'material'"
-    >
+
+    <app-post-comments [post]="post" [currentUser]="currentUser" [show]="_show"
+        (onComment)="updatePost($event)"></app-post-comments>
+
+    <lib-toastify-toast-container [transition]="'slide'" [iconLibrary]="'material'">
     </lib-toastify-toast-container>
 </main>

@@ -9,6 +9,8 @@ import { ToastComponent } from './toast/toast.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { PostCommentsComponent } from './post-comments/post-comments.component';
 import { PipesModule } from "../pipes/pipes.module";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AngularToastifyModule } from 'angular-toastify';
 
 @NgModule({
   declarations: [
@@ -23,14 +25,18 @@ import { PipesModule } from "../pipes/pipes.module";
   imports: [
     CommonModule,
     RouterModule,
-    PipesModule
+    PipesModule,
+    ReactiveFormsModule,
+    FormsModule,
+    AngularToastifyModule
   ],
   exports:  [
     NavbarComponent,
     FooterComponent,
     LayoutComponent,
     PostMenuComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    PostCommentsComponent
   ],
 })
 export class ComponentsModule { }

@@ -15,6 +15,9 @@ export class PostDetailsComponent implements OnInit {
 
   _post?: Post;
   currentUser?: User
+  _show: boolean = false;
+  loading?: boolean;
+  requestError?: any;
 
   constructor(
     private readonly postService: PostService,
@@ -34,9 +37,11 @@ export class PostDetailsComponent implements OnInit {
   }
 
   getPost (id: number) {
-    this.postService.getPost(id)
+    this.postService.getPost(id, 'no-cache')
       .subscribe(
         (results: any) => {
+          this.loading = results.loading;
+          this.requestError = results.errors[0]?.extensions.response.message;
           console.log(results);
           this.post = results.data?.post;
         }
@@ -56,12 +61,14 @@ export class PostDetailsComponent implements OnInit {
       .subscribe(
         (result: any) => {
           console.log(result);
-          if ((result.errors as any[]).find(item => (item.extensions.response.message as string).includes("Expired JWT"))) {
-            this._toastService.error("Your session has expired. Please login again.");
-            this.logout();
-          } else if ((result.errors as any[]).find(item => (item.extensions.response.message as string).includes("Invalid JWT"))) {
-            this._toastService.error("Something went wrong with your session. You are required to login.");
-            this.logout();
+          if (!result.loading) {
+            if ((result.errors as any[])?.find(item => (item.extensions.response.message as string).includes("Expired JWT"))) {
+              this._toastService.error("Your session has expired. Please login again.");
+              this.logout();
+            } else if ((result.errors as any[])?.find(item => (item.extensions.response.message as string).includes("Invalid Authorization"))) {
+              this._toastService.error("Something went wrong with your session. You are required to login.");
+              this.logout();
+            }
           }
 
           if (result.data?.likePost) {
@@ -71,8 +78,22 @@ export class PostDetailsComponent implements OnInit {
       )
   }
 
+  showComments () {
+    this._show = !this._show;
+  }
+
   logout(): void {
     this.authService.logout();
-    setTimeout(() => this.router.navigate(["/login"]), 5000);
+    console.log(this.route.snapshot.url, this.route.snapshot.url.map(el => el.path).join("/"));
+    setTimeout(() => this.router.navigate(["/login"], {
+      queryParams: {
+        url: this.route.snapshot.url.map(el => el.path).join("/")
+      }
+    }), 5000);
+  }
+
+  updatePost(postId: number) {
+    console.log("updating on pd...")
+    this.getPost(postId);
   }
 }
