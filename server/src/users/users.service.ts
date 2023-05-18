@@ -46,8 +46,10 @@ export class UsersService {
     return await this.find(sub);
   }
 
-  update(id: string, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+  update(user: User, updateUserInput: UpdateUserInput) {
+    const updatedUser: Partial<User> = { ...updateUserInput, id: user.id };
+
+    return this.usersRepository.save(updatedUser);
   }
 
   remove(id: number) {

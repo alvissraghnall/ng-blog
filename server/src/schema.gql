@@ -118,6 +118,7 @@ type Mutation {
   createComment(createCommentInput: CreateCommentInput!): Comment!
   createLike(createLikeInput: CreateLikeInput!): Like!
   createPost(createPostInput: CreatePostInput!): Post!
+  followUser(userToBeFollowedId: String!): User!
   likeComment(commentId: Int!): Comment!
   likePost(postId: Int!): Post!
   login(loginUserInput: LoginUserInput!): LoginResponse!
@@ -126,6 +127,7 @@ type Mutation {
   removePost(id: Int!): Post!
   removeUser(id: Int!): User!
   signup(createUserInput: CreateUserInput!): User!
+  unFollowUser(userToBeUnfollowedId: String!): User!
   updateComment(updateCommentInput: UpdateCommentInput!): Comment!
   updatePost(updatePostInput: UpdatePostInput!): Post!
   updateUser(updateUserInput: UpdateUserInput!): User!
@@ -174,6 +176,8 @@ type Query {
   like(id: Int!): Like!
   likes(entity: EntityOwnsLike!, id: Int!): [Like!]!
   post(id: Int!): Post!
+
+  """Get posts by category, and/or author ID"""
   posts(authorId: String, cat: Category): [Post!]
   user(username: String!): User!
   users: [User!]!
@@ -227,6 +231,7 @@ input UpdateUserInput {
 
 type User {
   avatar: String
+  bio: String
   email: String!
 
   """ID"""

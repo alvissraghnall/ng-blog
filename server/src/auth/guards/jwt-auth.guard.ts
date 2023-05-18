@@ -42,7 +42,15 @@ export class JwtAuthGuard implements CanActivate {
             const user = this.jwtService.verify<JwtResponsePayload>(token, jwtVerifyOpts);
             request.user = await this.datasource
                 .getRepository(User)
-                .findOneBy({id: user.sub});
+                .findOne({
+                    where: {id: user.sub},
+                    relations: {
+                        commentLikes: true,
+                        followers: true,
+                        following: true,
+                        postLikes: true
+                    }
+                });
 
             console.log("gqlauth guard: ", user, request.user);
             return true;

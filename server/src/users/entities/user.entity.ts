@@ -1,7 +1,7 @@
 import { ObjectType, Field, Int
  } from '@nestjs/graphql';
 import { IsUnique } from '../../common/is-unique';
-import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Post } from 'posts/entities/post.entity';
 import { Comment } from 'posts/comments/entities/comment.entity';
@@ -63,9 +63,8 @@ export class User {
   })
   commentLikes: Comment[]
 
-  @ManyToMany(() => User, user => user.following, {
-    cascade: true
-  })
+  @ManyToMany(() => User, user => user.following)
+  @JoinTable()
   followers: User[];
 
   @ManyToMany(() => User, user => user.followers, { cascade: true, nullable: true })
