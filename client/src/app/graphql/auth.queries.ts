@@ -27,3 +27,22 @@ export const LOGIN_USER = gql`
 export const CHECK_AUTH_USER_TOKEN = gql`
     { checkJwt }
 `;
+
+export const WHO_AM_I = gql`
+    whoami {
+        username
+        id
+        bio
+        username
+        email
+        avatar
+        followers {
+            id 
+            username
+        }
+        following {
+            id 
+            username
+        }
+    } 
+`;

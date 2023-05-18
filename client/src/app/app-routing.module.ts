@@ -10,6 +10,7 @@ import { LayoutComponent } from './components/layout/layout.component';
 import { PostDetailsComponent } from './pages/post-details/post-details.component';
 import { UserComponent } from './pages/user/user.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 const routes: Routes = [
   {
@@ -48,6 +49,10 @@ const routes: Routes = [
       path: 'user',
       component: UserComponent,
       canActivate: [AuthGuard]
+    },
+    {
+      path: 'profile/:id',
+      component: ProfileComponent,
     }
   ]
 }, {

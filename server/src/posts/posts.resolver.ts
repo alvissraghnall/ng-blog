@@ -84,9 +84,8 @@ export class PostsResolver {
   }
 
   @Mutation(() => Post)
-  updatePost(@Args('updatePostInput') updatePostInput: UpdatePostInput, @Context() ctx: any) {
-    console.log(ctx.req.user);
-    return this.postsService.update(updatePostInput, ctx.req.user as User);
+  updatePost(@Args('updatePostInput') updatePostInput: UpdatePostInput, @CurrentUser() user: User) {
+    return this.postsService.update(updatePostInput, user);
   }
 
   @Mutation(() => Post)

@@ -32,18 +32,26 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async find(id: string) {
-    return await this.usersRepository.findOneBy({
-      id
+  async findOne(id: string) {
+    return await this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        followers: true, following: true
+      }
     });
   }
 
-  findOne(username: string) {
-    return this.usersRepository.findOneBy({ username });
+  findOneByUsername(username: string) {
+    return this.usersRepository.findOne({
+      where: { username },
+      relations: {
+        followers: true, following: true
+      }
+    });
   }
 
   async getByPayload ({ sub }: JwtPayload) {
-    return await this.find(sub);
+    return await this.findOne(sub);
   }
 
   update(user: User, updateUserInput: UpdateUserInput) {

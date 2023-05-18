@@ -108,6 +108,10 @@ export class AuthService {
   getError(): any {
     return this.errors;
   }
+
+  whoami() {
+    
+  }
   
 }
   /**

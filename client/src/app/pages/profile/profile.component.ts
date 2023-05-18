@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { User } from "@models/User.model";
+import { Post } from "@models/Post.model";
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
   template: `
-    <!-- component -->
-<link rel="stylesheet" href="https://demos.creative-tim.com/notus-js/assets/styles/tailwind.css">
-<link rel="stylesheet" href="https://demos.creative-tim.com/notus-js/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
-
 <main class="">
   <section class="relative block h-[500px]">
     <div class="absolute top-0 w-full h-full bg-center bg-cover" style="
@@ -27,7 +26,7 @@ import { Component, OnInit } from '@angular/core';
           <div class="flex flex-wrap justify-center">
             <div class="w-full lg:w-3/12 px-4 lg:order-2 flex justify-center">
               <div class="relative">
-                <img alt="..." src="https://demos.creative-tim.com/notus-js/assets/img/team-2-800x800.jpg" class="shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px]">
+                <img alt="..." [src]="user?.avatar" class="shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px]">
               </div>
             </div>
             <div class="w-full lg:w-4/12 px-4 lg:order-3 lg:text-right lg:self-center">
@@ -40,20 +39,20 @@ import { Component, OnInit } from '@angular/core';
             <div class="w-full lg:w-4/12 px-4 lg:order-1">
               <div class="flex justify-center py-4 lg:pt-4 pt-8">
                 <div class="mr-4 p-3 text-center">
-                  <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">22</span><span class="text-sm text-blueGray-400">Followers</span>
+                  <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">{{user?.followers?.length}}</span><span class="text-sm text-blueGray-400">Followers</span>
                 </div>
                 <div class="mr-4 p-3 text-center">
-                  <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">10</span><span class="text-sm text-blueGray-400">Posts</span>
+                  <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">{{userPosts?.length}}</span><span class="text-sm text-blueGray-400">Posts</span>
                 </div>
                 <div class="lg:mr-4 p-3 text-center">
-                  <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">89</span><span class="text-sm text-blueGray-400">Comments</span>
+                  <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">{{user?.following?.length}}</span><span class="text-sm text-blueGray-400">Following</span>
                 </div>
               </div>
             </div>
           </div>
           <div class="text-center mt-12">
             <h3 class="text-4xl font-semibold leading-normal text-blueGray-700 mb-2">
-              Jenna Stones
+              {{ user?.username }}
             </h3>
             <div class="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
               <ng-icon class="cursor-pointer" name="heroMapPin" color="rgb(148 163 184)" size="20">
@@ -64,7 +63,7 @@ import { Component, OnInit } from '@angular/core';
             <div class="mb-2 text-blueGray-600 mt-10">
               <ng-icon class="cursor-pointer mr-2 text-lg text-blueGray-400" name="heroBriefcase" color="rgb(148 163 184)" size="20">
 
-              </ng-icon> Solution Manager - Creative Tim Officer
+              </ng-icon> Creative Writer
             </div>
             <!-- <div class="mb-2 text-blueGray-600">
               <i class="fas fa-university mr-2 text-lg text-blueGray-400"></i>University of Computer Science
@@ -74,13 +73,8 @@ import { Component, OnInit } from '@angular/core';
             <div class="flex flex-wrap justify-center">
               <div class="w-full lg:w-9/12 px-4">
                 <p class="mb-4 text-lg leading-relaxed text-blueGray-700">
-                  An artist of considerable range, Jenna the name taken by
-                  Melbourne-raised, Brooklyn-based Nick Murphy writes,
-                  performs and records all of his own music, giving it a
-                  warm, intimate feel with a solid groove structure. An
-                  artist of considerable range.
+                  {{user?.bio}}
                 </p>
-                <a href="#pablo" class="font-normal text-pink-500">Show more</a>
               </div>
             </div>
           </div>
@@ -104,9 +98,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfileComponent implements OnInit {
 
-  constructor() { }
+  user?: User;
+  userPosts?: Post[];
+
+  constructor(
+    private readonly route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
+    const userId = Number(this.route.snapshot.paramMap.get("id"));
+    
   }
 
 }

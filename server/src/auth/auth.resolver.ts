@@ -8,6 +8,7 @@ import { LoginUserInput } from './dto/login-user.input';
 import { LoginResponse } from './dto/login.response';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CurrentUser } from 'common/current-user.decorator';
 
 
 @Resolver(() => User)
@@ -38,6 +39,11 @@ export class AuthResolver {
   @Query(() => Boolean, { name: 'checkJwt' })
   checkJwt () {
     return true;
+  }
+
+  @Query(() => User, { name: 'whoami' })
+  whoami (@CurrentUser() user: User) {
+    return user;
   }
 
 //   @Query(() => User, { name: 'auth' })

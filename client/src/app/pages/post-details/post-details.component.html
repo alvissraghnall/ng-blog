@@ -38,6 +38,9 @@
                         {{ post?.title }}
                     </h1>
                     <p class="text-justify leading-7 pl-1.5">
+                        <quill-view-html [content]="post?.content ?? ''" theme="snow">
+
+                        </quill-view-html>
                         {{ post?.content }}
                     </p>
 

@@ -26,7 +26,16 @@ export class UsersResolver {
 
   @Query(() => User, { name: 'user' })
   findOne(@Args('username', { type: () => String }) username: string) {
-    return this.usersService.findOne(username);
+    const user = this.usersService.findOneByUsername(username);
+    if(!user) throw new NotFoundException(`User with Username: ${username} does not exist!`);
+    return user;
+  }
+
+  @Query(() => User, { name: 'getUserById' })
+  findOneById (@Args("id", { type: () => String}) id: string) {
+    const user = this.usersService.findOne(id);
+    if(!user) throw new NotFoundException(`User with ID: ${id} does not exist!`);
+    return user;
   }
 
   @Mutation(() => User)

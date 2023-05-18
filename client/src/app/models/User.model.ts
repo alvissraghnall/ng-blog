@@ -4,4 +4,7 @@ export interface User {
     username: string;
     email: string;
     avatar: string | null;
+    bio?: string;
+    followers: User[];
+    following: User[];
 }
