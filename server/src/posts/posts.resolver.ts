@@ -62,12 +62,12 @@ export class PostsResolver {
   }
 
   @Public()
-  @Query(() => [Post], { name: 'posts', nullable: true })
+  @Query(() => [Post], { name: 'posts', nullable: true, description: "Get posts by category, and/or author ID" })
   async find(
     @Args("cat", { type: () => Category, nullable: true }) cat?: Category,
     @Args("authorId", { type: () => String, nullable: true }) authorId?: string
     ) {
-    return await this.postsService.find(cat, authorId);
+    return await this.postsService.find({cat, authorId});
   }
 
   // @Public()

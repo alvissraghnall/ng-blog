@@ -16,10 +16,12 @@ import {
   heroHandThumbUp,
   heroShare,
   heroChatBubbleLeft,
-  heroChatBubbleOvalLeftEllipsis
+  heroChatBubbleOvalLeftEllipsis,
+  heroMapPin,
+  heroBriefcase,
 } from "@ng-icons/heroicons/outline";
 import {
-    matCommentOutline
+    matCommentOutline,
 } from "@ng-icons/material-icons/outline";
 import { ComponentsModule } from '../components/components.module';
 import { QuillModule } from 'ngx-quill'
@@ -58,7 +60,9 @@ import { AngularToastifyModule } from 'angular-toastify';
             heroShare,
             matCommentOutline,
             heroChatBubbleLeft,
-            heroChatBubbleOvalLeftEllipsis
+            heroChatBubbleOvalLeftEllipsis,
+            heroMapPin,
+            heroBriefcase,
         }),
         ComponentsModule,
         QuillModule.forRoot(),

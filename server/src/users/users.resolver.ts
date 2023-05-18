@@ -5,7 +5,9 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { UseGuards } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
+import { CurrentUser } from 'common/current-user.decorator';
+import { UserNotFoundException } from 'common/user-not-found.exception';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -35,5 +37,27 @@ export class UsersResolver {
   @Mutation(() => User)
   removeUser(@Args('id', { type: () => Int }) id: number) {
     return this.usersService.remove(id);
+  }
+
+  @Mutation(() => User)
+  followUser (@Args('userToBeFollowedId', { type: () => String }) userToBeFollowedId: string, @CurrentUser() currUser) {
+    try {
+      const updatedUser = this.usersService.follow(currUser, userToBeFollowedId);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+    }
+  }
+
+  @Mutation(() => User)
+  unFollowUser (@Args('userToBeUnfollowedId', { type: () => String }) userToBeUnfollowedId: string, @CurrentUser() currUser) {
+    try {
+      const updatedUser = this.usersService.unfollow(currUser, userToBeUnfollowedId);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+    }
   }
 }

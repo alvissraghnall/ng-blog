@@ -31,7 +31,8 @@ export class PostsService {
     return await this.postsRepository.save(newPost);
   }
 
-  find(cat?: Category, authorId?: string): Promise<Post[]> {
+  find(par: {cat?: Category, authorId?: string}): Promise<Post[]> {
+    let cat = par.cat, authorId = par.authorId;
     // return cat 
     //   ? 
     //   this.postsRepository.find({
