@@ -31,7 +31,7 @@ export class UsersResolver {
     return user;
   }
 
-  @Query(() => User, { name: 'getUserById' })
+  @Query(() => User, { name: 'findUserById' })
   findOneById (@Args("id", { type: () => String}) id: string) {
     const user = this.usersService.findOne(id);
     if(!user) throw new NotFoundException(`User with ID: ${id} does not exist!`);

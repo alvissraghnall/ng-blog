@@ -21,7 +21,7 @@
                             <p> {{post?.createdAt | timeSince }} </p>
                         </div>
                         <div class="flex gap-1.5" *ngIf="post?.author?.id === currentUser?.id">
-                            <a [routerLink]="['/create']" [queryParams]="{ edit: true }"
+                            <a [routerLink]="['/create']" [queryParams]="{ edit: true, id: post?.id }"
                                 routerLinkActive="router-link-active">
                                 <ng-icon name="heroPencilSquare" color="blue" size="20">
 

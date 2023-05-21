@@ -5,9 +5,10 @@ import { ContentChange } from 'ngx-quill';
 import Quill from 'quill';
 import BlotFormatter from 'quill-blot-formatter';
 import { switchMap, tap } from 'rxjs';
-import { Category } from 'src/app/models/enum/category.enum';
-import { CreatePostInput } from 'src/app/models/inputs/create-post.input';
+import { Category } from '@models/enum/category.enum';
+import { CreatePostInput } from '@models/inputs/create-post.input';
 import { PostService } from 'src/app/services/post.service';
+import { Post } from "@models/Post.model";
 
 
 Quill.register('modules/blotFormatter', BlotFormatter)
@@ -26,6 +27,15 @@ export class CreateComponent implements OnInit {
   quillEditorModules = {};
   selectedFile!: File;
   categoryOptions = Object.keys(Category);
+  private _post?: Post;
+
+  get post (): Post | undefined {
+    return this._post;
+  }
+
+  set post (post: Post | undefined) {
+    this._post = post;
+  }
 
   constructor(
     protected readonly postService: PostService,
@@ -36,7 +46,7 @@ export class CreateComponent implements OnInit {
       textEditor: new FormControl("", {
         validators: [Validators.required, Validators.minLength(66)]
       }),
-      title: new FormControl("", {
+      title: new FormControl(this.post?.title ?? "", {
         validators: [Validators.required, Validators.minLength(5), Validators.maxLength(66)]
       }),
       desc: new FormControl("", {
@@ -52,8 +62,10 @@ export class CreateComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const edit = Boolean(this.route.snapshot.queryParamMap.get("edit"));
-    console.log(edit);
+    const isEdit = this.checkIsUpdate();
+    const postId = this.getPostId();
+
+    if(isEdit) this.getPost(postId);
   }
 
   handleContentChange($event: ContentChange) {
@@ -100,6 +112,25 @@ export class CreateComponent implements OnInit {
       }
     );
     return res;
+  }
+
+  checkIsUpdate () {
+    return Boolean(this.route.snapshot.queryParamMap.get("edit"));
+  }
+
+  getPostId () {
+    return Number(this.route.snapshot.queryParamMap.get("id"));
+  }
+
+  getPost (id: number) {
+    this.postService.getPost(id, 'no-cache')
+      .subscribe(
+        (results: any) => {
+          console.log(results);
+          // if (results.errors) 
+          this.post = results.data?.post;
+        }
+      );
   }
 
 }
