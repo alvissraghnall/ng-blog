@@ -5,7 +5,7 @@ import { Apollo } from 'apollo-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CreateCommentInput } from '@models/inputs/create-comment.input';
 import { CommentService } from 'src/app/services/comment.service';
-import { ToastService } from 'angular-toastify';
+import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '@app/services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -29,7 +29,7 @@ export class PostCommentsComponent implements OnInit, OnChanges {
   constructor(
     private readonly fb: FormBuilder,
     private readonly commentService: CommentService,
-    private readonly _toastService: ToastService,
+    private readonly _toastService: ToastrService,
     private readonly authService: AuthService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,

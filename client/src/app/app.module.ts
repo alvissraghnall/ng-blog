@@ -10,7 +10,9 @@ import { GraphQLModule } from './graphql.module';
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentsModule } from './components/components.module';
 import { PipesModule } from './pipes/pipes.module';
-import { ToastService, AngularToastifyModule } from 'angular-toastify'; 
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+// import { ToastService, AngularToastifyModule } from 'angular-toastify'; 
 
 @NgModule({
   declarations: [
@@ -24,9 +26,15 @@ import { ToastService, AngularToastifyModule } from 'angular-toastify';
     PagesModule,
     ComponentsModule,
     PipesModule,
-    AngularToastifyModule
+    ToastrModule.forRoot({
+      closeButton: true,
+      progressBar: true,
+      tapToDismiss: false,
+      
+    }),
+    BrowserAnimationsModule
   ],
-  providers: [ToastService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

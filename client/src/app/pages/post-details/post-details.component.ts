@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ToastService } from 'angular-toastify';
+import { ToastrService } from 'ngx-toastr';
 import { Post } from 'src/app/models/Post.model';
 import { User } from 'src/app/models/User.model';
 import { AuthService } from 'src/app/services/auth.service';
@@ -23,7 +23,7 @@ export class PostDetailsComponent implements OnInit {
     private readonly postService: PostService,
     private readonly route: ActivatedRoute,
     private readonly authService: AuthService,
-    private readonly _toastService: ToastService,
+    private readonly _toastService: ToastrService,
     private readonly router: Router
   ) { }
 
