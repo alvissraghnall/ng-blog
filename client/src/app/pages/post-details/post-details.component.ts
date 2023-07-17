@@ -9,7 +9,12 @@ import { PostService } from 'src/app/services/post.service';
 @Component({
   selector: 'app-post-details',
   templateUrl: './post-details.component.html',
-  styles: []
+  styles: [ `
+    .cntnt .ql-editor { 
+      font-size: 1.23rem !important;
+      line-height: 1.5;
+     }
+  `]
 })
 export class PostDetailsComponent implements OnInit {
 
@@ -41,7 +46,9 @@ export class PostDetailsComponent implements OnInit {
       .subscribe(
         (results: any) => {
           this.loading = results.loading;
-          this.requestError = results.errors[0]?.extensions.response.message;
+          if (results.errors as any[]) {
+            this.requestError = results.errors[0]?.extensions?.response?.message;
+          }
           console.log(results);
           this.post = results.data?.post;
         }

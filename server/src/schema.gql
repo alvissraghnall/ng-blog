@@ -173,6 +173,7 @@ type Query {
   checkJwt: Boolean!
   comment(id: Int!): Comment!
   comments(postId: Int!): [Comment!]!
+  findUserById(id: String!): User!
   like(id: Int!): Like!
   likes(entity: EntityOwnsLike!, id: Int!): [Like!]!
   post(id: Int!): Post!
@@ -181,6 +182,7 @@ type Query {
   posts(authorId: String, cat: Category): [Post!]
   user(username: String!): User!
   users: [User!]!
+  whoami: User!
 }
 
 input UpdateCommentInput {

@@ -34,14 +34,14 @@
                             </ng-icon>
                         </div>
                     </div>
-                    <h1 class="text-[#333] text-4xl font-serif font-bold pl-1.5">
+                    <h1 class="text-[#333] text-4xl font-serif font-bold pl-6">
                         {{ post?.title }}
                     </h1>
-                    <p class="text-justify leading-7 pl-1.5">
-                        <quill-view-html [content]="post?.content ?? ''" theme="snow">
+                    <p class="cntnt text-justify leading-7 pl-1.5 first:text-justify">
+                        <quill-view-html [content]="post?.content ?? ''" theme="snow" class="leading-4 text-lg">
 
                         </quill-view-html>
-                        {{ post?.content }}
+                        <!-- {{ post?.content }} -->
                     </p>
 
                     <div

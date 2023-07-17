@@ -29,6 +29,7 @@ export const CHECK_AUTH_USER_TOKEN = gql`
 `;
 
 export const WHO_AM_I = gql`
+    {
     whoami {
         username
         id
@@ -45,4 +46,5 @@ export const WHO_AM_I = gql`
             username
         }
     } 
+    }
 `;

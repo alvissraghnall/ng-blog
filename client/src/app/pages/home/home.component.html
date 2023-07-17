@@ -1,7 +1,7 @@
 <main>
     <section class="">
         <div class="mt-12 flex flex-col gap-40 mx-7">
-            <a [routerLink]="['/post', index]" routerLinkActive="router-link-active"  *ngFor="let post of posts; index as index; let odd = odd" class="flex gap-24 no-underline text-zinc-800" [class.oddPost]="odd">
+            <a [routerLink]="['/post', post.id]" routerLinkActive="router-link-active"  *ngFor="let post of posts; index as index; let odd = odd" class="flex gap-24 no-underline text-zinc-800" [class.oddPost]="odd">
                 <!-- <div
                     class="absolute inset-0 
                 </div> -->
