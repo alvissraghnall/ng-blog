@@ -1,0 +1,39 @@
+name: ENV Prod.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  prod:
+    name: prod
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [15.x]
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2.3.2
+    - name: create-file
+    - run: |
+        mkdir src/environments
+        touch src/environments/environment.prod.ts
+        printf '%s\n' 'export const environment = {' '  production: true' '};' > src/environments/environment.prod.ts
+
+    - name: Commit files
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git diff-index --quiet HEAD || git add . && git commit -m "Add changed files"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
