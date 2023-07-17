@@ -22,7 +22,7 @@ jobs:
       - name: Create environment.prod.ts
         run: |
           mkdir -p client/src/environments
-          printf '%s\n' 'export const environment = {' '  production: true' '};' > src/environments/environment.prod.ts
+          printf '%s\n' 'export const environment = {' '  production: true' '};' > client/src/environments/environment.prod.ts
 
       - name: Commit files
         run: |
