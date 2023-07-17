@@ -8,7 +8,8 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
+permissions:
+  contents: write
 jobs:
   prod:
     name: prod
@@ -20,8 +21,7 @@ jobs:
 
       - name: Create environment.prod.ts
         run: |
-          mkdir -p src/environments
-          touch src/environments/environment.prod.ts
+          mkdir -p client/src/environments
           printf '%s\n' 'export const environment = {' '  production: true' '};' > src/environments/environment.prod.ts
 
       - name: Commit files
