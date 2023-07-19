@@ -1,22 +1,29 @@
 <main>
     <section class="">
         <div class="mt-12 flex flex-col gap-40 mx-7">
-            <a [routerLink]="['/post', post.id]" routerLinkActive="router-link-active"  *ngFor="let post of posts; index as index; let odd = odd" class="flex gap-24 no-underline text-zinc-800" [class.oddPost]="odd">
-                <!-- <div
-                    class="absolute inset-0 
-                </div> -->
-                <div class="flex-[2] img-cont relative after:content-none after:w-full after:h-full after:absolute after:top-5 after:right-5 after:z-[-1]" [ngClass]="{'after:h-full': !post.image, 'after:bg-gradient-to-r after:from-blue-300 after:to-blue-600 after:shadow-lg after:transform after:-skew-y-6 after:sm:skew-y-0 after:sm:-rotate-6 after:sm:rounded-3xl': post.image}">
-                    <img src="{{post.image}}" class="w-full object-cover max-h-96 cursor-pointer" />
-                </div>
-                <div class="flex-[3] flex flex-col justify-between">
-                    <a [routerLink]="['post', post.id]" class="no-underline">
-                        <h2 class="text-5xl">{{post.title}}</h2>
+            <div *ngIf="!loading; then content else skeleton"></div>
+            <ng-template #content>
+
+                <a [routerLink]="['/post', post.id]" routerLinkActive="router-link-active"  *ngFor="let post of posts; index as index; let odd = odd" class="flex gap-24 no-underline text-zinc-800" [class.oddPost]="odd">
+                    <!-- <div
+                        class="absolute inset-0 
+                    </div> -->
+                    <div class="flex-[2] img-cont relative after:content-none after:w-full after:h-full after:absolute after:top-5 after:right-5 after:z-[-1]" [ngClass]="{'after:h-full': !post.image, 'after:bg-gradient-to-r after:from-blue-300 after:to-blue-600 after:shadow-lg after:transform after:-skew-y-6 after:sm:skew-y-0 after:sm:-rotate-6 after:sm:rounded-3xl': post.image}">
+                        <img src="{{post.image}}" class="w-full object-cover max-h-96 cursor-pointer" />
+                    </div>
+                    <div class="flex-[3] flex flex-col justify-between">
+                        <a [routerLink]="['/post', post.id]" class="no-underline">
+                            <h2 class="text-5xl">{{post.title}}</h2>
                         
-                    </a>
-                    <p class="text-lg">{{post.desc}}</p>
-                    <button class="w-max rounded-lg py-2.5 px-5 border bg-[#eee] border-teal-300 text-teal-500 hover:bg-teal-400 hover:text-[#eee] cursor-pointer outline-none"> Read more... </button>
-                </div>
-            </a>
+                        </a>
+                        <p class="text-lg">{{post.desc}}</p>
+                        <button class="w-max rounded-lg py-2.5 px-5 border bg-[#eee] border-teal-300 text-teal-500 hover:bg-teal-400 hover:text-[#eee] cursor-pointer outline-none"> Read more... </button>
+                    </div>
+                </a>
+            </ng-template>
+            <ng-template #skeleton>
+                <app-posts-loading-skeleton></app-posts-loading-skeleton>
+            </ng-template>
         </div>
     </section>
 </main>

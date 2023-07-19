@@ -10,6 +10,7 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
 import { PostCommentsComponent } from './post-comments/post-comments.component';
 import { PipesModule } from "../pipes/pipes.module";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { PostsLoadingSkeletonComponent } from './posts-loading-skeleton/posts-loading-skeleton.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     PostMenuComponent,
     ToastComponent,
     FileUploadComponent,
-    PostCommentsComponent
+    PostCommentsComponent,
+    PostsLoadingSkeletonComponent
   ],
   imports: [
     CommonModule,
@@ -34,7 +36,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     LayoutComponent,
     PostMenuComponent,
     FileUploadComponent,
-    PostCommentsComponent
+    PostCommentsComponent,
+    PostsLoadingSkeletonComponent
   ],
 })
 export class ComponentsModule { }

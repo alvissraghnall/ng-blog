@@ -16,6 +16,7 @@ export class HomeComponent implements OnInit, OnChanges {
   
   posts: Post[] = [
   ];
+  loading: boolean = true;
 
   constructor(
     private readonly apollo: Apollo,
@@ -31,12 +32,13 @@ export class HomeComponent implements OnInit, OnChanges {
     this.category = this.route.snapshot.queryParamMap.get("category")?.toUpperCase();
     let indexOfCat = Object.values(Category).indexOf(this.category as unknown as Category)
     const catEnum = Object.keys(Category)[indexOfCat];
-    console.log(catEnum);
+    console.log(catEnum, this.loading);
     
     this.postService.getPosts(Category[catEnum as keyof typeof Category])
       .subscribe(
         (results: any) => {
-          console.log(results);
+          this.loading = results.loading;
+          console.log(results, this.loading);
           this.posts = (results.data?.posts as Post[]).slice(0, 7);
         }
       )

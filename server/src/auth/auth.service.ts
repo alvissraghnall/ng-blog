@@ -39,7 +39,7 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string): Promise<User | string> {    
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findOneByUsername(username);
     console.log(user);
     
     if (!user) {
@@ -53,7 +53,7 @@ export class AuthService {
   }
 
   async create (createUserInput: CreateUserInput) {
-    const existingUser = await this.usersService.findOne(createUserInput.username);
+    const existingUser = await this.usersService.findOneByUsername(createUserInput.username);
 
     if(existingUser) throw new ConflictException("User already exists!");
 

@@ -33,7 +33,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       cors: {
-        origin: 'http://localhost:4200',
+        origin: '*',
         credentials: true
       }
     }),
