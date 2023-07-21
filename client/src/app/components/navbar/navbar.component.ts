@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, type Subject } from 'rxjs';
 import { Category } from 'src/app/models/enum/category.enum';
@@ -8,13 +8,21 @@ import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styles: []
+  styles: [
+    ` 
+      .sticky-head {
+        @apply w-full sticky top-0 left-0 leading-8 z-50 shadow-md shadow-[#ddd] bg-[#fff];
+      }
+    `
+]
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, AfterViewInit {
 
+  @ViewChild('header') headerRef?: ElementRef<HTMLElement>;
   currentUser?: User;
   showMobileMenu: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private prevShowMobileMenu: boolean = false;
+  private prevScrollPos = new BehaviorSubject<number>(window.scrollY);
 
   constructor(
     private readonly authService: AuthService,
@@ -48,6 +56,30 @@ export class NavbarComponent implements OnInit {
   onLogout() {
     this.authService.logout();
     this.router.navigateByUrl("/login");
+  }
+
+
+  stickyHeader () {
+//    const prevScrollPos = ref(window.scrollY);
+    console.log("wow");
+
+    window.addEventListener("scroll", () => {
+      const currScrollPos = window.scrollY;
+
+      if(this.prevScrollPos.value > currScrollPos) {
+        this.headerRef?.nativeElement.classList.remove("-top-[4rem]");
+        this.headerRef?.nativeElement.classList.add("sticky-head");
+      } else {
+        this.headerRef?.nativeElement.classList.remove("sticky-head");
+        this.headerRef?.nativeElement.classList.add("-top-[4rem]");
+      }
+      console.log(this.headerRef);
+      this.prevScrollPos.next(currScrollPos);
+    });
+  }
+
+  ngAfterViewInit() {
+    this.stickyHeader();
   }
 
 }

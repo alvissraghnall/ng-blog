@@ -14,6 +14,7 @@ export class PostsQueries {
                     category
                     id
                     desc
+                    image
                     title
                     author {
                         id
@@ -37,6 +38,7 @@ export class PostsQueries {
                     id
                     desc
                     title
+         	    image
                     author {
                         id
                         username
