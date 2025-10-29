@@ -57,7 +57,7 @@ export class Post {
   comments: Comment[];
 
   @Field(() => [User], { description: "Likes on post", nullable: true })
-  @OneToMany(type => User, user => user.postLikes, {
+  @OneToMany(type => User, "user", {
     nullable: true,
     eager: true
   })

@@ -32,10 +32,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      cors: {
-        origin: '*',
-        credentials: true
-      }
+	  graphiql: true,
+      
     }),
     UsersModule,
     PostsModule,

@@ -1,4 +1,4 @@
-import { OmitType } from "@nestjs/swagger";
+import { OmitType } from "@nestjs/graphql";
 import { User } from "../entities/user.entity";
 
 

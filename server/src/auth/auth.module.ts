@@ -11,6 +11,9 @@ import { JwtKeyModule } from './jwt/jwt-key.module';
 import { JwtKeyService } from './jwt/jwt-key.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
+import { GoogleOAuthStrategy } from './strategy/google-oauth.strategy';
+import { GithubOAuthStrategy } from './strategy/github-oauth.strategy';
+import { OAuthService } from './oauth/oauth.service';
 
 @Module({
   imports: [
@@ -22,7 +25,7 @@ import { LocalStrategy } from './strategy/local.strategy';
         return {
           privateKey: await keyService.getPrivKey(),
           publicKey: await keyService.getPubKey(), 
-          signOptions: { expiresIn: configService.get<string>("JWT_EXP_IN"), algorithm: 'RS256', issuer: "ng-blog" },
+          signOptions: { expiresIn: configService.get<number>("JWT_EXP_IN"), algorithm: 'RS256', issuer: "ng-blog" },
           verifyOptions: { algorithms: ["RS256"] },
         };
       },
@@ -31,9 +34,11 @@ import { LocalStrategy } from './strategy/local.strategy';
     }),
     UsersModule,
     HashModule,
-    JwtKeyModule
+    JwtKeyModule,
+	ConfigModule,
   ],
-  providers: [ AuthService, LocalStrategy, AuthResolver, JwtKeyService, JwtStrategy ],
+  providers: [ AuthService, LocalStrategy, AuthResolver, JwtKeyService, JwtStrategy, GoogleOAuthStrategy,
+    GithubOAuthStrategy, OAuthService, ConfigService ],
   exports: [AuthService, JwtKeyService]
 })
 export class AuthModule {}

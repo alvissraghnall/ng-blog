@@ -119,9 +119,11 @@ type Mutation {
   createLike(createLikeInput: CreateLikeInput!): Like!
   createPost(createPostInput: CreatePostInput!): Post!
   followUser(userToBeFollowedId: String!): User!
+  getOAuthUrl(provider: String!): String!
   likeComment(commentId: Int!): Comment!
   likePost(postId: Int!): Post!
   login(loginUserInput: LoginUserInput!): LoginResponse!
+  oauthLogin(oauthInput: OAuthInput!): LoginResponse!
   removeComment(id: Int!): Comment!
   removeLike(id: Int!): Like!
   removePost(id: Int!): Post!
@@ -131,6 +133,12 @@ type Mutation {
   updateComment(updateCommentInput: UpdateCommentInput!): Comment!
   updatePost(updatePostInput: UpdatePostInput!): Post!
   updateUser(updateUserInput: UpdateUserInput!): User!
+}
+
+input OAuthInput {
+  code: String!
+  provider: String!
+  redirectUri: String
 }
 
 type Post {
@@ -234,9 +242,24 @@ input UpdateUserInput {
 type User {
   avatar: String
   bio: String
+
+  """Date Entity was created."""
+  createdAt: DateTime!
   email: String!
+
+  """Email verification status"""
+  emailVerified: Boolean!
 
   """ID"""
   id: String!
+
+  """OAuth2 ID"""
+  oauthId: String
+
+  """OAuth2 Provider name, e.g. Google, GitHub.."""
+  oauthProvider: String
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
   username: String!
 }

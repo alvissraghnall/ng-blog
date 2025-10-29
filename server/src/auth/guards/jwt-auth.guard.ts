@@ -45,10 +45,6 @@ export class JwtAuthGuard implements CanActivate {
                 .findOne({
                     where: {id: user.sub},
                     relations: {
-                        commentLikes: true,
-                        followers: true,
-                        following: true,
-                        postLikes: true
                     }
                 });
 

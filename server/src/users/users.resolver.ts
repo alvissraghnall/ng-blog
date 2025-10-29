@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { GqlJwtAuthGuard as JwtAuthGuard } from '../auth/guards/gql-jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { NotFoundException, UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'common/current-user.decorator';
@@ -38,18 +38,20 @@ export class UsersResolver {
     return user;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => User)
   updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput, @CurrentUser() currUser: User) {
     return this.usersService.update(currUser, updateUserInput);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => User)
   removeUser(@Args('id', { type: () => Int }) id: number) {
     return this.usersService.remove(id);
   }
 
   @Mutation(() => User)
-  followUser (@Args('userToBeFollowedId', { type: () => String }) userToBeFollowedId: string, @CurrentUser() currUser) {
+  followUser (@Args('userToBeFollowedId', { type: () => String }) userToBeFollowedId: string, @CurrentUser() currUser: User) {
     try {
       const updatedUser = this.usersService.follow(currUser, userToBeFollowedId);
     } catch (error) {
