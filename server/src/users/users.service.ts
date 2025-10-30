@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -65,7 +65,7 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return `This action removes a #${id} user`;
   }
 
@@ -104,6 +104,7 @@ export class UsersService {
     });
   }
 
+  /*
   private async generateUniqueUsername(profile: OAuthProfile): Promise<string> {
     const baseUsername = profile.name?.replace(/\s+/g, '').toLowerCase() || 
                         profile.email?.split('@')[0] || 
@@ -119,10 +120,37 @@ export class UsersService {
 
     return username;
   }
+  */
+
+  private async generateUniqueUsername(profile: OAuthProfile): Promise<string> {
+  const rawBase =
+    profile.name?.trim().replace(/\s+/g, '').toLowerCase() ||
+    profile.email?.split('@')[0]?.toLowerCase() ||
+    `user${profile.id.slice(0, 8)}`;
+
+  const baseUsername = rawBase.replace(/[^a-z0-9_]/g, '') || 'user';
+
+  let username = baseUsername;
+  let counter = 1;
+  const MAX_ATTEMPTS = 20;
+
+  while (await this.findOneByUsername(username)) {
+    if (counter > MAX_ATTEMPTS) {
+      const randomSuffix = Math.random().toString(36).slice(2, 6);
+      username = `${baseUsername}_${randomSuffix}`;
+      break;
+    }
+
+    username = `${baseUsername}${counter}`;
+    counter++;
+  }
+
+  return username;
+}
 
   async follow(currUser: User, followUserId: string) {
     if (currUser.id === followUserId)
-      throw new Error('You cannot follow yourself.');
+      throw new BadRequestException('You cannot follow yourself.');
 
     const userToFollow = await this.usersRepository.findOne({ where: { id: followUserId } });
     if (!userToFollow) throw new UserNotFoundException(followUserId);

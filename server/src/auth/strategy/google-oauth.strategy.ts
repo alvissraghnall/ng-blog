@@ -102,9 +102,9 @@ export class GoogleOAuthStrategy extends OAuthBaseStrategy {
       },
     });
 
-    if (!response.ok) {
-      throw new BadRequestException('Failed to fetch Google user profile');
-    }
+	if (!response || !response.ok) {
+  	  throw new BadRequestException('Failed to fetch Google user profile');
+	}
 
     const userInfo = await response.json();
     return this.normalizeBasicProfile(userInfo);

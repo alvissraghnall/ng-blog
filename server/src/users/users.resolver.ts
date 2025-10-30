@@ -8,6 +8,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { NotFoundException, UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'common/current-user.decorator';
 import { UserNotFoundException } from 'common/user-not-found.exception';
+import { UserFollow } from './entities/user-follow.entity';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -18,22 +19,23 @@ export class UsersResolver {
   //   return this.usersService.create(createUserInput);
   // }
 
-  @Query(() => [User], { name: 'users' })
-  @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.usersService.findAll();
-  }
+  // taken out cos why are we even fetching all users ??
+  // @Query(() => [User], { name: 'users' })
+  // @UseGuards(JwtAuthGuard)
+  // findAll() {
+  //   return this.usersService.findAll();
+  // }
 
   @Query(() => User, { name: 'user' })
-  findOne(@Args('username', { type: () => String }) username: string) {
-    const user = this.usersService.findOneByUsername(username);
+  async findOne(@Args('username', { type: () => String }) username: string) {
+    const user = await this.usersService.findOneByUsername(username);
     if(!user) throw new NotFoundException(`User with Username: ${username} does not exist!`);
     return user;
   }
 
   @Query(() => User, { name: 'findUserById' })
-  findOneById (@Args("id", { type: () => String}) id: string) {
-    const user = this.usersService.findOne(id);
+  async findOneById (@Args("id", { type: () => String}) id: string) {
+    const user = await this.usersService.findOne(id);
     if(!user) throw new NotFoundException(`User with ID: ${id} does not exist!`);
     return user;
   }
@@ -46,29 +48,35 @@ export class UsersResolver {
 
   @UseGuards(JwtAuthGuard)
   @Mutation(() => User)
-  removeUser(@Args('id', { type: () => Int }) id: number) {
+  removeUser(@Args('id', { type: () => String }) id: string) {
     return this.usersService.remove(id);
   }
 
   @Mutation(() => User)
-  followUser (@Args('userToBeFollowedId', { type: () => String }) userToBeFollowedId: string, @CurrentUser() currUser: User) {
+  @UseGuards(JwtAuthGuard)
+  async followUser (@Args('userToBeFollowedId', { type: () => String }) userToBeFollowedId: string, @CurrentUser() currUser: User): Promise<UserFollow> {
     try {
-      const updatedUser = this.usersService.follow(currUser, userToBeFollowedId);
+      return await this.usersService.follow(currUser, userToBeFollowedId);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new NotFoundException(error.message);
-      }
+      } else {
+		throw error;
+	  }
     }
   }
 
   @Mutation(() => User)
-  unFollowUser (@Args('userToBeUnfollowedId', { type: () => String }) userToBeUnfollowedId: string, @CurrentUser() currUser) {
+  @UseGuards(JwtAuthGuard)
+  async unFollowUser (@Args('userToBeUnfollowedId', { type: () => String }) userToBeUnfollowedId: string, @CurrentUser() currUser: User) {
     try {
-      const updatedUser = this.usersService.unfollow(currUser, userToBeUnfollowedId);
+      return await this.usersService.unfollow(currUser, userToBeUnfollowedId);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new NotFoundException(error.message);
-      }
+      } else {
+		throw error;
+	  }
     }
   }
 }
