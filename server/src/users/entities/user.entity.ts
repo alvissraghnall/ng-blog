@@ -1,14 +1,23 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { IsUnique } from '../../common/is-unique';
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
 
 @ObjectType()
 @Entity()
 export class User {
-
-  @PrimaryGeneratedColumn("uuid")
-  @Field(() => String, { description: "ID"})
+  @PrimaryGeneratedColumn('uuid')
+  @Field(() => String, { description: 'ID' })
   id: string;
 
   @Column({ unique: true, length: 255 })
@@ -28,14 +37,21 @@ export class User {
   avatar?: string;
 
   @Column({ nullable: true })
-  @Field({ nullable: true, description: 'OAuth2 Provider name, e.g. Google, GitHub..' })
+  @Field({
+    nullable: true,
+    description: 'OAuth2 Provider name, e.g. Google, GitHub..',
+  })
   oauthProvider?: string;
 
   @Column({ nullable: true })
   @Field({ nullable: true, description: 'OAuth2 ID' })
   oauthId?: string;
 
-  @Field(() => Boolean,{ nullable: false, defaultValue: false, description: 'Email verification status' })
+  @Field(() => Boolean, {
+    nullable: false,
+    defaultValue: false,
+    description: 'Email verification status',
+  })
   @Column({ default: false })
   emailVerified: boolean;
 
@@ -44,18 +60,24 @@ export class User {
   bio?: string;
 
   @CreateDateColumn()
-  @Field(() => Date, { nullable: false, description: 'Date Entity was created.' })
+  @Field(() => Date, {
+    nullable: false,
+    description: 'Date Entity was created.',
+  })
   createdAt: Date;
 
   @UpdateDateColumn()
-  @Field(() => Date, { nullable: false, description: 'Date Entity was last updated.' })
+  @Field(() => Date, {
+    nullable: false,
+    description: 'Date Entity was last updated.',
+  })
   updatedAt: Date;
 
   isOAuthUser(): boolean {
-   return !!this.oauthProvider && !!this.oauthId;
+    return !!this.oauthProvider && !!this.oauthId;
   }
 
-  canUsePasswordAuth (): boolean {
+  canUsePasswordAuth(): boolean {
     return !!this.password;
   }
 }

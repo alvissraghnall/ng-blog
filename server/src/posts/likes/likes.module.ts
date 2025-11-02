@@ -6,9 +6,8 @@ import { Like } from './entities/like.entity';
 import { PostsModule } from 'posts/posts.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Like]),
-  ],
+  imports: [TypeOrmModule.forFeature([Like])],
   providers: [LikesResolver, LikesService],
-  exports: [LikesService]
+  exports: [LikesService],
 })
 export class LikesModule {}

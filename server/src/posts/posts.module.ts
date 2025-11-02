@@ -19,22 +19,20 @@ import { LikesService } from './likes/likes.service';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard
+      useClass: JwtAuthGuard,
     },
-    PostsResolver, 
-    PostsService, 
-    JwtService, 
+    PostsResolver,
+    PostsService,
+    JwtService,
   ],
   imports: [
-    LikesModule, 
-    CommentsModule, 
-    TypeOrmModule.forFeature([Post]), 
+    LikesModule,
+    CommentsModule,
+    TypeOrmModule.forFeature([Post]),
     UsersModule,
     CloudinaryModule,
     JwtKeyModule,
   ],
-  exports: [
-    PostsService
-  ]
+  exports: [PostsService],
 })
 export class PostsModule {}

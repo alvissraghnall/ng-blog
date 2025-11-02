@@ -5,8 +5,8 @@ import { IsUniqueConstraint, IsUnique } from './is-unique';
 import { registerDecorator } from 'class-validator';
 
 jest.mock('class-validator', () => ({
-  ...jest.requireActual('class-validator'), 
-  registerDecorator: jest.fn(), 
+  ...jest.requireActual('class-validator'),
+  registerDecorator: jest.fn(),
 }));
 
 const mockRepository = {
@@ -23,7 +23,6 @@ describe('IsUniqueConstraint', () => {
   let constraint: IsUniqueConstraint;
 
   beforeEach(() => {
-
     mockRepository.findOne.mockClear();
     mockDataSource.getRepository.mockClear();
 
@@ -115,7 +114,7 @@ describe('IsUnique Decorator', () => {
     expect(mockRegisterDecorator).toHaveBeenCalledWith({
       target: targetObject.constructor,
       propertyName: propertyName,
-      options: undefined, 
+      options: undefined,
       constraints: [model, field],
       validator: IsUniqueConstraint,
     });

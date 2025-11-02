@@ -6,12 +6,15 @@ import { OAuthConfig } from '../interfaces/oauth-config.interface';
 import { OAuthProfile } from '../interfaces/oauth-profile.interface';
 
 @Injectable()
-export abstract class OAuthBaseStrategy extends PassportStrategy(Strategy, "oauth") {
+export abstract class OAuthBaseStrategy extends PassportStrategy(
+  Strategy,
+  'oauth',
+) {
   protected abstract readonly providerName: string;
 
   constructor(
     protected readonly authService: AuthService,
-    config: OAuthConfig
+    config: OAuthConfig,
   ) {
     super(config);
   }
@@ -20,13 +23,19 @@ export abstract class OAuthBaseStrategy extends PassportStrategy(Strategy, "oaut
 
   abstract getUserProfile(accessToken: string): Promise<OAuthProfile>;
 
-  async validate(accessToken: string, refreshToken: string, profile: any): Promise<any> {
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+  ): Promise<any> {
     try {
       const userProfile = await this.getUserProfile(accessToken);
       const user = await this.authService.validateOAuthLogin(userProfile);
       return user;
     } catch (error) {
-      throw new Error(`OAuth validation failed for ${this.providerName}: ${error.message}`);
+      throw new Error(
+        `OAuth validation failed for ${this.providerName}: ${error.message}`,
+      );
     }
   }
 

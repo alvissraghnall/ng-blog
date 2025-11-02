@@ -6,16 +6,13 @@ jest.mock('@nestjs/common', () => ({
 }));
 
 describe('Public Decorator', () => {
-
   const mockSetMetadata = SetMetadata as jest.Mock;
 
   beforeEach(() => {
-
     mockSetMetadata.mockClear();
   });
 
   it('should call SetMetadata with the correct key and value', () => {
-
     Public();
 
     expect(mockSetMetadata).toHaveBeenCalledTimes(1);

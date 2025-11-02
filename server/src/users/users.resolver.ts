@@ -29,20 +29,27 @@ export class UsersResolver {
   @Query(() => User, { name: 'user' })
   async findOne(@Args('username', { type: () => String }) username: string) {
     const user = await this.usersService.findOneByUsername(username);
-    if(!user) throw new NotFoundException(`User with Username: ${username} does not exist!`);
+    if (!user)
+      throw new NotFoundException(
+        `User with Username: ${username} does not exist!`,
+      );
     return user;
   }
 
   @Query(() => User, { name: 'findUserById' })
-  async findOneById (@Args("id", { type: () => String}) id: string) {
+  async findOneById(@Args('id', { type: () => String }) id: string) {
     const user = await this.usersService.findOne(id);
-    if(!user) throw new NotFoundException(`User with ID: ${id} does not exist!`);
+    if (!user)
+      throw new NotFoundException(`User with ID: ${id} does not exist!`);
     return user;
   }
 
   @UseGuards(JwtAuthGuard)
   @Mutation(() => User)
-  updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput, @CurrentUser() currUser: User) {
+  updateUser(
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+    @CurrentUser() currUser: User,
+  ) {
     return this.usersService.update(currUser, updateUserInput);
   }
 
@@ -54,29 +61,37 @@ export class UsersResolver {
 
   @Mutation(() => User)
   @UseGuards(JwtAuthGuard)
-  async followUser (@Args('userToBeFollowedId', { type: () => String }) userToBeFollowedId: string, @CurrentUser() currUser: User): Promise<UserFollow> {
+  async followUser(
+    @Args('userToBeFollowedId', { type: () => String })
+    userToBeFollowedId: string,
+    @CurrentUser() currUser: User,
+  ): Promise<UserFollow> {
     try {
       return await this.usersService.follow(currUser, userToBeFollowedId);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new NotFoundException(error.message);
       } else {
-		throw error;
-	  }
+        throw error;
+      }
     }
   }
 
   @Mutation(() => User)
   @UseGuards(JwtAuthGuard)
-  async unFollowUser (@Args('userToBeUnfollowedId', { type: () => String }) userToBeUnfollowedId: string, @CurrentUser() currUser: User) {
+  async unFollowUser(
+    @Args('userToBeUnfollowedId', { type: () => String })
+    userToBeUnfollowedId: string,
+    @CurrentUser() currUser: User,
+  ) {
     try {
       return await this.usersService.unfollow(currUser, userToBeUnfollowedId);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new NotFoundException(error.message);
       } else {
-		throw error;
-	  }
+        throw error;
+      }
     }
   }
 }

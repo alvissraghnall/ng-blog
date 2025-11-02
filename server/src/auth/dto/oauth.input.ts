@@ -1,5 +1,5 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { IsIn } from "class-validator";
+import { Field, InputType } from '@nestjs/graphql';
+import { IsIn } from 'class-validator';
 
 @InputType()
 export class OAuthInput {

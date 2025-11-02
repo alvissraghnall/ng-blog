@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { CreateLikeInput } from './dto/create-like.input';
@@ -11,25 +16,45 @@ import { EntityOwnsLike } from 'posts/enum/entity-owns-like.enum';
 
 @Injectable()
 export class LikesService {
-  
   constructor(
     @InjectRepository(Like) private readonly likesRepository: Repository<Like>,
-    private readonly dataSource: DataSource
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createLikeInput: CreateLikeInput, user: User) {
     console.log(createLikeInput);
-    
-    const cmt = createLikeInput.commentId ? await this.dataSource.getRepository(Comment).findOne({ where: { id: createLikeInput.commentId }, relations: ["likes", "likes.owner"] }) : null;
-    const post = createLikeInput.postId ? await this.dataSource.getRepository(Post).findOne({ where: {id: createLikeInput.postId}, relations: ["likes", "likes.owner"] }) : null;
 
-    if (!cmt && !post) throw new NotFoundException("Neither comment nor post provided in request");
+    const cmt = createLikeInput.commentId
+      ? await this.dataSource
+          .getRepository(Comment)
+          .findOne({
+            where: { id: createLikeInput.commentId },
+            relations: ['likes', 'likes.owner'],
+          })
+      : null;
+    const post = createLikeInput.postId
+      ? await this.dataSource
+          .getRepository(Post)
+          .findOne({
+            where: { id: createLikeInput.postId },
+            relations: ['likes', 'likes.owner'],
+          })
+      : null;
 
-    const alreadyLiked = post ? post.likes.some(like => like.id === user.id) : cmt.likes.some(like => like.id === user.id);
+    if (!cmt && !post)
+      throw new NotFoundException(
+        'Neither comment nor post provided in request',
+      );
+
+    const alreadyLiked = post
+      ? post.likes.some((like) => like.id === user.id)
+      : cmt.likes.some((like) => like.id === user.id);
 
     if (alreadyLiked) {
       // return { ...this.likesRepository.remove(post.likes)[0], message: "Like removed successfully!", id: post.id ?? cmt.id };
-      throw new ConflictException(`User has already liked post with ID ${post.id || cmt.id}`);
+      throw new ConflictException(
+        `User has already liked post with ID ${post.id || cmt.id}`,
+      );
     }
 
     const newLike = new Like();
@@ -45,29 +70,30 @@ export class LikesService {
     const cntnt = await this.dataSource
       .getRepository<Post | Comment>(entity.toString().toLocaleLowerCase())
       .findOne({
-        relations: ["likes"],
-        where: { id: entityId }
+        relations: ['likes'],
+        where: { id: entityId },
       });
 
-    console.log(cntnt); 
-      
+    console.log(cntnt);
+
     return cntnt.likes;
   }
 
-  findOne (id: number) {
+  findOne(id: number) {
     return this.likesRepository.findOne({
-      relations: ["post", "comment", "owner", "post.author", "comment.author"],
-      where: { id }
+      relations: ['post', 'comment', 'owner', 'post.author', 'comment.author'],
+      where: { id },
     });
   }
 
   async remove(id: number) {
-    const like = await this.likesRepository.findOneBy({id});
-    if(!like) throw new BadRequestException(`Like with ID: ${id} does not exist!`);
+    const like = await this.likesRepository.findOneBy({ id });
+    if (!like)
+      throw new BadRequestException(`Like with ID: ${id} does not exist!`);
     return this.likesRepository.remove(like);
   }
 
-  saveLike (like: Like) {
+  saveLike(like: Like) {
     return this.likesRepository.save(like);
   }
 }

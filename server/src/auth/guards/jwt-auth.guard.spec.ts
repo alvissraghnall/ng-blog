@@ -14,6 +14,16 @@ import * as jwt from 'jsonwebtoken';
 import { User } from 'users/entities/user.entity';
 import { IS_PUBLIC_KEY } from 'common/public.decorator';
 
+jest.mock('users/entities/user.entity', () => ({
+  User: class {},
+}));
+
+jest.mock('@nestjs/graphql', () => ({
+  Field: () => () => {},
+  ObjectType: () => () => {},
+  ID: String,
+}));
+
 jest.mock('@nestjs/graphql', () => ({
   GqlExecutionContext: {
     create: jest.fn(),
@@ -68,7 +78,9 @@ describe('JwtAuthGuard', () => {
     jest.clearAllMocks();
   });
 
-  const createMockContext = (headers: Record<string, string>): ExecutionContext => {
+  const createMockContext = (
+    headers: Record<string, string>,
+  ): ExecutionContext => {
     const mockReq = { headers };
     const mockGqlContext = {
       getContext: () => ({ req: mockReq }),
@@ -202,4 +214,3 @@ describe('JwtAuthGuard', () => {
     });
   });
 });
-

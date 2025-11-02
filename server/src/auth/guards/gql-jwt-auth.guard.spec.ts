@@ -1,7 +1,9 @@
 import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Reflector } from '@nestjs/core';
 import { GqlJwtAuthGuard } from './gql-jwt-auth.guard';
-import { of, Observable } from 'rxjs';
+import { of, firstValueFrom, Observable } from 'rxjs';
+import { IS_PUBLIC_KEY } from 'common/public.decorator';
 
 jest.mock('@nestjs/graphql', () => ({
   GqlExecutionContext: {
@@ -11,7 +13,7 @@ jest.mock('@nestjs/graphql', () => ({
 
 describe('GqlJwtAuthGuard', () => {
   let guard: GqlJwtAuthGuard;
-  let mockGqlExecutionContext: jest.Mocked<typeof GqlExecutionContext>;
+  let reflector: Reflector;
   let mockContext: ExecutionContext;
 
   const mockGqlContext = {
@@ -21,17 +23,13 @@ describe('GqlJwtAuthGuard', () => {
   };
 
   beforeEach(() => {
-    guard = new GqlJwtAuthGuard();
+    reflector = { getAllAndOverride: jest.fn() } as any;
+    guard = new GqlJwtAuthGuard(reflector);
     mockContext = {} as ExecutionContext;
 
-    mockGqlExecutionContext = GqlExecutionContext as jest.Mocked<
-      typeof GqlExecutionContext
-    >;
-    mockGqlExecutionContext.create.mockReturnValue(
+    (GqlExecutionContext.create as jest.Mock).mockReturnValue(
       mockGqlContext as any,
     );
-
-    jest.spyOn(Object.getPrototypeOf(guard), 'canActivate').mockReturnValue(of(true));
   });
 
   afterEach(() => {
@@ -51,39 +49,27 @@ describe('GqlJwtAuthGuard', () => {
   });
 
   describe('canActivate', () => {
-    it('should return true if handler is public', () => {
-      jest
-        .spyOn(mockGqlContext, 'getHandler')
-        .mockReturnValue({ isPublic: true });
+    it('should return true if route is public', async () => {
+      (reflector.getAllAndOverride as jest.Mock).mockReturnValue(true);
+
+      const superSpy = jest.spyOn(Object.getPrototypeOf(guard), 'canActivate');
+      mockContext = {
+        getHandler: () => ({}) as Function,
+        getClass: () => ({}) as any,
+      } as any;
 
       const result = guard.canActivate(mockContext);
 
       expect(result).toBe(true);
-      expect(
-        Object.getPrototypeOf(guard).canActivate,
-      ).not.toHaveBeenCalled();
+      expect(superSpy).toHaveBeenCalled();
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(IS_PUBLIC_KEY, [
+        mockContext.getHandler?.(),
+        mockContext.getClass?.(),
+      ]);
     });
 
-    it('should return true if class is public', () => {
-      jest
-        .spyOn(mockGqlContext, 'getClass')
-        .mockReturnValue({ isPublic: true });
-
-      const result = guard.canActivate(mockContext);
-
-      expect(result).toBe(true);
-      expect(
-        Object.getPrototypeOf(guard).canActivate,
-      ).not.toHaveBeenCalled();
-    });
-
-    it('should call super.canActivate if not public', (done) => {
-      jest
-        .spyOn(mockGqlContext, 'getHandler')
-        .mockReturnValue({ isPublic: false });
-      jest
-        .spyOn(mockGqlContext, 'getClass')
-        .mockReturnValue({ isPublic: false });
+    it('should call super.canActivate if route is not public', (done) => {
+      (reflector.getAllAndOverride as jest.Mock).mockReturnValue(false);
 
       const superSpy = jest
         .spyOn(Object.getPrototypeOf(guard), 'canActivate')

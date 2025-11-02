@@ -1,9 +1,9 @@
-import { User } from "users/entities/user.entity";
+import { User } from 'users/entities/user.entity';
 
 export class UserBuilder {
   private readonly user: User;
 
-  constructor () {
+  constructor() {
     this.user = new User();
   }
 
@@ -44,13 +44,13 @@ export class UserBuilder {
   }
 
   build(): User {
-    if (!this.user.email) throw new Error("Email is required");
-    if (!this.user.username) throw new Error("Username is required");
+    if (!this.user.email) throw new Error('Email is required');
+    if (!this.user.username) throw new Error('Username is required');
 
     const hasPassword = !!this.user.password;
     const hasOAuth = !!this.user.oauthProvider && !!this.user.oauthId;
     if (!hasPassword && !hasOAuth) {
-      throw new Error("User must have either password or OAuth credentials");
+      throw new Error('User must have either password or OAuth credentials');
     }
 
     return this.user;

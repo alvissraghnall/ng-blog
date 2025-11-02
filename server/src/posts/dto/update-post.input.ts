@@ -3,8 +3,6 @@ import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 
 @InputType()
 export class UpdatePostInput extends PartialType(CreatePostInput) {
-  
-  @Field(() => Int, { description: "Post id to be updated." })
+  @Field(() => Int, { description: 'Post id to be updated.' })
   id: number;
-  
 }

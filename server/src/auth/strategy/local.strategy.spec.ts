@@ -55,7 +55,6 @@ describe('LocalStrategy', () => {
     });
 
     it('should return null or throw if validation fails (as per authService)', async () => {
-
       authService.validatePasswordUser.mockResolvedValue(null);
 
       const result = await strategy.validate('testuser', 'wrongpass');

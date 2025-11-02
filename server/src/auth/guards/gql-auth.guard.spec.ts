@@ -32,9 +32,7 @@ describe('GqlAuthGuard', () => {
         getArgs: () => ({ loginUserInput: mockLoginUserInput }),
       };
 
-      mockGqlExecutionContext.create.mockReturnValue(
-        mockContext as any,
-      );
+      mockGqlExecutionContext.create.mockReturnValue(mockContext as any);
 
       const result = guard.getRequest({} as ExecutionContext);
 

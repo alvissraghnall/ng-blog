@@ -1,14 +1,11 @@
-
-
 export interface JwtResponsePayload {
+  username: string;
 
-    username: string;
+  sub: string;
 
-    sub: string;
+  iat: number;
 
-    iat: number;
+  exp: number;
 
-    exp: number;
-
-    iss: string;
+  iss: string;
 }

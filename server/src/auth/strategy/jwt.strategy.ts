@@ -1,12 +1,12 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { PassportStrategy } from "@nestjs/passport";
-import { ExtractJwt, Strategy } from "passport-jwt";
-import { JwtKeyService } from "../jwt/jwt-key.service";
-import { JwtPayload } from "../jwt/jwt.payload";
-import { AuthService } from "../auth.service";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { JwtKeyService } from '../jwt/jwt-key.service';
+import { JwtPayload } from '../jwt/jwt.payload';
+import { AuthService } from '../auth.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private readonly jwtKeyService: JwtKeyService,
     private readonly authService: AuthService,
@@ -22,9 +22,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
         }
       },
       ignoreExpiration: false,
-      algorithms: ["RS256"],
-      issuer: "ng-blog",
-      audience: "ng-blog-app",
+      algorithms: ['RS256'],
+      issuer: 'ng-blog',
+      audience: 'ng-blog-app',
     });
   }
 

@@ -38,7 +38,7 @@ const mockGithubProfileData = {
   login: 'github-user',
   name: 'Github User',
   avatar_url: 'http://example.com/avatar.png',
-  email: null, 
+  email: null,
 };
 
 const mockGithubEmailsData = [
@@ -63,7 +63,6 @@ describe('GithubOAuthStrategy', () => {
   let authService: typeof mockAuthService;
 
   beforeEach(async () => {
-
     global.fetch = jest.fn();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -85,7 +84,6 @@ describe('GithubOAuthStrategy', () => {
   });
 
   afterEach(() => {
-
     global.fetch = originalFetch;
     jest.clearAllMocks();
   });
@@ -126,14 +124,18 @@ describe('GithubOAuthStrategy', () => {
       expect(mockFetch).toHaveBeenCalledWith(
         'https://api.github.com/user',
         expect.objectContaining({
-          headers: expect.objectContaining({ Authorization: `Bearer ${mockGithubToken.access_token}` }),
+          headers: expect.objectContaining({
+            Authorization: `Bearer ${mockGithubToken.access_token}`,
+          }),
         }),
       );
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://api.github.com/user/emails',
         expect.objectContaining({
-          headers: expect.objectContaining({ Authorization: `Bearer ${mockGithubToken.access_token}` }),
+          headers: expect.objectContaining({
+            Authorization: `Bearer ${mockGithubToken.access_token}`,
+          }),
         }),
       );
 
@@ -202,9 +204,10 @@ describe('GithubOAuthStrategy', () => {
   });
 
   describe('normalizeProfile', () => {
-
     it('should use primary verified email', () => {
-	  const normalizeProfile = (strategy as any).normalizeProfile.bind(strategy);
+      const normalizeProfile = (strategy as any).normalizeProfile.bind(
+        strategy,
+      );
       const profile = normalizeProfile({
         ...mockGithubProfileData,
         emails: [
@@ -217,7 +220,9 @@ describe('GithubOAuthStrategy', () => {
     });
 
     it('should use login for name if name is null', () => {
-	  const normalizeProfile = (strategy as any).normalizeProfile.bind(strategy);
+      const normalizeProfile = (strategy as any).normalizeProfile.bind(
+        strategy,
+      );
       const profile = normalizeProfile({
         ...mockGithubProfileData,
         name: null,
@@ -226,7 +231,9 @@ describe('GithubOAuthStrategy', () => {
     });
 
     it('should create a fallback email if no emails are found', () => {
-      const normalizeProfile = (strategy as any).normalizeProfile.bind(strategy);
+      const normalizeProfile = (strategy as any).normalizeProfile.bind(
+        strategy,
+      );
       const profile = normalizeProfile({
         ...mockGithubProfileData,
         emails: [],
@@ -237,7 +244,6 @@ describe('GithubOAuthStrategy', () => {
 
   describe('validate (from OAuthBaseStrategy)', () => {
     it('should call getUserProfile and validateOAuthLogin', async () => {
-
       jest
         .spyOn(strategy, 'getUserProfile')
         .mockResolvedValue(mockNormalizedProfile);

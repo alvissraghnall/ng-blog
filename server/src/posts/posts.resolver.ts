@@ -17,43 +17,49 @@ import { CurrentUser } from 'common/current-user.decorator';
 
 @Resolver(() => Post)
 export class PostsResolver {
-  constructor(
-    private readonly postsService: PostsService,
-    ) {}
+  constructor(private readonly postsService: PostsService) {}
 
   @Mutation(() => Post)
-  createPost(@Args('createPostInput') createPostInput: CreatePostInput, @CurrentUser() user: User) {
+  createPost(
+    @Args('createPostInput') createPostInput: CreatePostInput,
+    @CurrentUser() user: User,
+  ) {
     console.log(createPostInput.desc);
     console.log(user);
     return this.postsService.create(createPostInput, user as User);
   }
 
   @Mutation(() => Post)
-  async likePost (@Args('postId', { type: () => Int }) postId: number, @CurrentUser() currUser: User, @Context() ctx: any) {
-    console.log("Curr User: ", currUser);
-    console.log("ctx user: ", ctx.req.user);
+  async likePost(
+    @Args('postId', { type: () => Int }) postId: number,
+    @CurrentUser() currUser: User,
+    @Context() ctx: any,
+  ) {
+    console.log('Curr User: ', currUser);
+    console.log('ctx user: ', ctx.req.user);
     const user = ctx.req.user as User;
     const post = await this.postsService.findOne(postId);
-    
+
     let savedPost: Post;
-    console.log("User: ", user);
+    console.log('User: ', user);
 
-    if (!post) throw new NotFoundException("Post with ID: " + postId + " not found!");
+    if (!post)
+      throw new NotFoundException('Post with ID: ' + postId + ' not found!');
 
-    const likesIndex = post.likes.findIndex(like => like.id === user.id);
+    const likesIndex = post.likes.findIndex((like) => like.id === user.id);
     console.log(post.likes);
 
     if (likesIndex === -1) {
       // const newLike = new Like();
       // newLike.post = post;
       // newLike.owner = user;
-      // this.likesService.saveLike(newLike).then(r => {       
+      // this.likesService.saveLike(newLike).then(r => {
       // });
       post.likes.push(user);
-      console.log("Post likes post-append: ", post.likes);
+      console.log('Post likes post-append: ', post.likes);
     } else {
       post.likes.splice(likesIndex, 1)[0];
-      console.log("Post likes post-delete: ", post.likes);
+      console.log('Post likes post-delete: ', post.likes);
     }
     savedPost = await this.postsService.save(post);
 
@@ -62,12 +68,16 @@ export class PostsResolver {
   }
 
   @Public()
-  @Query(() => [Post], { name: 'posts', nullable: true, description: "Get posts by category, and/or author ID" })
+  @Query(() => [Post], {
+    name: 'posts',
+    nullable: true,
+    description: 'Get posts by category, and/or author ID',
+  })
   async find(
-    @Args("cat", { type: () => Category, nullable: true }) cat?: Category,
-    @Args("authorId", { type: () => String, nullable: true }) authorId?: string
-    ) {
-    return await this.postsService.find({cat, authorId});
+    @Args('cat', { type: () => Category, nullable: true }) cat?: Category,
+    @Args('authorId', { type: () => String, nullable: true }) authorId?: string,
+  ) {
+    return await this.postsService.find({ cat, authorId });
   }
 
   // @Public()
@@ -84,7 +94,10 @@ export class PostsResolver {
   }
 
   @Mutation(() => Post)
-  updatePost(@Args('updatePostInput') updatePostInput: UpdatePostInput, @CurrentUser() user: User) {
+  updatePost(
+    @Args('updatePostInput') updatePostInput: UpdatePostInput,
+    @CurrentUser() user: User,
+  ) {
     return this.postsService.update(updatePostInput, user);
   }
 

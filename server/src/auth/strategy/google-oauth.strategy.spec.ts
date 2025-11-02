@@ -35,7 +35,9 @@ const mockGoogleToken = {
 
 const mockGooglePeopleData = {
   resourceName: 'people/12345',
-  emailAddresses: [{ value: 'primary@google.com', metadata: { primary: true } }],
+  emailAddresses: [
+    { value: 'primary@google.com', metadata: { primary: true } },
+  ],
   names: [
     {
       displayName: 'Google User',
@@ -73,7 +75,6 @@ describe('GoogleOAuthStrategy', () => {
   let authService: typeof mockAuthService;
 
   beforeEach(async () => {
-
     global.fetch = jest.fn();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -95,7 +96,6 @@ describe('GoogleOAuthStrategy', () => {
   });
 
   afterEach(() => {
-
     global.fetch = originalFetch;
     jest.clearAllMocks();
   });
@@ -131,7 +131,10 @@ describe('GoogleOAuthStrategy', () => {
       expect(mockFetch).toHaveBeenCalledWith(
         'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
         expect.objectContaining({
-          headers: { Authorization: `Bearer ${mockGoogleToken.access_token}`, "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${mockGoogleToken.access_token}`,
+            'Content-Type': 'application/json',
+          },
         }),
       );
 
@@ -221,7 +224,7 @@ describe('GoogleOAuthStrategy', () => {
         new Response(null, { status: 401, statusText: 'Unauthorized' }),
       );
 
-	  mockFetch.mockResolvedValueOnce(
+      mockFetch.mockResolvedValueOnce(
         new Response(null, { status: 401, statusText: 'Unauthorized' }),
       );
 

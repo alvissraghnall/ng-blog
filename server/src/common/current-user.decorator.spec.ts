@@ -1,13 +1,16 @@
 import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { getCurrentUserFromContext, CurrentUser } from './current-user.decorator';
+import {
+  getCurrentUserFromContext,
+  CurrentUser,
+} from './current-user.decorator';
 import { User } from 'users/entities/user.entity';
 
 import { createParamDecorator } from '@nestjs/common';
 
 jest.mock('@nestjs/common', () => ({
-  ...jest.requireActual('@nestjs/common'), 
-  createParamDecorator: jest.fn(), 
+  ...jest.requireActual('@nestjs/common'),
+  createParamDecorator: jest.fn(),
 }));
 
 jest.mock('@nestjs/graphql', () => ({
@@ -20,7 +23,6 @@ const mockUser: User = {
   id: 'user-123',
   username: 'testuser',
   email: 'test@example.com',
-
 } as User;
 
 const mockGqlContext = {
@@ -31,8 +33,7 @@ const mockGqlContext = {
   }),
 };
 
-const mockGqlExecutionContextCreate =
-  GqlExecutionContext.create as jest.Mock;
+const mockGqlExecutionContextCreate = GqlExecutionContext.create as jest.Mock;
 mockGqlExecutionContextCreate.mockReturnValue(mockGqlContext);
 
 const mockExecutionContext = {} as ExecutionContext;
@@ -54,12 +55,10 @@ describe('CurrentUser Decorator', () => {
 
   describe('CurrentUser', () => {
     it('should call createParamDecorator with a factory function', () => {
-
       expect(createParamDecorator).toHaveBeenCalledWith(expect.any(Function));
     });
 
     it('should use getCurrentUserFromContext as the decorator factory', () => {
-
       const factory = (createParamDecorator as jest.Mock).mock.calls[0][0];
 
       const user = factory(null, mockExecutionContext);

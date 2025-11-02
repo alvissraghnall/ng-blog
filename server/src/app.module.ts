@@ -16,7 +16,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-      type: "postgres",
+      type: 'postgres',
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
       username: process.env.DB_USERNAME,
@@ -26,21 +26,20 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       // dropSchema: true,
       autoLoadEntities: true,
       // schema: "all"
-
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-	  graphiql: true,
-      
+      graphiql: true,
     }),
     UsersModule,
     PostsModule,
     AuthModule,
-    CloudinaryModule],
+    CloudinaryModule,
+  ],
   controllers: [],
   providers: [AppService, IsUniqueConstraint],
-  exports: [TypeOrmModule]
+  exports: [TypeOrmModule],
 })
 export class AppModule {}

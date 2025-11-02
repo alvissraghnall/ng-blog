@@ -5,7 +5,6 @@ import { User } from 'users/entities/user.entity';
 
 @InputType()
 export class CreatePostInput {
-
   @Field(() => String, { description: 'Blog post title' })
   @IsNotEmpty()
   title: string;
@@ -14,15 +13,15 @@ export class CreatePostInput {
   @IsNotEmpty()
   content: string;
 
-  @Field(() => String, { description: "Blog post image"})
+  @Field(() => String, { description: 'Blog post image' })
   @IsNotEmpty()
   image: string;
 
-  @Field(() => String, { description: "Blog post description"})
+  @Field(() => String, { description: 'Blog post description' })
   @IsNotEmpty()
   desc: string;
 
-  @Field(() => Category, { description: "Blog post content"})
+  @Field(() => Category, { description: 'Blog post content' })
   @IsEnum(Category)
   category: Category;
 

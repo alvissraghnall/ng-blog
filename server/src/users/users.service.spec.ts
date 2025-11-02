@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -43,12 +42,11 @@ const mockUser: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   isOAuthUser() {
-      return this.oauthId && this.oauthProvider
+    return this.oauthId && this.oauthProvider;
   },
   canUsePasswordAuth() {
-      return !!this.isOAuthUser()
+    return !!this.isOAuthUser();
   },
-
 };
 
 const mockUser2: User = {
@@ -63,10 +61,10 @@ const mockUser2: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   isOAuthUser() {
-      return this.oauthId && this.oauthProvider
+    return this.oauthId && this.oauthProvider;
   },
   canUsePasswordAuth() {
-      return !!this.isOAuthUser()
+    return !!this.isOAuthUser();
   },
 };
 
@@ -181,8 +179,8 @@ describe('UsersService', () => {
       const expectedUsername = 'oauthuser1';
 
       usersRepository.findOne
-        .mockResolvedValueOnce(mockUser) 
-        .mockResolvedValueOnce(null); 
+        .mockResolvedValueOnce(mockUser)
+        .mockResolvedValueOnce(null);
 
       usersRepository.save.mockResolvedValue({
         ...mockUser,
@@ -206,7 +204,7 @@ describe('UsersService', () => {
 
     it('should use email prefix as username if name is not provided', async () => {
       const profileWithoutName = { ...mockOAuthProfile, name: null };
-      const expectedUsername = 'oauth'; 
+      const expectedUsername = 'oauth';
 
       usersRepository.findOne.mockResolvedValue(null);
       usersRepository.save.mockResolvedValue({} as User);
@@ -227,7 +225,7 @@ describe('UsersService', () => {
         name: null,
         email: null,
       };
-      const expectedUsername = 'useroauth12'; 
+      const expectedUsername = 'useroauth12';
 
       usersRepository.findOne.mockResolvedValue(null);
       usersRepository.save.mockResolvedValue({} as User);
@@ -277,7 +275,9 @@ describe('UsersService', () => {
     it('should find a user by ID', async () => {
       usersRepository.findOneBy.mockResolvedValue(mockUser);
       const result = await service.findOne(mockUser.id);
-      expect(usersRepository.findOneBy).toHaveBeenCalledWith({ id: mockUser.id });
+      expect(usersRepository.findOneBy).toHaveBeenCalledWith({
+        id: mockUser.id,
+      });
       expect(result).toEqual(mockUser);
     });
   });
@@ -294,15 +294,17 @@ describe('UsersService', () => {
 
   describe('remove', () => {
     it('should return a string indicating removal', async () => {
-      const result = await service.remove("1");
+      const result = await service.remove('1');
       expect(result).toEqual('This action removes a #1 user');
-
     });
   });
 
   describe('update', () => {
     it('should save and return the updated user', async () => {
-      const updateInput: UpdateUserInput = { id: mockUser.id, username: 'newusername' };
+      const updateInput: UpdateUserInput = {
+        id: mockUser.id,
+        username: 'newusername',
+      };
       const updatedUser = { ...mockUser, ...updateInput };
 
       usersRepository.save.mockResolvedValue(updatedUser);
@@ -367,7 +369,12 @@ describe('UsersService', () => {
 
   describe('getByPayload', () => {
     it('should find a user by JWT payload (sub)', async () => {
-      const payload: JwtPayload = { sub: mockUser.id, username: mockUser.username, email: mockUser.email, isOAuth: mockUser.isOAuthUser() };
+      const payload: JwtPayload = {
+        sub: mockUser.id,
+        username: mockUser.username,
+        email: mockUser.email,
+        isOAuth: mockUser.isOAuthUser(),
+      };
       usersRepository.findOne.mockResolvedValue(mockUser);
 
       const result = await service.getByPayload(payload);
@@ -380,8 +387,8 @@ describe('UsersService', () => {
 
   describe('follow', () => {
     it('should allow a user to follow another user', async () => {
-      usersRepository.findOne.mockResolvedValue(mockUser2); 
-      userFollowRepository.findOne.mockResolvedValue(null); 
+      usersRepository.findOne.mockResolvedValue(mockUser2);
+      userFollowRepository.findOne.mockResolvedValue(null);
       userFollowRepository.create.mockReturnValue(mockUserFollow);
       userFollowRepository.save.mockResolvedValue(mockUserFollow);
 
@@ -411,15 +418,15 @@ describe('UsersService', () => {
     });
 
     it('should throw UserNotFoundException if the user to follow does not exist', async () => {
-      usersRepository.findOne.mockResolvedValue(null); 
+      usersRepository.findOne.mockResolvedValue(null);
       await expect(service.follow(mockUser, 'non-existent-id')).rejects.toThrow(
         UserNotFoundException,
       );
     });
 
     it('should return the existing follow relationship if user is already following', async () => {
-      usersRepository.findOne.mockResolvedValue(mockUser2); 
-      userFollowRepository.findOne.mockResolvedValue(mockUserFollow); 
+      usersRepository.findOne.mockResolvedValue(mockUser2);
+      userFollowRepository.findOne.mockResolvedValue(mockUserFollow);
 
       const result = await service.follow(mockUser, mockUser2.id);
 
@@ -445,7 +452,12 @@ describe('UsersService', () => {
   describe('getFollowers', () => {
     it('should return a list of followers for a user', async () => {
       const follows = [
-        { follower: mockUser2, following: mockUser, id: 1, createdAt: new Date() },
+        {
+          follower: mockUser2,
+          following: mockUser,
+          id: 1,
+          createdAt: new Date(),
+        },
       ];
       userFollowRepository.find.mockResolvedValue(follows);
 
@@ -462,7 +474,12 @@ describe('UsersService', () => {
   describe('getFollowing', () => {
     it('should return a list of users a user is following', async () => {
       const follows = [
-        { follower: mockUser, following: mockUser2, id: 1, createdAt: new Date() },
+        {
+          follower: mockUser,
+          following: mockUser2,
+          id: 1,
+          createdAt: new Date(),
+        },
       ];
       userFollowRepository.find.mockResolvedValue(follows);
 

@@ -12,28 +12,42 @@ export class CommentsResolver {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Mutation(() => Comment)
-  createComment(@Args('createCommentInput') createCommentInput: CreateCommentInput, @Context() context: any) {
-    return this.commentsService.create(createCommentInput, context.req.user as User);
+  createComment(
+    @Args('createCommentInput') createCommentInput: CreateCommentInput,
+    @Context() context: any,
+  ) {
+    return this.commentsService.create(
+      createCommentInput,
+      context.req.user as User,
+    );
   }
 
   @Mutation(() => Comment)
-  async likeComment (@Args('commentId', { type: () => Int }) commentId: number, @CurrentUser() currUser: User) {
-    console.log("Curr User: ", currUser);
+  async likeComment(
+    @Args('commentId', { type: () => Int }) commentId: number,
+    @CurrentUser() currUser: User,
+  ) {
+    console.log('Curr User: ', currUser);
     const comment = await this.commentsService.findOne(commentId);
-    
+
     let savedComment: Comment;
 
-    if (!comment) throw new NotFoundException("Comment with ID: " + commentId + " not found!");
+    if (!comment)
+      throw new NotFoundException(
+        'Comment with ID: ' + commentId + ' not found!',
+      );
 
-    const likesIndex = comment.likes.findIndex(like => like.id === currUser.id);
+    const likesIndex = comment.likes.findIndex(
+      (like) => like.id === currUser.id,
+    );
     console.log(comment.likes);
 
     if (likesIndex === -1) {
       comment.likes.push(currUser);
-      console.log("Comment likes post-append: ", comment.likes);
+      console.log('Comment likes post-append: ', comment.likes);
     } else {
       comment.likes.splice(likesIndex, 1)[0];
-      console.log("Comment likes post-delete: ", comment.likes);
+      console.log('Comment likes post-delete: ', comment.likes);
     }
     savedComment = await this.commentsService.add(comment);
 
@@ -42,7 +56,7 @@ export class CommentsResolver {
   }
 
   @Query(() => [Comment], { name: 'comments' })
-  getCommentsOnPost(@Args("postId", {type: () => Int}) postId: number ) {
+  getCommentsOnPost(@Args('postId', { type: () => Int }) postId: number) {
     return this.commentsService.findAllOnPost(postId);
   }
 
@@ -52,7 +66,9 @@ export class CommentsResolver {
   }
 
   @Mutation(() => Comment)
-  updateComment(@Args('updateCommentInput') updateCommentInput: UpdateCommentInput) {
+  updateComment(
+    @Args('updateCommentInput') updateCommentInput: UpdateCommentInput,
+  ) {
     return this.commentsService.update(updateCommentInput);
   }
 

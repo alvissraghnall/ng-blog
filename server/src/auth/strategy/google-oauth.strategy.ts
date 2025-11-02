@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../auth.service';
 import { OAuthBaseStrategy } from './oauth-base.strategy';
@@ -30,25 +34,31 @@ export class GoogleOAuthStrategy extends OAuthBaseStrategy {
   async authenticate(code: string, redirectUri?: string): Promise<any> {
     try {
       const accessToken = await this.exchangeCodeForToken(code, redirectUri);
-      
+
       const profile = await this.getUserProfile(accessToken);
-      
+
       const user = await this.authService.validateOAuthLogin(profile);
-      
+
       return user;
     } catch (error) {
-      throw new InternalServerErrorException(`Google OAuth authentication failed: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Google OAuth authentication failed: ${error.message}`,
+      );
     }
   }
 
-  private async exchangeCodeForToken(code: string, redirectUri?: string): Promise<string> {
+  private async exchangeCodeForToken(
+    code: string,
+    redirectUri?: string,
+  ): Promise<string> {
     const tokenUrl = 'https://oauth2.googleapis.com/token';
     const params = new URLSearchParams({
       client_id: this.configService.get<string>('GOOGLE_CLIENT_ID'),
       client_secret: this.configService.get<string>('GOOGLE_CLIENT_SECRET'),
       code: code,
       grant_type: 'authorization_code',
-      redirect_uri: redirectUri || this.configService.get<string>('GOOGLE_CALLBACK_URL'),
+      redirect_uri:
+        redirectUri || this.configService.get<string>('GOOGLE_CALLBACK_URL'),
     });
 
     try {
@@ -62,7 +72,9 @@ export class GoogleOAuthStrategy extends OAuthBaseStrategy {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new BadRequestException(`Google token exchange failed: ${errorData.error_description || errorData.error}`);
+        throw new BadRequestException(
+          `Google token exchange failed: ${errorData.error_description || errorData.error}`,
+        );
       }
 
       const tokenData = await response.json();
@@ -71,18 +83,23 @@ export class GoogleOAuthStrategy extends OAuthBaseStrategy {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to exchange code for access token');
+      throw new InternalServerErrorException(
+        'Failed to exchange code for access token',
+      );
     }
   }
 
   async getUserProfile(accessToken: string): Promise<OAuthProfile> {
     try {
-      const peopleResponse = await fetch('https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos', {
-        headers: { 
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
+      const peopleResponse = await fetch(
+        'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
 
       if (!peopleResponse.ok) {
         return await this.getBasicProfile(accessToken);
@@ -96,24 +113,34 @@ export class GoogleOAuthStrategy extends OAuthBaseStrategy {
   }
 
   private async getBasicProfile(accessToken: string): Promise<OAuthProfile> {
-    const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: { 
-        Authorization: `Bearer ${accessToken}`,
+    const response = await fetch(
+      'https://www.googleapis.com/oauth2/v2/userinfo',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       },
-    });
+    );
 
-	if (!response || !response.ok) {
-  	  throw new BadRequestException('Failed to fetch Google user profile');
-	}
+    if (!response || !response.ok) {
+      throw new BadRequestException('Failed to fetch Google user profile');
+    }
 
     const userInfo = await response.json();
     return this.normalizeBasicProfile(userInfo);
   }
 
   protected normalizeProfile(googleProfile: any): OAuthProfile {
-    const primaryEmail = googleProfile.emailAddresses?.find((email: any) => email.metadata?.primary) || googleProfile.emailAddresses?.[0];
-    const primaryName = googleProfile.names?.find((name: any) => name.metadata?.primary) || googleProfile.names?.[0];
-    const primaryPhoto = googleProfile.photos?.find((photo: any) => photo.metadata?.primary) || googleProfile.photos?.[0];
+    const primaryEmail =
+      googleProfile.emailAddresses?.find(
+        (email: any) => email.metadata?.primary,
+      ) || googleProfile.emailAddresses?.[0];
+    const primaryName =
+      googleProfile.names?.find((name: any) => name.metadata?.primary) ||
+      googleProfile.names?.[0];
+    const primaryPhoto =
+      googleProfile.photos?.find((photo: any) => photo.metadata?.primary) ||
+      googleProfile.photos?.[0];
 
     return {
       id: googleProfile.resourceName?.replace('people/', '') || '',

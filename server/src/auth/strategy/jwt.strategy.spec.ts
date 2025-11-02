@@ -32,7 +32,6 @@ describe('JwtStrategy', () => {
   let jwtKeyService: typeof mockJwtKeyService;
 
   beforeEach(async () => {
-
     mockJwtKeyService.getPubKey.mockResolvedValue('mock-public-key');
 
     const module: TestingModule = await Test.createTestingModule({
@@ -68,7 +67,9 @@ describe('JwtStrategy', () => {
 
       const result = await strategy.validate(mockPayload);
 
-      expect(authService.validateUserByPayload).toHaveBeenCalledWith(mockPayload);
+      expect(authService.validateUserByPayload).toHaveBeenCalledWith(
+        mockPayload,
+      );
       expect(result).toEqual(mockUser);
     });
 
@@ -84,14 +85,14 @@ describe('JwtStrategy', () => {
     });
 
     it('should throw UnauthorizedException if authService throws', async () => {
-      authService.validateUserByPayload.mockRejectedValue(new Error('DB error'));
+      authService.validateUserByPayload.mockRejectedValue(
+        new Error('DB error'),
+      );
 
       await expect(strategy.validate(mockPayload)).rejects.toThrow(
         UnauthorizedException,
       );
-      await expect(strategy.validate(mockPayload)).rejects.toThrow(
-        'DB error',
-      );
+      await expect(strategy.validate(mockPayload)).rejects.toThrow('DB error');
     });
   });
 });

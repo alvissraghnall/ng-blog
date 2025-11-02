@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../auth.service';
 import { OAuthBaseStrategy } from './oauth-base.strategy';
@@ -30,24 +34,30 @@ export class GithubOAuthStrategy extends OAuthBaseStrategy {
   async authenticate(code: string, redirectUri?: string): Promise<any> {
     try {
       const accessToken = await this.exchangeCodeForToken(code, redirectUri);
-      
+
       const profile = await this.getUserProfile(accessToken);
-      
+
       const user = await this.authService.validateOAuthLogin(profile);
-      
+
       return user;
     } catch (error) {
-      throw new InternalServerErrorException(`GitHub OAuth authentication failed: ${error.message}`);
+      throw new InternalServerErrorException(
+        `GitHub OAuth authentication failed: ${error.message}`,
+      );
     }
   }
 
-  private async exchangeCodeForToken(code: string, redirectUri?: string): Promise<string> {
+  private async exchangeCodeForToken(
+    code: string,
+    redirectUri?: string,
+  ): Promise<string> {
     const tokenUrl = 'https://github.com/login/oauth/access_token';
     const params = new URLSearchParams({
       client_id: this.configService.get<string>('GITHUB_CLIENT_ID'),
       client_secret: this.configService.get<string>('GITHUB_CLIENT_SECRET'),
       code: code,
-      redirect_uri: redirectUri || this.configService.get<string>('GITHUB_CALLBACK_URL'),
+      redirect_uri:
+        redirectUri || this.configService.get<string>('GITHUB_CALLBACK_URL'),
     });
 
     try {
@@ -55,7 +65,7 @@ export class GithubOAuthStrategy extends OAuthBaseStrategy {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: params.toString(),
       });
@@ -65,9 +75,11 @@ export class GithubOAuthStrategy extends OAuthBaseStrategy {
       }
 
       const tokenData = await response.json();
-      
+
       if (tokenData.error) {
-        throw new BadRequestException(`GitHub OAuth error: ${tokenData.error_description || tokenData.error}`);
+        throw new BadRequestException(
+          `GitHub OAuth error: ${tokenData.error_description || tokenData.error}`,
+        );
       }
 
       return tokenData.access_token;
@@ -75,17 +87,19 @@ export class GithubOAuthStrategy extends OAuthBaseStrategy {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to exchange code for access token');
+      throw new InternalServerErrorException(
+        'Failed to exchange code for access token',
+      );
     }
   }
 
   async getUserProfile(accessToken: string): Promise<OAuthProfile> {
     try {
       const userResponse = await fetch('https://api.github.com/user', {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'NgBlog-App', 
+          Accept: 'application/vnd.github.v3+json',
+          'User-Agent': 'NgBlog-App',
         },
       });
 
@@ -96,9 +110,9 @@ export class GithubOAuthStrategy extends OAuthBaseStrategy {
       const userData = await userResponse.json();
 
       const emailsResponse = await fetch('https://api.github.com/user/emails', {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Accept': 'application/vnd.github.v3+json',
+          Accept: 'application/vnd.github.v3+json',
           'User-Agent': 'NgBlog-App',
         },
       });
@@ -113,20 +127,25 @@ export class GithubOAuthStrategy extends OAuthBaseStrategy {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to fetch GitHub user profile');
+      throw new InternalServerErrorException(
+        'Failed to fetch GitHub user profile',
+      );
     }
   }
 
   protected normalizeProfile(githubProfile: any): OAuthProfile {
-    const primaryEmail = githubProfile.emails?.find((email: any) => email.primary && email.verified) || 
-                        githubProfile.emails?.find((email: any) => email.primary) || 
-                        githubProfile.emails?.find((email: any) => email.verified) || 
-                        githubProfile.emails?.[0];
+    const primaryEmail =
+      githubProfile.emails?.find(
+        (email: any) => email.primary && email.verified,
+      ) ||
+      githubProfile.emails?.find((email: any) => email.primary) ||
+      githubProfile.emails?.find((email: any) => email.verified) ||
+      githubProfile.emails?.[0];
 
     // Split name if available, otherwise use login as fallback
     let firstName = '';
     let lastName = '';
-    
+
     if (githubProfile.name) {
       const nameParts = githubProfile.name.split(' ');
       firstName = nameParts[0] || '';
@@ -135,7 +154,10 @@ export class GithubOAuthStrategy extends OAuthBaseStrategy {
 
     return {
       id: githubProfile.id.toString(),
-      email: primaryEmail?.email || githubProfile.email || `${githubProfile.id}+${this.providerName}@users.noreply.github.com`,
+      email:
+        primaryEmail?.email ||
+        githubProfile.email ||
+        `${githubProfile.id}+${this.providerName}@users.noreply.github.com`,
       name: githubProfile.name || githubProfile.login,
       firstName: firstName,
       lastName: lastName,

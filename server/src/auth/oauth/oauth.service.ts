@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotImplementedException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotImplementedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '../../users/entities/user.entity';
 import { AuthService } from '../auth.service';
@@ -33,7 +37,9 @@ export class OAuthService {
 
     const params = new URLSearchParams({
       client_id: this.configService.get(`${provider.toUpperCase()}_CLIENT_ID`),
-      redirect_uri: this.configService.get(`${provider.toUpperCase()}_CALLBACK_URL`),
+      redirect_uri: this.configService.get(
+        `${provider.toUpperCase()}_CALLBACK_URL`,
+      ),
       response_type: 'code',
       scope: scopes[provider],
       ...(provider === 'google' && {
@@ -48,19 +54,27 @@ export class OAuthService {
   async authenticate(oauthInput: OAuthInput): Promise<User> {
     switch (oauthInput.provider) {
       case 'google':
-        return this.googleStrategy.authenticate(oauthInput.code, oauthInput.redirectUri);
-      
+        return this.googleStrategy.authenticate(
+          oauthInput.code,
+          oauthInput.redirectUri,
+        );
+
       case 'github':
-        return this.githubStrategy.authenticate(oauthInput.code, oauthInput.redirectUri);
-      
+        return this.githubStrategy.authenticate(
+          oauthInput.code,
+          oauthInput.redirectUri,
+        );
+
       case 'facebook':
         throw new NotImplementedException('Facebook OAuth not implemented yet');
-      
+
       case 'apple':
         throw new NotImplementedException('Apple OAuth not implemented yet');
-      
+
       default:
-        throw new BadRequestException(`Unsupported provider: ${oauthInput.provider}`);
+        throw new BadRequestException(
+          `Unsupported provider: ${oauthInput.provider}`,
+        );
     }
   }
 }

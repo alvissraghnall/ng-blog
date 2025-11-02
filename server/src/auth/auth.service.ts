@@ -1,14 +1,14 @@
-import { 
-  ConflictException, 
-  BadRequestException, 
-  NotFoundException, 
+import {
+  ConflictException,
+  BadRequestException,
+  NotFoundException,
   Injectable,
   Logger,
-  UnauthorizedException 
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { HashService } from './hash/hash.service';
-import { JwtService } from "@nestjs/jwt";
+import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/entities/user.entity';
 import { JwtKeyService } from './jwt/jwt-key.service';
 import { CreateUserInput } from '../users/dto/create-user.input';
@@ -31,19 +31,22 @@ export class AuthService {
       username: user.username,
       sub: user.id,
       email: user.email,
-      isOAuth: user.isOAuthUser()
+      isOAuth: user.isOAuthUser(),
     };
 
     return {
       access_token: this.jwtService.sign(payload, {
-        algorithm: "RS256",
+        algorithm: 'RS256',
         privateKey: await this.jwtKeyService.getPrivKey(),
       }),
-      user
+      user,
     };
   }
 
-  async validatePasswordUser(username: string, password: string): Promise<User> {
+  async validatePasswordUser(
+    username: string,
+    password: string,
+  ): Promise<User> {
     const user = await this.usersService.findOneByUsername(username);
 
     if (!user) {
@@ -54,24 +57,28 @@ export class AuthService {
       throw new UnauthorizedException('Please use OAuth to sign in');
     }
 
-    if (!await this.hashService.comparePassword(password, user.password)) {
-      throw new BadRequestException("Invalid password!");
+    if (!(await this.hashService.comparePassword(password, user.password))) {
+      throw new BadRequestException('Invalid password!');
     }
 
     return user;
   }
 
   async createPasswordUser(createUserInput: CreateUserInput): Promise<User> {
-    const existingUser = await this.usersService.findOneByUsername(createUserInput.username);
+    const existingUser = await this.usersService.findOneByUsername(
+      createUserInput.username,
+    );
 
     if (existingUser) {
-      throw new ConflictException("User already exists!");
+      throw new ConflictException('User already exists!');
     }
 
     if (createUserInput.email) {
-      const existingEmail = await this.usersService.findOneByEmail(createUserInput.email);
+      const existingEmail = await this.usersService.findOneByEmail(
+        createUserInput.email,
+      );
       if (existingEmail) {
-        throw new ConflictException("Email already registered!");
+        throw new ConflictException('Email already registered!');
       }
     }
 
@@ -80,29 +87,39 @@ export class AuthService {
 
   async validateOAuthLogin(profile: OAuthProfile): Promise<User> {
     try {
-
-      let user = await this.usersService.findByProviderId(profile.id, profile.provider);
+      let user = await this.usersService.findByProviderId(
+        profile.id,
+        profile.provider,
+      );
 
       if (!user && profile.email) {
-
         user = await this.usersService.findOneByEmail(profile.email);
 
         if (user && !user.isOAuthUser()) {
-
-          user = await this.usersService.linkOAuthProvider(user.id, profile.provider, profile.id);
-          this.logger.log(`Linked existing user ${user.id} with ${profile.provider}`);
+          user = await this.usersService.linkOAuthProvider(
+            user.id,
+            profile.provider,
+            profile.id,
+          );
+          this.logger.log(
+            `Linked existing user ${user.id} with ${profile.provider}`,
+          );
         }
       }
 
       if (!user) {
-
         user = await this.usersService.createOAuthUser(profile);
-        this.logger.log(`Created new OAuth user for ${profile.provider}: ${profile.email}`);
+        this.logger.log(
+          `Created new OAuth user for ${profile.provider}: ${profile.email}`,
+        );
       }
 
       return user;
     } catch (error) {
-      this.logger.error(`OAuth validation failed for ${profile.provider}:`, error);
+      this.logger.error(
+        `OAuth validation failed for ${profile.provider}:`,
+        error,
+      );
       throw new BadRequestException(`OAuth login failed: ${error.message}`);
     }
   }

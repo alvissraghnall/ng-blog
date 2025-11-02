@@ -29,6 +29,7 @@
     "@nestjs/core": "^11.1.8",
     "@nestjs/graphql": "^13.2.0",
     "@nestjs/jwt": "^11.0.1",
+    "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.8",
     "@nestjs/typeorm": "^11.0.0",
@@ -87,7 +88,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -97,11 +98,13 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-
-	"moduleNameMapper": {
-	  "^common/(.*)$": "<rootDir>/common/$1",
-	  "^auth/(.*)$": "<rootDir>/auth/$1",
-	  "^users/(.*)$": "<rootDir>/users/$1"
-	}
+    "moduleNameMapper": {
+      "^common/(.*)$": "<rootDir>/src/common/$1",
+      "^auth/(.*)$": "<rootDir>/src/auth/$1",
+      "^users/(.*)$": "<rootDir>/src/users/$1"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
+    ]
   }
 }

@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -16,16 +20,19 @@ export class UsersService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
     private readonly hashService: HashService,
-	@InjectRepository(UserFollow) private readonly userFollowRepository: Repository<UserFollow>,
+    @InjectRepository(UserFollow)
+    private readonly userFollowRepository: Repository<UserFollow>,
   ) {}
 
   async create(createUserInput: CreateUserInput): Promise<User> {
-    const hashedPassword = await this.hashService.hashPassword(createUserInput.password);
+    const hashedPassword = await this.hashService.hashPassword(
+      createUserInput.password,
+    );
 
     const user = this.usersRepository.create({
       ...createUserInput,
       password: hashedPassword,
-      emailVerified: false, 
+      emailVerified: false,
     });
 
     return this.usersRepository.save(user);
@@ -35,20 +42,24 @@ export class UsersService {
     const username = await this.generateUniqueUsername(profile);
 
     const user = new User();
-	  Object.assign(user, {
+    Object.assign(user, {
       username,
       email: profile.email,
       avatar: profile.picture,
       oauthProvider: profile.provider,
       oauthId: profile.id,
-      password: null, 
-      emailVerified: true, 
+      password: null,
+      emailVerified: true,
     });
 
     return this.usersRepository.save(user);
   }
 
-  async linkOAuthProvider(userId: string, provider: string, providerId: string): Promise<User> {
+  async linkOAuthProvider(
+    userId: string,
+    provider: string,
+    providerId: string,
+  ): Promise<User> {
     await this.usersRepository.update(userId, {
       oauthProvider: provider,
       oauthId: providerId,
@@ -75,31 +86,36 @@ export class UsersService {
   }
 
   async findOneByUsername(username: string): Promise<User | null> {
-    return this.usersRepository.findOne({ 
+    return this.usersRepository.findOne({
       where: { username },
     });
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({ 
+    return this.usersRepository.findOne({
       where: { email },
     });
   }
 
-  async findOneByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
+  async findOneByUsernameOrEmail(
+    usernameOrEmail: string,
+  ): Promise<User | null> {
     return this.usersRepository.findOne({
-      where: [ { username: usernameOrEmail }, { email: usernameOrEmail } ]
+      where: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
     });
   }
 
-  async findByProviderId(providerId: string, provider: string): Promise<User | null> {
-    return this.usersRepository.findOne({ 
+  async findByProviderId(
+    providerId: string,
+    provider: string,
+  ): Promise<User | null> {
+    return this.usersRepository.findOne({
       where: { oauthId: providerId, oauthProvider: provider },
     });
   }
 
   async getByPayload(payload: JwtPayload): Promise<User> {
-    return this.usersRepository.findOne({ 
+    return this.usersRepository.findOne({
       where: { id: payload.sub },
     });
   }
@@ -123,36 +139,38 @@ export class UsersService {
   */
 
   private async generateUniqueUsername(profile: OAuthProfile): Promise<string> {
-  const rawBase =
-    profile.name?.trim().replace(/\s+/g, '').toLowerCase() ||
-    profile.email?.split('@')[0]?.toLowerCase() ||
-    `user${profile.id.slice(0, 8)}`;
+    const rawBase =
+      profile.name?.trim().replace(/\s+/g, '').toLowerCase() ||
+      profile.email?.split('@')[0]?.toLowerCase() ||
+      `user${profile.id.slice(0, 8)}`;
 
-  const baseUsername = rawBase.replace(/[^a-z0-9_]/g, '') || 'user';
+    const baseUsername = rawBase.replace(/[^a-z0-9_]/g, '') || 'user';
 
-  let username = baseUsername;
-  let counter = 1;
-  const MAX_ATTEMPTS = 20;
+    let username = baseUsername;
+    let counter = 1;
+    const MAX_ATTEMPTS = 20;
 
-  while (await this.findOneByUsername(username)) {
-    if (counter > MAX_ATTEMPTS) {
-      const randomSuffix = Math.random().toString(36).slice(2, 6);
-      username = `${baseUsername}_${randomSuffix}`;
-      break;
+    while (await this.findOneByUsername(username)) {
+      if (counter > MAX_ATTEMPTS) {
+        const randomSuffix = Math.random().toString(36).slice(2, 6);
+        username = `${baseUsername}_${randomSuffix}`;
+        break;
+      }
+
+      username = `${baseUsername}${counter}`;
+      counter++;
     }
 
-    username = `${baseUsername}${counter}`;
-    counter++;
+    return username;
   }
-
-  return username;
-}
 
   async follow(currUser: User, followUserId: string) {
     if (currUser.id === followUserId)
       throw new BadRequestException('You cannot follow yourself.');
 
-    const userToFollow = await this.usersRepository.findOne({ where: { id: followUserId } });
+    const userToFollow = await this.usersRepository.findOne({
+      where: { id: followUserId },
+    });
     if (!userToFollow) throw new UserNotFoundException(followUserId);
 
     const existing = await this.userFollowRepository.findOne({
@@ -186,7 +204,7 @@ export class UsersService {
       where: { following: { id: userId } },
       relations: ['follower'],
     });
-    return follows.map(f => f.follower);
+    return follows.map((f) => f.follower);
   }
 
   async getFollowing(userId: string): Promise<User[]> {
@@ -194,6 +212,6 @@ export class UsersService {
       where: { follower: { id: userId } },
       relations: ['following'],
     });
-    return follows.map(f => f.following);
+    return follows.map((f) => f.following);
   }
 }
