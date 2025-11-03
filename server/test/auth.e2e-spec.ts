@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import request, { SuperTestStatic } from 'supertest';
+import {
+  INestApplication,
+  ValidationPipe,
+  BadRequestException,
+} from '@nestjs/common';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { AuthService } from '../src/auth/auth.service';
 import { UsersService } from '../src/users/users.service';
@@ -10,10 +14,27 @@ import { HashService } from '../src/auth/hash/hash.service';
 import { User } from '../src/users/entities/user.entity';
 import * as crypto from 'crypto';
 import { CreateUserInput } from 'users/dto/create-user.input';
-import TestAgent from 'supertest/lib/agent';
+import { IsUniqueConstraint } from 'common/is-unique';
+import { DataSource } from 'typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { useContainer } from 'class-validator';
+import { APP_FILTER } from '@nestjs/core';
+import { GraphQLExceptionFilter } from 'common/filters/graphql-exception.filter';
+import { SharedJwtModule } from 'common/shared-jwt.module';
+import { AuthModule } from 'auth/auth.module';
+import { UsersModule } from 'users/users.module';
+import { HashModule } from 'auth/hash/hash.module';
+import { JwtKeyModule } from 'auth/jwt/jwt-key.module';
+import { ConfigModule } from '@nestjs/config';
+import { CommonModule } from 'common/common.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
+import { GraphQLFormattedError } from 'graphql';
+import util from 'util';
 
 const mockUser: User = {
-  id: 'user-id-123',
+  id: crypto.randomUUID(),
   username: 'testuser',
   email: 'test@example.com',
   password: 'hashedpassword',
@@ -22,7 +43,7 @@ const mockUser: User = {
 } as unknown as User;
 
 const mockOAuthUser: User = {
-  id: 'user-id-456',
+  id: crypto.randomUUID(),
   username: 'oauthuser',
   email: 'oauth@example.com',
   password: null,
@@ -65,13 +86,54 @@ const mockOAuthService = {
 describe('AuthResolver (e2e)', () => {
   let app: INestApplication;
   let httpServer: any;
-  let jwtToken: string; 
+  let jwtToken: string;
 
   let gqlRequest: (query: string, variables?: object) => request.Test;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          // envFilePath: '.env.test',
+        }),
+        AuthModule,
+        UsersModule,
+        HashModule,
+        CommonModule,
+        JwtKeyModule,
+        SharedJwtModule,
+
+        TypeOrmModule.forRoot({
+          type: 'postgres',
+          host: 'localhost',
+          port: 5432,
+          username: 'postgres',
+          password: '',
+          database: 'postgres',
+          synchronize: true,
+          dropSchema: true,
+          autoLoadEntities: true,
+        }),
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          driver: ApolloDriver,
+          autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+          sortSchema: true,
+          graphiql: true,
+          formatError: (
+            formattedError: GraphQLFormattedError,
+            error: unknown,
+          ) => {
+            return formattedError;
+          },
+        }),
+      ],
+      providers: [
+        {
+          provide: APP_FILTER,
+          useClass: GraphQLExceptionFilter,
+        },
+      ],
     })
       .overrideProvider(UsersService)
       .useValue(mockUsersService)
@@ -84,26 +146,56 @@ describe('AuthResolver (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe()); 
+    app.useGlobalPipes(
+      new ValidationPipe({
+        forbidUnknownValues: true,
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        exceptionFactory: (errors) => {
+          const detailed = errors.map((error) => ({
+            property: error.property,
+            constraints: error.constraints,
+            children: error.children,
+          }));
+
+          const messages = errors.flatMap((e) =>
+            Object.values(e.constraints || {}),
+          );
+
+          // If there are any constraint messages, prefer ~~
+          if (messages.length > 0) {
+            return new BadRequestException(messages.join(', '));
+          }
+
+          // Otherwise fall back to detailed structure (like nested validation)
+          return new BadRequestException({
+            message: 'Validation failed',
+            errors: detailed,
+          });
+        },
+      }),
+    );
+
+    useContainer(app.select(AuthModule), { fallbackOnErrors: true });
+
     await app.init();
     httpServer = app.getHttpServer();
 
     gqlRequest = (query: string, variables?: object) => {
-        return request(httpServer).post('/graphql').send({ query, variables });
-      };
-    
+      return request(httpServer).post('/graphql').send({ query, variables });
+    };
 
     const authService = moduleFixture.get<AuthService>(AuthService);
     const loginData = await authService.login(mockUser);
     jwtToken = loginData.access_token;
-  });
+  }, 15000);
 
   afterAll(async () => {
     await app.close();
   });
 
   beforeEach(() => {
-
     jest.clearAllMocks();
   });
 
@@ -172,6 +264,7 @@ describe('AuthResolver (e2e)', () => {
         input: { ...createUserInput, confirmPassword: 'wrongpassword' },
       }).expect(200);
 
+      console.log(body);
       expect(body.data).toBeNull();
       expect(body.errors[0].message).toContain(
         'password and confirmPassword does not match!',
@@ -183,6 +276,7 @@ describe('AuthResolver (e2e)', () => {
         input: { ...createUserInput, password: '123', confirmPassword: '123' },
       }).expect(200);
 
+      console.log(body);
       expect(body.data).toBeNull();
       expect(body.errors[0].message).toContain(
         'password must be longer than or equal to 8 characters',
@@ -289,7 +383,11 @@ describe('AuthResolver (e2e)', () => {
         }
       }
     `;
-    const oauthInput = { provider: 'google', code: 'test-code-123' };
+    const oauthInput = {
+      provider: 'google',
+      code: 'test-code-123',
+      redirectUri: 'http://localhost:4200/oauth/callback',
+    };
 
     it('should authenticate via OAuth and return token', async () => {
       mockOAuthService.authenticate.mockResolvedValue(mockOAuthUser);
@@ -312,13 +410,14 @@ describe('AuthResolver (e2e)', () => {
         input: oauthInput,
       }).expect(200);
 
+      util.inspect(body, { depth: null, colors: true });
+
       expect(body.data).toBeNull();
       expect(body.errors[0].message).toContain('Invalid code');
     });
   });
 
   describe('Protected Queries', () => {
-
     describe('whoami', () => {
       const WHOAMI_QUERY = `query { whoami { id username email } }`;
 
@@ -328,6 +427,8 @@ describe('AuthResolver (e2e)', () => {
         const { body } = await gqlRequest(WHOAMI_QUERY)
           .set('Authorization', `Bearer ${jwtToken}`)
           .expect(200);
+
+        console.log(body);
 
         expect(body.data.whoami).toEqual({
           id: mockUser.id,
@@ -366,12 +467,14 @@ describe('AuthResolver (e2e)', () => {
           .set('Authorization', `Bearer ${jwtToken}`)
           .expect(200);
 
+        console.log(body);
         expect(body.data.checkJwt).toBe(true);
       });
 
       it('should return Unauthorized without a token', async () => {
         const { body } = await gqlRequest(CHECKJWT_QUERY).expect(200);
 
+        util.inspect(body, { depth: null, colors: true });
         expect(body.data).toBeNull();
         expect(body.errors[0].message).toBe('Invalid Authorization Header');
       });

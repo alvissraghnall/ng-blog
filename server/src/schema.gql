@@ -2,67 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-enum Category {
-  CINEMA
-  CUISINE
-  DIY
-  FASHION
-  LIFESTYLE
-  TECHNOLOGY
-  TRAVEL
-}
-
-type Comment {
-  """Author of blog comment"""
-  author: User!
-
-  """Comment Created Date"""
-  createdAt: DateTime!
-
-  """Comment ID"""
-  id: Int!
-
-  """Likes on Comment"""
-  likes: [User!]
-
-  """Post that was commented on"""
-  post: Post!
-  text: String!
-}
-
-input CreateCommentInput {
-  """ID of Post that was commented on"""
-  postId: Int!
-
-  """Comment text content"""
-  text: String!
-}
-
-input CreateLikeInput {
-  """Comment with like"""
-  commentId: Int
-
-  """Post with like"""
-  postId: Int
-}
-
-input CreatePostInput {
-  """Blog post content"""
-  category: Category!
-
-  """Blog post content"""
-  content: String!
-
-  """Blog post description"""
-  desc: String!
-
-  """Blog post image"""
-  image: String!
-
-  """Blog post title"""
-  title: String!
-}
-
 input CreateUserInput {
   """User display photo (avatar)"""
   avatar: String
@@ -85,25 +24,6 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-enum EntityOwnsLike {
-  COMMENT
-  POST
-}
-
-type Like {
-  """Comment that was liked"""
-  comment: Comment
-
-  """Likes Collection ID"""
-  id: Int!
-
-  """User who liked post."""
-  owner: User!
-
-  """Post that was liked"""
-  post: Post
-}
-
 type LoginResponse {
   access_token: String!
   user: User!
@@ -115,23 +35,13 @@ input LoginUserInput {
 }
 
 type Mutation {
-  createComment(createCommentInput: CreateCommentInput!): Comment!
-  createLike(createLikeInput: CreateLikeInput!): Like!
-  createPost(createPostInput: CreatePostInput!): Post!
   followUser(userToBeFollowedId: String!): User!
   getOAuthUrl(provider: String!): String!
-  likeComment(commentId: Int!): Comment!
-  likePost(postId: Int!): Post!
   login(loginUserInput: LoginUserInput!): LoginResponse!
   oauthLogin(oauthInput: OAuthInput!): LoginResponse!
-  removeComment(id: Int!): Comment!
-  removeLike(id: Int!): Like!
-  removePost(id: Int!): Post!
-  removeUser(id: Int!): User!
+  removeUser(id: String!): User!
   signup(createUserInput: CreateUserInput!): User!
   unFollowUser(userToBeUnfollowedId: String!): User!
-  updateComment(updateCommentInput: UpdateCommentInput!): Comment!
-  updatePost(updatePostInput: UpdatePostInput!): Post!
   updateUser(updateUserInput: UpdateUserInput!): User!
 }
 
@@ -141,84 +51,12 @@ input OAuthInput {
   redirectUri: String
 }
 
-type Post {
-  """Owner of post"""
-  author: User!
-
-  """Blog post content"""
-  category: String!
-
-  """Comments on post"""
-  comments: [Comment!]
-
-  """Blog post content"""
-  content: String!
-
-  """post creation date"""
-  createdAt: DateTime!
-
-  """Blog post description"""
-  desc: String!
-
-  """Blog Post ID"""
-  id: Int!
-
-  """Blog post image"""
-  image: String!
-
-  """Likes on post"""
-  likes: [User!]
-
-  """Blog Post Title"""
-  title: String!
-
-  """post update date"""
-  updatedAt: DateTime!
-}
-
 type Query {
   auth: String!
   checkJwt: Boolean!
-  comment(id: Int!): Comment!
-  comments(postId: Int!): [Comment!]!
   findUserById(id: String!): User!
-  like(id: Int!): Like!
-  likes(entity: EntityOwnsLike!, id: Int!): [Like!]!
-  post(id: Int!): Post!
-
-  """Get posts by category, and/or author ID"""
-  posts(authorId: String, cat: Category): [Post!]
   user(username: String!): User!
-  users: [User!]!
   whoami: User!
-}
-
-input UpdateCommentInput {
-  """ID of comment to be updated."""
-  id: Int!
-
-  """Comment text content"""
-  text: String!
-}
-
-input UpdatePostInput {
-  """Blog post content"""
-  category: Category
-
-  """Blog post content"""
-  content: String
-
-  """Blog post description"""
-  desc: String
-
-  """Post id to be updated."""
-  id: Int!
-
-  """Blog post image"""
-  image: String
-
-  """Blog post title"""
-  title: String
 }
 
 input UpdateUserInput {

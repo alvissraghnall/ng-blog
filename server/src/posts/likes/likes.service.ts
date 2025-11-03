@@ -25,20 +25,16 @@ export class LikesService {
     console.log(createLikeInput);
 
     const cmt = createLikeInput.commentId
-      ? await this.dataSource
-          .getRepository(Comment)
-          .findOne({
-            where: { id: createLikeInput.commentId },
-            relations: ['likes', 'likes.owner'],
-          })
+      ? await this.dataSource.getRepository(Comment).findOne({
+          where: { id: createLikeInput.commentId },
+          relations: ['likes', 'likes.owner'],
+        })
       : null;
     const post = createLikeInput.postId
-      ? await this.dataSource
-          .getRepository(Post)
-          .findOne({
-            where: { id: createLikeInput.postId },
-            relations: ['likes', 'likes.owner'],
-          })
+      ? await this.dataSource.getRepository(Post).findOne({
+          where: { id: createLikeInput.postId },
+          relations: ['likes', 'likes.owner'],
+        })
       : null;
 
     if (!cmt && !post)

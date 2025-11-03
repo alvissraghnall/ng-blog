@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsIn } from 'class-validator';
+import { IsIn, IsAscii, MinLength, IsUrl } from 'class-validator';
 
 @InputType()
 export class OAuthInput {
@@ -8,8 +8,16 @@ export class OAuthInput {
   provider: string;
 
   @Field()
+  @MinLength(3)
+  @IsAscii()
   code: string;
 
   @Field({ nullable: true })
+  @MinLength(3)
+  @IsUrl({
+    require_tld: false,
+    require_protocol: true,
+    require_port: true,
+  })
   redirectUri?: string;
 }

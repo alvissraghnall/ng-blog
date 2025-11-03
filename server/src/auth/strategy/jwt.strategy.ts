@@ -23,8 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       },
       ignoreExpiration: false,
       algorithms: ['RS256'],
-      issuer: 'ng-blog',
-      audience: 'ng-blog-app',
+      issuer: 'reblog',
     });
   }
 

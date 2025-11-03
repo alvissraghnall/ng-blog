@@ -194,7 +194,10 @@ describe('AuthService', () => {
     });
 
     it('should create and return a new user', async () => {
-      const newUser = { ...mockCreateUserInput, id: 'new-id' } as unknown as User;
+      const newUser = {
+        ...mockCreateUserInput,
+        id: 'new-id',
+      } as unknown as User;
       usersService.findOneByUsername.mockResolvedValue(null);
       usersService.findOneByEmail.mockResolvedValue(null);
       usersService.create.mockResolvedValue(newUser);
@@ -228,7 +231,9 @@ describe('AuthService', () => {
 
       const result = await service.validateOAuthLogin(mockProfile);
 
-      expect(usersService.findOneByEmail).toHaveBeenCalledWith(mockProfile.email);
+      expect(usersService.findOneByEmail).toHaveBeenCalledWith(
+        mockProfile.email,
+      );
       expect(usersService.linkOAuthProvider).toHaveBeenCalledWith(
         mockUser.id,
         mockProfile.provider,
@@ -244,7 +249,9 @@ describe('AuthService', () => {
 
       const result = await service.validateOAuthLogin(mockProfile);
 
-      expect(usersService.findOneByEmail).toHaveBeenCalledWith(mockProfile.email);
+      expect(usersService.findOneByEmail).toHaveBeenCalledWith(
+        mockProfile.email,
+      );
       expect(usersService.linkOAuthProvider).not.toHaveBeenCalled();
       expect(result).toEqual(mockOAuthUser);
     });

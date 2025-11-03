@@ -1,5 +1,6 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
 import { Match } from 'auth/validator/match.validator';
+import { User } from '../entities/user.entity';
 import { IsAlphanumeric, IsAscii, IsEmail, MinLength } from 'class-validator';
 import { IsUnique } from 'common/is-unique';
 
@@ -8,7 +9,7 @@ export class CreateUserInput {
   @Field(() => String, { description: 'Username' })
   @MinLength(3)
   @IsAscii()
-  @IsUnique('user', 'username', {
+  @IsUnique(User, 'username', {
     always: true,
     message: 'username already exists',
   })
@@ -16,7 +17,7 @@ export class CreateUserInput {
 
   @Field(() => String, { description: 'User email address' })
   @IsEmail()
-  @IsUnique('user', 'email', { always: true, message: 'email already exists' })
+  @IsUnique(User, 'email', { always: true, message: 'email already exists' })
   email: string;
 
   @Field(() => String, { description: 'User password' })

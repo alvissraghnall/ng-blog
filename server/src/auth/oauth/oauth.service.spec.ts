@@ -4,10 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../auth.service';
 import { GoogleOAuthStrategy } from '../strategy/google-oauth.strategy';
 import { GithubOAuthStrategy } from '../strategy/github-oauth.strategy';
-import {
-  BadRequestException,
-  NotImplementedException,
-} from '@nestjs/common';
+import { BadRequestException, NotImplementedException } from '@nestjs/common';
 import { User } from 'users/entities/user.entity';
 import { OAuthInput } from '../dto/oauth.input';
 
