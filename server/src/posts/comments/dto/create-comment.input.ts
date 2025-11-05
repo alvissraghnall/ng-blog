@@ -1,5 +1,6 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { Allow, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { Post } from 'posts/entities/post.entity';
 
 @InputType()
 export class CreateCommentInput {
@@ -11,4 +12,7 @@ export class CreateCommentInput {
   @IsNumber()
   @IsNotEmpty()
   postId: number;
+
+  @IsOptional()
+  post: Post;
 }

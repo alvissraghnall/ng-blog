@@ -21,42 +21,49 @@ export class LikesService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(createLikeInput: CreateLikeInput, user: User) {
-    console.log(createLikeInput);
+  async toggleLike(createLikeInput: CreateLikeInput, user: User) {
+    const { commentId, postId } = createLikeInput;
 
-    const cmt = createLikeInput.commentId
-      ? await this.dataSource.getRepository(Comment).findOne({
-          where: { id: createLikeInput.commentId },
-          relations: ['likes', 'likes.owner'],
-        })
-      : null;
-    const post = createLikeInput.postId
-      ? await this.dataSource.getRepository(Post).findOne({
-          where: { id: createLikeInput.postId },
-          relations: ['likes', 'likes.owner'],
-        })
-      : null;
-
-    if (!cmt && !post)
-      throw new NotFoundException(
-        'Neither comment nor post provided in request',
-      );
-
-    const alreadyLiked = post
-      ? post.likes.some((like) => like.id === user.id)
-      : cmt.likes.some((like) => like.id === user.id);
-
-    if (alreadyLiked) {
-      // return { ...this.likesRepository.remove(post.likes)[0], message: "Like removed successfully!", id: post.id ?? cmt.id };
-      throw new ConflictException(
-        `User has already liked post with ID ${post.id || cmt.id}`,
+    if (!commentId && !postId) {
+      throw new BadRequestException(
+        'A post ID or comment ID must be provided.',
       );
     }
 
-    const newLike = new Like();
-    newLike.comment = cmt;
-    newLike.post = post;
-    newLike.owner = user;
+    const existingLike = await this.likesRepository.findOne({
+      where: {
+        owner: { id: user.id },
+        ...(postId && { post: { id: postId } }),
+        ...(commentId && { comment: { id: commentId } }),
+      },
+    });
+
+    if (existingLike) {
+      await this.likesRepository.remove(existingLike);
+      return { ...existingLike, id: existingLike.id, removed: true };
+    }
+
+    if (postId) {
+      const post = await this.dataSource
+        .getRepository(Post)
+        .findOneBy({ id: postId });
+      if (!post)
+        throw new NotFoundException(`Post with ID ${postId} not found.`);
+    }
+    if (commentId) {
+      const cmt = await this.dataSource
+        .getRepository(Comment)
+        .findOneBy({ id: commentId });
+      if (!cmt)
+        throw new NotFoundException(`Comment with ID ${commentId} not found.`);
+    }
+
+    const newLike = this.likesRepository.create({
+      owner: user,
+      post: postId ? { id: postId } : null,
+      comment: commentId ? { id: commentId } : null,
+    });
+
     return this.likesRepository.save(newLike);
   }
 

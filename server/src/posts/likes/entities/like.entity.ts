@@ -13,11 +13,11 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { BaseEntity } from 'common/entities/base.entity';
 
 @ObjectType()
 @Entity()
-@Unique(['owner', 'post', 'comment'])
-export class Like {
+export class Like extends BaseEntity {
   @Field(() => Int, { description: 'Likes Collection ID' })
   @PrimaryGeneratedColumn()
   id: number;
@@ -39,13 +39,4 @@ export class Like {
   @Field(() => User, { description: 'User who liked post.' })
   @ManyToOne((type) => User)
   owner: User;
-
-  // @Column()
-  // isLike: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

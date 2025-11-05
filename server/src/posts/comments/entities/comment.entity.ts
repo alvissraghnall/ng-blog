@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, ResolveField } from '@nestjs/graphql';
 import { Post } from '../../entities/post.entity';
 import { Like } from '../../likes/entities/like.entity';
 import { User } from '../../../users/entities/user.entity';
@@ -11,17 +11,13 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  JoinColumn,
 } from 'typeorm';
+import { BaseEntity } from 'common/entities/base.entity';
 
 @ObjectType()
 @Entity()
-export class Comment {
-  constructor(text: string, author: User, post: Post) {
-    this.text = text;
-    this.author = author;
-    this.post = post;
-  }
-
+export class Comment extends BaseEntity {
   @Field(() => Int, { description: 'Comment ID' })
   @PrimaryGeneratedColumn()
   id: number;
@@ -36,21 +32,14 @@ export class Comment {
 
   @Field(() => User, { description: 'Author of blog comment' })
   @ManyToOne((type) => User, {
-    eager: true,
+    // eager: true,
   })
+  @JoinColumn()
   author: User;
 
-  @Field(() => [User], { description: 'Likes on Comment', nullable: true })
-  @OneToMany((type) => User, 'user', {
+  @Field(() => [Like], { description: 'Likes on Comment', nullable: true })
+  @OneToMany((type) => Like, (like) => like.comment, {
     nullable: true,
-    eager: true,
   })
-  likes: User[];
-
-  @Field(() => Date, { description: 'Comment Created Date' })
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  likes: Like[];
 }

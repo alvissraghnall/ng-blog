@@ -1,4 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from 'posts/entities/post.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -6,6 +13,7 @@ import { User } from 'users/entities/user.entity';
 import { CreateCommentInput } from './dto/create-comment.input';
 import { UpdateCommentInput } from './dto/update-comment.input';
 import { Comment } from './entities/comment.entity';
+import { CommentBuilder } from './builders/comment.builder';
 
 @Injectable()
 export class CommentsService {
@@ -13,22 +21,19 @@ export class CommentsService {
     @InjectRepository(Comment)
     private readonly commentsRepository: Repository<Comment>,
     private readonly dataSource: DataSource,
+    private readonly logger: Logger,
   ) {}
 
   async create(
     createCommentInput: CreateCommentInput,
     author: User,
   ): Promise<Comment> {
-    const post = await this.dataSource
-      .getRepository(Post)
-      .findOneBy({ id: createCommentInput.postId });
+    const newComment = new CommentBuilder()
+      .withAuthor(author)
+      .withText(createCommentInput.text)
+      .withPost(createCommentInput.post)
+      .build();
 
-    if (!post)
-      throw new BadRequestException(
-        'Post with ID: ' + createCommentInput.postId + ' does not exist!',
-      );
-
-    const newComment = new Comment(createCommentInput.text, author, post);
     return this.commentsRepository.save(newComment);
   }
 
@@ -39,23 +44,56 @@ export class CommentsService {
     });
   }
 
-  findOne(id: number) {
-    return this.commentsRepository.findOneBy({ id });
+  async findOne(id: number): Promise<Comment | null> {
+    const comment = await this.commentsRepository.findOne({
+      where: { id },
+      relations: ['author', 'post', 'likes'],
+    });
+
+	console.log(comment);
+    return comment ?? null;
   }
 
-  async update(updateCommentInput: UpdateCommentInput): Promise<Comment> {
+  async update(
+    updateCommentInput: UpdateCommentInput,
+    comment: Comment,
+  ): Promise<Comment> {
+    /*
     const cmt = await this.commentsRepository.preload(updateCommentInput);
     if (!cmt)
       throw new BadRequestException(
         `Comment with ID: ${updateCommentInput.id} does not exist!`,
       );
+	*/
 
-    return this.commentsRepository.save(cmt);
+    Object.assign(comment, updateCommentInput);
+    return this.commentsRepository.save(comment);
   }
 
-  async remove(id: number): Promise<Comment> {
-    const comment = await this.commentsRepository.findOneBy({ id });
-    return this.commentsRepository.remove(comment);
+  async remove(id: number, comment: Comment): Promise<Comment> {
+    // const comment = await this.commentsRepository.findOne({
+    //   where: { id },
+    //   relations: ['author']
+    // });
+    // this.logger.log(`Post comment to be removed: ${comment}`);
+
+    // if(!comment) {
+    //   throw new NotFoundException('Comment with ID: ' + id + ' not found!');
+    // }
+
+    // if (comment.author.id !== currentUser.id) {
+    //   throw new ForbiddenException('Cannot delete post you\'re not the author of!');
+    // }
+    // // return this.commentsRepository.createQueryBuilder('comment')
+    //   .innerJoin('comment.author', 'user')
+    //   .delete()
+    //   .where('comment.id = :commentId', { commentId: id })
+    //   .andWhere('user.id = :currentUserId', { currentUserId })
+    //   .execute()
+
+    const tbr = await this.commentsRepository.remove(comment);
+	console.log(tbr, 5000);
+	return Object.assign(tbr, { id }) ?? null;
   }
 
   add(comment: Comment) {

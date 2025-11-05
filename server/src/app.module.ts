@@ -14,10 +14,12 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphQLExceptionFilter } from 'common/filters/graphql-exception.filter';
+import { SharedJwtModule } from 'common/shared-jwt.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    SharedJwtModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,

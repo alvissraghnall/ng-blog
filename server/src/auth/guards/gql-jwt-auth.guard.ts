@@ -32,15 +32,7 @@ export class GqlJwtAuthGuard extends AuthGuard('jwt') {
     if (isPublic) {
       return true;
     }
-    try {
-      //console.log(new Date(), context, 39);
-      return super.canActivate(context);
-    } catch (err) {
-      console.log(err, 4444);
-      if (err instanceof Error && err.message === 'No auth token') {
-        throw new UnauthorizedException(err.message);
-      } else throw err;
-    }
+    return super.canActivate(context);
   }
 
   handleRequest<User>(

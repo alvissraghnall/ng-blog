@@ -12,12 +12,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { BaseEntity } from 'common/entities/base.entity';
 
 @ObjectType()
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn('uuid')
+export class User extends BaseEntity {
   @Field(() => String, { description: 'ID' })
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ unique: true, length: 255 })
@@ -58,20 +59,6 @@ export class User {
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
   bio?: string;
-
-  @CreateDateColumn()
-  @Field(() => Date, {
-    nullable: false,
-    description: 'Date Entity was created.',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  @Field(() => Date, {
-    nullable: false,
-    description: 'Date Entity was last updated.',
-  })
-  updatedAt: Date;
 
   isOAuthUser(): boolean {
     return !!this.oauthProvider && !!this.oauthId;

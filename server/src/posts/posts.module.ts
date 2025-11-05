@@ -11,7 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtKeyModule } from 'auth/jwt/jwt-key.module';
 import { JwtKeyService } from 'auth/jwt/jwt-key.service';
 import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from 'auth/guards/jwt-auth.guard';
+import { GqlJwtAuthGuard } from 'auth/guards/gql-jwt-auth.guard';
 import { CloudinaryModule } from 'cloudinary/cloudinary.module';
 import { LikesService } from './likes/likes.service';
 
@@ -19,7 +19,7 @@ import { LikesService } from './likes/likes.service';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: GqlJwtAuthGuard,
     },
     PostsResolver,
     PostsService,

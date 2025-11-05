@@ -6,31 +6,21 @@ import { UpdateLikeInput } from './dto/update-like.input';
 import { User } from 'users/entities/user.entity';
 import { EntityOwnsLike } from 'posts/enum/entity-owns-like.enum';
 import { QueryFailedError, TypeORMError } from 'typeorm';
+import { CurrentUser } from 'common/current-user.decorator';
+import { GqlJwtAuthGuard } from 'auth/guards/gql-jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Resolver(() => Like)
 export class LikesResolver {
   constructor(private readonly likesService: LikesService) {}
 
   @Mutation(() => Like)
-  createLike(
+  @UseGuards(GqlJwtAuthGuard)
+  toggleLike(
     @Args('createLikeInput') createLikeInput: CreateLikeInput,
-    @Context() ctx: any,
+    @CurrentUser() user: User,
   ) {
-    try {
-      const createdLike = this.likesService.create(
-        createLikeInput,
-        ctx.req.user as User,
-      );
-      return createdLike;
-    } catch (error) {
-      if (
-        error instanceof QueryFailedError &&
-        (error as any).code === '23505'
-      ) {
-        console.log(error + '\n\n\n');
-      }
-      console.log(error);
-    }
+    return this.likesService.toggleLike(createLikeInput, user);
   }
 
   @Query(() => [Like], { name: 'likes' })
@@ -42,11 +32,13 @@ export class LikesResolver {
   }
 
   @Query(() => Like, { name: 'like' })
+  @UseGuards(GqlJwtAuthGuard)
   findOne(@Args('id', { type: () => Int }) id: number) {
     return this.likesService.findOne(id);
   }
 
   @Mutation(() => Like)
+  @UseGuards(GqlJwtAuthGuard)
   removeLike(@Args('id', { type: () => Int }) id: number) {
     return this.likesService.remove(id);
   }

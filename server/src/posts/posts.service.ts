@@ -14,6 +14,7 @@ import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
 import { Post } from './entities/post.entity';
 import { Category } from './enum/category.enum';
+import { PostBuilder } from './builders/post.builder';
 
 @Injectable()
 export class PostsService {
@@ -27,7 +28,14 @@ export class PostsService {
     const { title, content, category, desc, image } = createPostInput;
     console.log(user);
 
-    const newPost = new Post(title, content, image, desc, category, user);
+    const newPost = new PostBuilder()
+      .withAuthor(user)
+      .withTitle(title)
+      .withContent(content)
+      .withImage(image)
+      .withDesc(desc)
+      .withCategory(category)
+      .build();
 
     return await this.postsRepository.save(newPost);
   }
@@ -35,17 +43,6 @@ export class PostsService {
   find(par: { cat?: Category; authorId?: string }): Promise<Post[]> {
     let cat = par.cat,
       authorId = par.authorId;
-    // return cat
-    //   ?
-    //   this.postsRepository.find({
-    //     where: { category: cat },
-    //     relations: ["author", "likes", "comments"]
-    //   })
-    //   : ( authorId ?
-    //     this.postsRepository.find({
-    //       where: { author: { id: authorId } },
-    //       relations: ["author", "likes", "comments"]
-    //     }) :
     return this.postsRepository.find({
       relations: ['author', 'likes', 'comments'],
       where:
@@ -78,7 +75,14 @@ export class PostsService {
 
   async update(updatePostInput: UpdatePostInput, user: User) {
     const { id, title, image, desc, content, category } = updatePostInput;
-    const post = new Post(title, content, image, desc, category, user);
+    const post = new PostBuilder()
+      .withAuthor(user)
+      .withTitle(title)
+      .withContent(content)
+      .withImage(image)
+      .withDesc(desc)
+      .withCategory(category)
+      .build();
     post.id = id;
     return this.postsRepository.save(post);
   }
