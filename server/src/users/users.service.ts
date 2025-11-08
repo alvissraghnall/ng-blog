@@ -1,95 +1,217 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from "@nestjs/typeorm";
-import { JwtPayload } from '../auth/jwt/jwt.payload';
+import {
+  Injectable,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
+import { CreateUserInput } from './dto/create-user.input';
+import { HashService } from '../auth/hash/hash.service';
+import { OAuthProfile } from '../auth/interfaces/oauth-profile.interface';
+import { JwtPayload } from '../auth/jwt/jwt.payload';
+import { UserFollow } from './entities/user-follow.entity';
 import { UserNotFoundException } from 'common/user-not-found.exception';
+import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+    private readonly hashService: HashService,
+    @InjectRepository(UserFollow)
+    private readonly userFollowRepository: Repository<UserFollow>,
+  ) {}
 
-  constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) {}
-  
-  async create(createUserInput: CreateUserInput) {
-    const { 
-      email, 
-      password,
-      avatar,
-      username
-   } = createUserInput;
-    const newUser = new User(email, username, password, avatar);
+  async create(createUserInput: CreateUserInput): Promise<User> {
+    /* const hashedPassword = await this.hashService.hashPassword(
+      createUserInput.password,
+    ); */
 
-    console.log("new user", newUser);
-    const savedUser = await this.usersRepository.save(newUser);
-    console.log("saved user", savedUser);
+    const user = this.usersRepository.create({
+      ...createUserInput,
+      //password: hashedPassword,
+      emailVerified: false,
+    });
 
-    return savedUser;
+    return this.usersRepository.save(user);
   }
 
-  findAll() {
+  async createOAuthUser(profile: OAuthProfile): Promise<User> {
+    const username = await this.generateUniqueUsername(profile);
+
+    const user = new User();
+    Object.assign(user, {
+      username,
+      email: profile.email,
+      avatar: profile.picture,
+      oauthProvider: profile.provider,
+      oauthId: profile.id,
+      password: null,
+      emailVerified: true,
+    });
+
+    return this.usersRepository.save(user);
+  }
+
+  async linkOAuthProvider(
+    userId: string,
+    provider: string,
+    providerId: string,
+  ): Promise<User> {
+    await this.usersRepository.update(userId, {
+      oauthProvider: provider,
+      oauthId: providerId,
+    });
+
+    return this.usersRepository.findOne({ where: { id: userId } });
+  }
+
+  async findOne(id: string): Promise<User> {
+    return this.usersRepository.findOneBy({ id });
+  }
+
+  async findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
-  async findOne(id: string) {
-    return await this.usersRepository.findOne({
-      where: { id },
-      relations: {
-        followers: true, following: true
-      }
-    });
-  }
-
-  findOneByUsername(username: string) {
-    return this.usersRepository.findOne({
-      where: { username },
-      relations: {
-        followers: true, following: true
-      }
-    });
-  }
-
-  async getByPayload ({ sub }: JwtPayload) {
-    return await this.findOne(sub);
-  }
-
-  update(user: User, updateUserInput: UpdateUserInput) {
-    const updatedUser: Partial<User> = { ...updateUserInput, id: user.id };
-
-    return this.usersRepository.save(updatedUser);
-  }
-
-  remove(id: number) {
+  async remove(id: string) {
     return `This action removes a #${id} user`;
   }
 
-  async follow (currUser: User, followUserId: string) {
-    const userToBeFollowed = await this.usersRepository.findOne({
-      where: { id: followUserId }, relations: ['followers'] 
-    });
-
-    if (!userToBeFollowed) throw new UserNotFoundException(followUserId);
-
-    currUser.following.push(userToBeFollowed);
-    userToBeFollowed.followers.push(currUser);
-
-    this.usersRepository.save(userToBeFollowed);
-    return this.usersRepository.save(currUser);
+  async update(user: User, updateUserInput: UpdateUserInput) {
+    const updatedUser: Partial<User> = { ...updateUserInput, id: user.id };
+    return this.usersRepository.save(updatedUser);
   }
 
-  async unfollow(currUser: User, userToBeUnfollowedId: string) {
-    const userToBeUnfollowed = await this.usersRepository.findOne({
-      where: { id: userToBeUnfollowedId },
-      relations: { followers: true }
+  async findOneByUsername(username: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { username },
+    });
+  }
+
+  async findOneByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { email },
+    });
+  }
+
+  async findOneByUsernameOrEmail(
+    usernameOrEmail: string,
+  ): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+    });
+  }
+
+  async findByProviderId(
+    providerId: string,
+    provider: string,
+  ): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { oauthId: providerId, oauthProvider: provider },
+    });
+  }
+
+  async getByPayload(payload: JwtPayload): Promise<User> {
+    return this.usersRepository.findOne({
+      where: { id: payload.sub },
+    });
+  }
+
+  /*
+  private async generateUniqueUsername(profile: OAuthProfile): Promise<string> {
+    const baseUsername = profile.name?.replace(/\s+/g, '').toLowerCase() || 
+                        profile.email?.split('@')[0] || 
+                        `user${profile.id.slice(0, 8)}`;
+
+    let username = baseUsername;
+    let counter = 1;
+
+    while (await this.findOneByUsername(username)) {
+      username = `${baseUsername}${counter}`;
+      counter++;
+    }
+
+    return username;
+  }
+  */
+
+  private async generateUniqueUsername(profile: OAuthProfile): Promise<string> {
+    const rawBase =
+      profile.name?.trim().replace(/\s+/g, '').toLowerCase() ||
+      profile.email?.split('@')[0]?.toLowerCase() ||
+      `user${profile.id.slice(0, 8)}`;
+
+    const baseUsername = rawBase.replace(/[^a-z0-9_]/g, '') || 'user';
+
+    let username = baseUsername;
+    let counter = 1;
+    const MAX_ATTEMPTS = 20;
+
+    while (await this.findOneByUsername(username)) {
+      if (counter > MAX_ATTEMPTS) {
+        const randomSuffix = Math.random().toString(36).slice(2, 6);
+        username = `${baseUsername}_${randomSuffix}`;
+        break;
+      }
+
+      username = `${baseUsername}${counter}`;
+      counter++;
+    }
+
+    return username;
+  }
+
+  async follow(currUser: User, followUserId: string) {
+    if (currUser.id === followUserId)
+      throw new BadRequestException('You cannot follow yourself.');
+
+    const userToFollow = await this.usersRepository.findOne({
+      where: { id: followUserId },
+    });
+    if (!userToFollow) throw new UserNotFoundException(followUserId);
+
+    const existing = await this.userFollowRepository.findOne({
+      where: {
+        follower: { id: currUser.id },
+        following: { id: followUserId },
+      },
     });
 
-    if (!userToBeUnfollowed) throw new UserNotFoundException(userToBeUnfollowedId);
+    if (existing) return existing;
 
-    currUser.following = currUser.following.filter(user => user.id !== userToBeUnfollowed.id);
-    userToBeUnfollowed.followers = userToBeUnfollowed.followers.filter(user => user.id !== currUser.id);
+    const follow = this.userFollowRepository.create({
+      follower: currUser,
+      following: userToFollow,
+    });
 
-    this.usersRepository.save(userToBeUnfollowed);
-    return this.usersRepository.save(currUser);
+    return this.userFollowRepository.save(follow);
+  }
+
+  async unfollow(currUser: User, unfollowUserId: string) {
+    await this.userFollowRepository.delete({
+      follower: { id: currUser.id },
+      following: { id: unfollowUserId },
+    });
+
+    return { success: true };
+  }
+
+  async getFollowers(userId: string): Promise<User[]> {
+    const follows = await this.userFollowRepository.find({
+      where: { following: { id: userId } },
+      relations: ['follower'],
+    });
+    return follows.map((f) => f.follower);
+  }
+
+  async getFollowing(userId: string): Promise<User[]> {
+    const follows = await this.userFollowRepository.find({
+      where: { follower: { id: userId } },
+      relations: ['following'],
+    });
+    return follows.map((f) => f.following);
   }
 }

@@ -11,29 +11,31 @@ import { JwtKeyModule } from './jwt/jwt-key.module';
 import { JwtKeyService } from './jwt/jwt-key.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
+import { GoogleOAuthStrategy } from './strategy/google-oauth.strategy';
+import { GithubOAuthStrategy } from './strategy/github-oauth.strategy';
+import { OAuthService } from './oauth/oauth.service';
+import { SharedJwtModule } from 'common/shared-jwt.module';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: "jwt" }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule, JwtKeyModule],
-      useFactory: async (configService: ConfigService, keyService: JwtKeyService) => {
-        console.log(configService.get<string>("JWT_EXP_IN"));
-        return {
-          privateKey: await keyService.getPrivKey(),
-          publicKey: await keyService.getPubKey(), 
-          signOptions: { expiresIn: configService.get<string>("JWT_EXP_IN"), algorithm: 'RS256', issuer: "ng-blog" },
-          verifyOptions: { algorithms: ["RS256"] },
-        };
-      },
-      
-      inject: [ConfigService, JwtKeyService]
-    }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    SharedJwtModule,
     UsersModule,
     HashModule,
-    JwtKeyModule
+    //JwtKeyModule,
+    ConfigModule,
   ],
-  providers: [ AuthService, LocalStrategy, AuthResolver, JwtKeyService, JwtStrategy ],
-  exports: [AuthService, JwtKeyService]
+  providers: [
+    AuthService,
+    LocalStrategy,
+    AuthResolver,
+    JwtKeyService,
+    JwtStrategy,
+    GoogleOAuthStrategy,
+    GithubOAuthStrategy,
+    OAuthService,
+    ConfigService,
+  ],
+  exports: [AuthService],
 })
 export class AuthModule {}

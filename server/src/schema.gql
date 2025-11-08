@@ -16,18 +16,21 @@ type Comment {
   """Author of blog comment"""
   author: User!
 
-  """Comment Created Date"""
+  """Date Entity was created."""
   createdAt: DateTime!
 
   """Comment ID"""
   id: Int!
 
   """Likes on Comment"""
-  likes: [User!]
+  likes: [Like!]
 
   """Post that was commented on"""
   post: Post!
   text: String!
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
 }
 
 input CreateCommentInput {
@@ -47,16 +50,16 @@ input CreateLikeInput {
 }
 
 input CreatePostInput {
-  """Blog post content"""
+  """Blog post category"""
   category: Category!
 
   """Blog post content"""
   content: String!
 
-  """Blog post description"""
+  """Blog post short description"""
   desc: String!
 
-  """Blog post image"""
+  """Blog post image URL"""
   image: String!
 
   """Blog post title"""
@@ -94,6 +97,9 @@ type Like {
   """Comment that was liked"""
   comment: Comment
 
+  """Date Entity was created."""
+  createdAt: DateTime!
+
   """Likes Collection ID"""
   id: Int!
 
@@ -102,6 +108,9 @@ type Like {
 
   """Post that was liked"""
   post: Post
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
 }
 
 type LoginResponse {
@@ -116,72 +125,79 @@ input LoginUserInput {
 
 type Mutation {
   createComment(createCommentInput: CreateCommentInput!): Comment!
-  createLike(createLikeInput: CreateLikeInput!): Like!
   createPost(createPostInput: CreatePostInput!): Post!
   followUser(userToBeFollowedId: String!): User!
-  likeComment(commentId: Int!): Comment!
-  likePost(postId: Int!): Post!
+  getOAuthUrl(provider: String!): String!
   login(loginUserInput: LoginUserInput!): LoginResponse!
+  oauthLogin(oauthInput: OAuthInput!): LoginResponse!
   removeComment(id: Int!): Comment!
   removeLike(id: Int!): Like!
   removePost(id: Int!): Post!
-  removeUser(id: Int!): User!
+  removeUser(id: String!): User!
   signup(createUserInput: CreateUserInput!): User!
+  toggleLike(createLikeInput: CreateLikeInput!): Like!
   unFollowUser(userToBeUnfollowedId: String!): User!
   updateComment(updateCommentInput: UpdateCommentInput!): Comment!
   updatePost(updatePostInput: UpdatePostInput!): Post!
   updateUser(updateUserInput: UpdateUserInput!): User!
 }
 
+input OAuthInput {
+  code: String!
+  provider: String!
+  redirectUri: String
+}
+
 type Post {
-  """Owner of post"""
   author: User!
-
-  """Blog post content"""
-  category: String!
-
-  """Comments on post"""
+  category: Category!
+  commentCount: Int!
   comments: [Comment!]
-
-  """Blog post content"""
   content: String!
 
-  """post creation date"""
+  """Date Entity was created."""
   createdAt: DateTime!
-
-  """Blog post description"""
   desc: String!
-
-  """Blog Post ID"""
   id: Int!
-
-  """Blog post image"""
   image: String!
-
-  """Likes on post"""
-  likes: [User!]
-
-  """Blog Post Title"""
+  likeCount: Int!
+  likes: [Like!]
   title: String!
 
-  """post update date"""
+  """Date Entity was last updated."""
   updatedAt: DateTime!
 }
 
 type Query {
   auth: String!
   checkJwt: Boolean!
-  comment(id: Int!): Comment!
-  comments(postId: Int!): [Comment!]!
+  comment(id: Int!): Comment
+  comments(postId: Int!): [Comment!]
   findUserById(id: String!): User!
+  hasUserLiked(entity: EntityOwnsLike!, entityId: Int!): Boolean!
   like(id: Int!): Like!
+  likeCount(entity: EntityOwnsLike!, id: Int!): Int!
   likes(entity: EntityOwnsLike!, id: Int!): [Like!]!
+
+  """Get most popular posts ordered by likes"""
+  popularPosts(limit: Int = 10): [Post!]
   post(id: Int!): Post!
 
-  """Get posts by category, and/or author ID"""
-  posts(authorId: String, cat: Category): [Post!]
+  """Get total count of posts with optional filtering"""
+  postCount(authorId: String, category: Category): Int!
+
+  """Get posts with optional filtering by category and/or author"""
+  posts(authorId: String, category: Category, limit: Int, offset: Int): [Post!]!
+
+  """Get all posts by a specific author"""
+  postsByAuthor(authorId: String!, limit: Int): [Post!]
+
+  """Get all posts in a specific category"""
+  postsByCategory(category: Category!, limit: Int): [Post!]
+
+  """Get most recent posts"""
+  recentPosts(limit: Int = 10): [Post!]
   user(username: String!): User!
-  users: [User!]!
   whoami: User!
 }
 
@@ -208,8 +224,6 @@ input UpdatePostInput {
 
   """Blog post image"""
   image: String
-
-  """Blog post title"""
   title: String
 }
 
@@ -234,9 +248,24 @@ input UpdateUserInput {
 type User {
   avatar: String
   bio: String
+
+  """Date Entity was created."""
+  createdAt: DateTime!
   email: String!
+
+  """Email verification status"""
+  emailVerified: Boolean!
 
   """ID"""
   id: String!
+
+  """OAuth2 ID"""
+  oauthId: String
+
+  """OAuth2 Provider name, e.g. Google, GitHub.."""
+  oauthProvider: String
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
   username: String!
 }

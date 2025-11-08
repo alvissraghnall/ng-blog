@@ -14,22 +14,28 @@ export class IsUniqueConstraint implements ValidatorConstraintInterface {
   constructor(private dataSource: DataSource) {}
 
   async validate(value: any, args: ValidationArguments) {
-    console.log(args.constraints);
+    console.log('args.constraints:', args.constraints);
+    console.log('dataSource defined?', !!this.dataSource);
+
     const [model, field] = args.constraints;
-    const entity = await this.dataSource
-      .getRepository(model)
-      .findOne({
-        where: {
-          [field]: value,
-        },
-      });
-      console.log(30076, entity);
+    if (!model) throw new Error('Model not provided to IsUnique decorator');
+
+    const entity = await this.dataSource.getRepository(model).findOne({
+      where: {
+        [field]: value,
+      },
+    });
+    console.log(30076, entity);
     if (entity) return false;
     return true;
   }
 }
 
-export function IsUnique(model: string, field: string, validationOptions?: ValidationOptions) {
+export function IsUnique(
+  model: string | Object,
+  field: string,
+  validationOptions?: ValidationOptions,
+) {
   return function (object: object, propertyName: string) {
     registerDecorator({
       target: object.constructor,

@@ -1,5 +1,10 @@
-import { ClassSerializerInterceptor, UseGuards, UseInterceptors } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
+import {
+  ClassSerializerInterceptor,
+  UseGuards,
+  UseInterceptors,
+  Post,
+} from '@nestjs/common';
+import { Resolver, Mutation, Args, Context, Query } from '@nestjs/graphql';
 import { Public } from 'common/public.decorator';
 import { CreateUserInput } from '../users/dto/create-user.input';
 import { User } from '../users/entities/user.entity';
@@ -7,47 +12,65 @@ import { AuthService } from './auth.service';
 import { LoginUserInput } from './dto/login-user.input';
 import { LoginResponse } from './dto/login.response';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard';
 import { CurrentUser } from 'common/current-user.decorator';
-
+import { OAuthInput } from './dto/oauth.input';
+import { OAuthService } from './oauth/oauth.service';
 
 @Resolver(() => User)
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly oauthService: OAuthService,
+  ) {}
 
   @Mutation(() => LoginResponse)
   @Public()
   @UseGuards(GqlAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
-  login (@Args('loginUserInput') loginUserInput: LoginUserInput, @Context() context: any) {
-    console.log(context);
+  login(
+    @Args('loginUserInput') loginUserInput: LoginUserInput,
+    @Context() context: any,
+  ) {
     return this.authService.login(context.user);
+  }
+
+  @Mutation(() => LoginResponse)
+  @Public()
+  async oauthLogin(@Args('oauthInput') oauthInput: OAuthInput) {
+    // This handles the OAuth flow with the frontend
+    const user = await this.oauthService.authenticate(oauthInput);
+    return this.authService.login(user);
+  }
+
+  @Mutation(() => String)
+  @Public()
+  async getOAuthUrl(@Args('provider') provider: string): Promise<string> {
+    // Frontend calls this to get the OAuth URL to redirect to
+    return this.oauthService.getAuthorizationUrl(provider);
   }
 
   @Mutation(() => User)
   @Public()
-  signup(@Args('createUserInput') createAuthInput: CreateUserInput) {
-    return this.authService.create(createAuthInput);
+  signup(@Args('createUserInput') createUserInput: CreateUserInput) {
+    return this.authService.createPasswordUser(createUserInput);
   }
 
-  @Query(() => String, { name: 'auth' })
-  // @UseGuards(JwtAuthGuard)
-  findAll() {
+  @Query(() => String)
+  @UseGuards(GqlJwtAuthGuard)
+  auth() {
     return "God's boy.";
   }
 
-  @Query(() => Boolean, { name: 'checkJwt' })
-  checkJwt () {
+  @Query(() => Boolean)
+  @UseGuards(GqlJwtAuthGuard)
+  checkJwt() {
     return true;
   }
 
-  @Query(() => User, { name: 'whoami' })
-  whoami (@CurrentUser() user: User) {
+  @Query(() => User)
+  @UseGuards(GqlJwtAuthGuard)
+  whoami(@CurrentUser() user: User) {
     return user;
   }
-
-//   @Query(() => User, { name: 'auth' })
-//   findOne(@Args('id', { type: () => Int }) id: number) {
-//     return this.authService.findOne(id);
-//   }
 }

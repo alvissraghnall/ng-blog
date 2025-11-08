@@ -1,73 +1,158 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateLikeInput } from './dto/create-like.input';
-import { UpdateLikeInput } from './dto/update-like.input';
 import { Like } from './entities/like.entity';
 import { Comment } from 'posts/comments/entities/comment.entity';
 import { Post } from 'posts/entities/post.entity';
 import { User } from 'users/entities/user.entity';
 import { EntityOwnsLike } from 'posts/enum/entity-owns-like.enum';
+import { CrudService } from 'common/service/crud.service';
 
 @Injectable()
-export class LikesService {
-  
+export class LikesService extends CrudService(Like) {
   constructor(
-    @InjectRepository(Like) private readonly likesRepository: Repository<Like>,
-    private readonly dataSource: DataSource
-  ) {}
+    @InjectRepository(Like)
+    private readonly likesRepository: Repository<Like>,
+    @InjectRepository(Post)
+    private readonly postsRepository: Repository<Post>,
+    @InjectRepository(Comment)
+    private readonly commentsRepository: Repository<Comment>,
+  ) {
+    super();
+  }
 
-  async create(createLikeInput: CreateLikeInput, user: User) {
-    console.log(createLikeInput);
-    
-    const cmt = createLikeInput.commentId ? await this.dataSource.getRepository(Comment).findOne({ where: { id: createLikeInput.commentId }, relations: ["likes", "likes.owner"] }) : null;
-    const post = createLikeInput.postId ? await this.dataSource.getRepository(Post).findOne({ where: {id: createLikeInput.postId}, relations: ["likes", "likes.owner"] }) : null;
+  async toggleLike(
+    createLikeInput: CreateLikeInput,
+    user: User,
+  ): Promise<Like> {
+    const { commentId, postId } = createLikeInput;
+    let post: Post, comment: Comment;
 
-    if (!cmt && !post) throw new NotFoundException("Neither comment nor post provided in request");
-
-    const alreadyLiked = post ? post.likes.some(like => like.id === user.id) : cmt.likes.some(like => like.id === user.id);
-
-    if (alreadyLiked) {
-      // return { ...this.likesRepository.remove(post.likes)[0], message: "Like removed successfully!", id: post.id ?? cmt.id };
-      throw new ConflictException(`User has already liked post with ID ${post.id || cmt.id}`);
+    if ((commentId && postId) || (!commentId && !postId)) {
+      throw new BadRequestException(
+        'Must provide either commentId or postId, not both or neither',
+      );
     }
 
-    const newLike = new Like();
-    newLike.comment = cmt;
-    newLike.post = post;
-    newLike.owner = user;
+    const whereClause: FindOptionsWhere<Like> = { owner: { id: user.id } };
+
+    if (postId) {
+      post = await this.postsRepository.findOne({
+        where: { id: postId },
+      });
+      if (!post) {
+        throw new NotFoundException(`Post with id ${postId} not found`);
+      }
+      whereClause.post = { id: postId };
+    }
+
+    if (commentId) {
+      comment = await this.commentsRepository.findOne({
+        where: { id: commentId },
+      });
+      if (!comment) {
+        throw new NotFoundException(`Comment with id ${commentId} not found`);
+      }
+      whereClause.comment = { id: commentId };
+    }
+
+    const existingLike = await this.likesRepository.findOne({
+      where: whereClause,
+      relations: ['owner', 'post', 'comment'],
+    });
+
+    if (existingLike) {
+      const existingLikeId = existingLike.id;
+      console.log(existingLike);
+      await this.likesRepository.remove(existingLike);
+      return { ...existingLike, id: existingLikeId };
+    }
+
+    const newLike = this.likesRepository.create({
+      owner: user,
+      ...(postId && { post }),
+      ...(commentId && { comment }),
+    });
+
+    console.log(newLike);
     return this.likesRepository.save(newLike);
   }
 
-  async find(entityId: number, entity: EntityOwnsLike) {
-    console.log(EntityOwnsLike.COMMENT === entity, entity.toString());
+  async findForPostOrComment(
+    entityId: number,
+    entity: EntityOwnsLike,
+  ): Promise<Like[]> {
+    const whereClause: FindOptionsWhere<Like> =
+      {} satisfies FindOptionsWhere<Like>;
 
-    const cntnt = await this.dataSource
-      .getRepository<Post | Comment>(entity.toString().toLocaleLowerCase())
-      .findOne({
-        relations: ["likes"],
-        where: { id: entityId }
-      });
+    if (entity === EntityOwnsLike.POST) {
+      whereClause.post = { id: entityId };
+    } else if (entity === EntityOwnsLike.COMMENT) {
+      whereClause.comment = { id: entityId };
+    } else {
+      throw new BadRequestException('Invalid entity type');
+    }
 
-    console.log(cntnt); 
-      
-    return cntnt.likes;
-  }
-
-  findOne (id: number) {
-    return this.likesRepository.findOne({
-      relations: ["post", "comment", "owner", "post.author", "comment.author"],
-      where: { id }
+    return this.likesRepository.find({
+      where: whereClause,
+      relations: ['owner', 'post', 'comment'],
+      order: { createdAt: 'DESC' },
     });
   }
 
-  async remove(id: number) {
-    const like = await this.likesRepository.findOneBy({id});
-    if(!like) throw new BadRequestException(`Like with ID: ${id} does not exist!`);
-    return this.likesRepository.remove(like);
+  async findOne(id: number): Promise<Like> {
+    const like = await this.likesRepository.findOne({
+      relations: ['post', 'comment', 'owner', 'post.author', 'comment.author'],
+      where: { id },
+    });
+
+    if (!like) {
+      throw new NotFoundException(`Like with id ${id} not found`);
+    }
+
+    return like;
   }
 
-  saveLike (like: Like) {
-    return this.likesRepository.save(like);
+  async remove(like: Like): Promise<Like> {
+    const id = like.id;
+    const removed = await this.likesRepository.remove(like);
+    return Object.assign(removed, { id });
+  }
+
+  async hasUserLikedEntity(
+    userId: string,
+    entityId: number,
+    entity: EntityOwnsLike,
+  ): Promise<boolean> {
+    const whereClause: FindOptionsWhere<Like> = { owner: { id: userId } };
+
+    if (entity === EntityOwnsLike.POST) {
+      whereClause.post = { id: entityId };
+    } else {
+      whereClause.comment = { id: entityId };
+    }
+
+    const count = await this.likesRepository.count({ where: whereClause });
+    return count > 0;
+  }
+
+  async getLikeCount(
+    entityId: number,
+    entity: EntityOwnsLike,
+  ): Promise<number> {
+    const whereClause: FindOptionsWhere<Like> = {};
+
+    if (entity === EntityOwnsLike.POST) {
+      whereClause.post = { id: entityId };
+    } else {
+      whereClause.comment = { id: entityId };
+    }
+
+    return this.likesRepository.count({ where: whereClause });
   }
 }

@@ -1,93 +1,243 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtResponsePayload } from 'auth/jwt/jwt-response.payload';
 import { v2 } from 'cloudinary';
 import { CloudinaryService } from 'cloudinary/cloudinary.service';
-import { Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
 import { Post } from './entities/post.entity';
 import { Category } from './enum/category.enum';
+import { PostBuilder } from './builders/post.builder';
+
+export interface FindPostsOptions {
+  category?: Category;
+  authorId?: string;
+  includeRelations?: boolean;
+  limit?: number;
+  offset?: number;
+}
 
 @Injectable()
 export class PostsService {
-
   constructor(
     @InjectRepository(Post) private readonly postsRepository: Repository<Post>,
     private readonly usersService: UsersService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async create(createPostInput: CreatePostInput, user: User) {
+  async create(createPostInput: CreatePostInput, user: User): Promise<Post> {
     const { title, content, category, desc, image } = createPostInput;
-    console.log(user);
 
-    const newPost = new Post(
-      title, content, image, desc, category, user
-    );
+    const newPost = new PostBuilder()
+      .withAuthor(user)
+      .withTitle(title.trim())
+      .withContent(content)
+      .withImage(image)
+      .withDesc(desc?.trim() || '')
+      .withCategory(category)
+      .build();
 
-    return await this.postsRepository.save(newPost);
+    return this.postsRepository.save(newPost);
   }
 
-  find(par: {cat?: Category, authorId?: string}): Promise<Post[]> {
-    let cat = par.cat, authorId = par.authorId;
-    // return cat 
-    //   ? 
-    //   this.postsRepository.find({
-    //     where: { category: cat },
-    //     relations: ["author", "likes", "comments"]
-    //   }) 
-    //   : ( authorId ?
-    //     this.postsRepository.find({
-    //       where: { author: { id: authorId } },
-    //       relations: ["author", "likes", "comments"]
-    //     }) :
-    return this.postsRepository.find({
-      relations: ["author", "likes", "comments"],
-      where: cat && authorId ? { category: cat, author: { id: authorId } } : (
-        cat ? { category: cat } : (
-          authorId ? { author: { id: authorId } } : undefined
-        )
-      )
-    });
-      // );
+  async findAll(options: FindPostsOptions = {}): Promise<Post[]> {
+    const {
+      category,
+      authorId,
+      includeRelations = true,
+      limit,
+      offset,
+    } = options;
+
+    const where: FindOptionsWhere<Post> = {};
+
+    if (category) {
+      where.category = category;
+    }
+
+    if (authorId) {
+      where.author = { id: authorId };
+    }
+
+    const queryOptions: any = {
+      where: Object.keys(where).length > 0 ? where : undefined,
+      order: { createdAt: 'DESC' },
+    };
+
+    if (includeRelations) {
+      queryOptions.relations = [
+        'author',
+        'likes',
+        'likes.owner',
+        'comments',
+        'comments.author',
+      ];
+    }
+
+    if (limit) {
+      queryOptions.take = limit;
+    }
+
+    if (offset) {
+      queryOptions.skip = offset;
+    }
+
+    return this.postsRepository.find(queryOptions);
   }
 
-  // getByAuthorId (id: string): Promise<Post[]> {
-  //   return this.postsRepository.find({
-  //     where: 
-  //   })
-  // }
-
-  findOne(id: number): Promise<Post> {
-    return this.postsRepository.findOne({
+  async findOne(id: number, includeRelations = true): Promise<Post> {
+    const queryOptions: FindOneOptions<Post> = {
       where: { id },
+    };
+
+    if (includeRelations) {
+      queryOptions.relations = [
+        'author',
+        'likes',
+        'likes.owner',
+        'comments',
+        'comments.author',
+        'comments.likes',
+      ];
+    }
+
+    const post = await this.postsRepository.findOne(queryOptions);
+
+    if (!post) {
+      throw new NotFoundException(`Post with id ${id} not found`);
+    }
+
+    return post;
+  }
+
+  async findByAuthor(authorId: string, limit?: number): Promise<Post[]> {
+    return this.findAll({
+      authorId,
+      includeRelations: true,
+      limit,
     });
   }
 
-  save (post: Post) {
-    return this.postsRepository.save(post);
+  async findByCategory(category: Category, limit?: number): Promise<Post[]> {
+    return this.findAll({
+      category,
+      includeRelations: true,
+      limit,
+    });
   }
 
-  async update(updatePostInput: UpdatePostInput, user: User) {
-    const { 
-      id,
-      title,
-      image,
-      desc,
-      content,
-      category
-    } = updatePostInput;
-    const post = new Post(title, content, image, desc, category, user);
-    post.id = id;
-    return this.postsRepository.save(post);
+  async update(
+    updatePostInput: UpdatePostInput,
+    user: User,
+    existingPost: Post,
+  ): Promise<Post> {
+    const { id, title, image, desc, content, category } = updatePostInput;
+
+    // const existingPost = await this.findOne(id, false);
+
+    // if (existingPost.author.id !== user.id) {
+    //   throw new BadRequestException('You can only update your own posts');
+    // }
+
+    const updatedPost = new PostBuilder()
+      .withAuthor(existingPost.author)
+      .withTitle(title ?? existingPost.title)
+      .withContent(content ?? existingPost.content)
+      .withImage(image ?? existingPost.image)
+      .withDesc(desc ?? existingPost.desc)
+      .withCategory(category ?? existingPost.category)
+      .build();
+
+    updatedPost.id = id;
+
+    return this.postsRepository.save(updatedPost);
   }
 
-  async remove(id: number) {
-    const post = await this.postsRepository.findOneBy({id});
-    if(!post) throw new NotFoundException("Post with id: " + id + " does not exist, and hence cannot be deleted.");
-    return this.postsRepository.remove(post);
+  async remove(id: number, post: Post): Promise<Post> {
+    // const post = await this.findOne(id, false);
+
+    // if (post.author.id !== user.id) {
+    //   throw new BadRequestException('You can only delete your own posts');
+    // }
+
+    if (post.image) {
+      try {
+        // await this.cloudinaryService.deleteImage(publicId);
+      } catch (error) {
+        console.error('Failed to delete image from Cloudinary:', error);
+        // Continue with post deletion even if image deletion fails
+      }
+    }
+
+    const removed = await this.postsRepository.remove(post);
+    return { ...removed, id };
   }
+
+  async getPostCount(
+    options: { category?: Category; authorId?: string } = {},
+  ): Promise<number> {
+    const where: FindOptionsWhere<Post> = {};
+
+    if (options.category) {
+      where.category = options.category;
+    }
+
+    if (options.authorId) {
+      where.author = { id: options.authorId };
+    }
+
+    return this.postsRepository.count({
+      where: Object.keys(where).length > 0 ? where : undefined,
+    });
+  }
+
+  async getPopularPosts(limit: number = 10): Promise<Post[]> {
+    const posts = await this.postsRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoin('post.likes', 'likes')
+      .leftJoinAndSelect('post.comments', 'comments')
+      .groupBy('post.id')
+      .addGroupBy('author.id')
+      .addGroupBy('comments.id')
+      .orderBy('COUNT(likes.id)', 'DESC')
+      .addOrderBy('post.createdAt', 'DESC')
+      .limit(limit)
+      .getMany();
+
+    return posts;
+  }
+
+  async getRecentPosts(limit: number = 10): Promise<Post[]> {
+    return this.findAll({
+      includeRelations: true,
+      limit,
+    });
+  }
+
+  async exists(id: number): Promise<boolean> {
+    const count = await this.postsRepository.count({ where: { id } });
+    return count > 0;
+  }
+
+  // async update(updatePostInput: UpdatePostInput, user: User) {
+  //   const { id, title, image, desc, content, category } = updatePostInput;
+  //   const post = new PostBuilder()
+  //     .withAuthor(user)
+  //     .withTitle(title)
+  //     .withContent(content)
+  //     .withImage(image)
+  //     .withDesc(desc)
+  //     .withCategory(category)
+  //     .build();
+  //   post.id = id;
+  //   return this.postsRepository.save(post);
+  // }
 }

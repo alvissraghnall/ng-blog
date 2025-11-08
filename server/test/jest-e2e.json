@@ -1,9 +1,16 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
+  "rootDir": "..",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "moduleNameMapper": {
+      "^common/(.*)$": "<rootDir>/src/common/$1",
+      "^auth/(.*)$": "<rootDir>/src/auth/$1",
+      "^posts/(.*)$": "<rootDir>/src/posts/$1",
+      "^cloudinary/(.*)$": "<rootDir>/src/cloudinary/$1",
+      "^users/(.*)$": "<rootDir>/src/users/$1"
+    }
 }

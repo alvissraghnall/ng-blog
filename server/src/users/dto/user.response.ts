@@ -1,5 +1,6 @@
-import { OmitType } from "@nestjs/swagger";
-import { User } from "../entities/user.entity";
+import { OmitType } from '@nestjs/graphql';
+import { User } from '../entities/user.entity';
 
-
-export class UserResponse extends OmitType<User, keyof User>(User, ["password"] as const) {  };
+export class UserResponse extends OmitType<User, keyof User>(User, [
+  'password',
+] as const) {}

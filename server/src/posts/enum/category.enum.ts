@@ -1,15 +1,15 @@
-import { registerEnumType } from "@nestjs/graphql";
+import { registerEnumType } from '@nestjs/graphql';
 
 export enum Category {
-    FASHION = "fashion",
-    CUISINE = "cuisine",
-    TECHNOLOGY  = "technology",
-    DIY = "diy",
-    LIFESTYLE = "lifestyle",
-    TRAVEL = "travel",
-    CINEMA = "cinema"
+  FASHION = 'FASHION',
+  CUISINE = 'CUISINE',
+  TECHNOLOGY = 'TECHNOLOGY',
+  DIY = 'DIY',
+  LIFESTYLE = 'LIFESTYLE',
+  TRAVEL = 'TRAVEL',
+  CINEMA = 'CINEMA',
 }
 
 registerEnumType(Category, {
-    name: "Category",
-})
+  name: 'Category',
+});
