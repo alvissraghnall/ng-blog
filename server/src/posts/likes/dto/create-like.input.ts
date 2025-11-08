@@ -7,7 +7,7 @@ export class CreateLikeInput {
   @Field(() => Int, { description: 'Comment with like', nullable: true })
   @IsOptional()
   @CommentOrPost(CreateLikeInput, (cli) => cli.postId, {
-    message: "Must provide either commentId or postId, not both or neither",
+    message: 'Must provide either commentId or postId, not both or neither',
   })
   commentId?: number;
 

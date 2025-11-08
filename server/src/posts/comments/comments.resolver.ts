@@ -34,9 +34,12 @@ export class CommentsResolver {
 
   @Mutation(() => Comment)
   @UseGuards(GqlJwtAuthGuard, EntityExistsGuard)
-  @CheckEntityExistsFor<{
-    createCommentInput: CreateCommentInput;
-  }, Post>({
+  @CheckEntityExistsFor<
+    {
+      createCommentInput: CreateCommentInput;
+    },
+    Post
+  >({
     entity: Post,
     idExtractor: 'createCommentInput.postId',
     // idExtractor: (args) => args.createCommentInput.postId,
@@ -50,18 +53,18 @@ export class CommentsResolver {
     return this.commentsService.create(createCommentInput, user);
   }
 
-  @Query(() => [Comment], { name: 'comments', nullable: true,  })
+  @Query(() => [Comment], { name: 'comments', nullable: true })
   @Public()
   async getCommentsOnPost(@Args('postId', { type: () => Int }) postId: number) {
     const cmt = await this.commentsService.findAllOnPost(postId);
-	console.log(cmt);
-	return cmt;
+    console.log(cmt);
+    return cmt;
   }
 
   @Query(() => Comment, { name: 'comment', nullable: true })
   @Public()
   findOne(@Args('id', { type: () => Int }) id: number) {
-	  return this.commentsService.findOne(id);
+    return this.commentsService.findOne(id);
   }
 
   @Mutation(() => Comment)

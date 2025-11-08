@@ -216,7 +216,7 @@ describe('Posts (e2e)', () => {
 
   const validPostData = {
     title: 'Test Blog Post Title',
-	content: `This is a test blog post content that meets the minimum length requirement of 100 characters. 
+    content: `This is a test blog post content that meets the minimum length requirement of 100 characters. 
 	  It provides enough detail to demonstrate proper formatting, readability, and completeness 
 	  for testing purposes within a content management or publishing system.`,
     image: 'https://example.com/image.jpg',
@@ -314,7 +314,7 @@ describe('Posts (e2e)', () => {
 
     secondUserToken = secondLoginMutationResponse.body.data.login.access_token;
     secondUserId = secondRegisterResponse.body.data.signup.id;
-	console.log(secondUserId);
+    console.log(secondUserId);
   }, 15000);
 
   afterAll(async () => {
@@ -334,7 +334,7 @@ describe('Posts (e2e)', () => {
         input: validPostData,
       });
 
-	  console.log(util.inspect(response.body, { depth: null }));
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.createPost).toMatchObject({
@@ -359,8 +359,11 @@ describe('Posts (e2e)', () => {
       const response = await gqlRequest(CREATE_POST_MUTATION, secondUserToken, {
         input: secondPostData,
       });
-	  console.log(util.inspect(response.body, { depth: null }));
-	  console.log(response.body.data.createPost, response.body.data.createPost.author);
+      console.log(util.inspect(response.body, { depth: null }));
+      console.log(
+        response.body.data.createPost,
+        response.body.data.createPost.author,
+      );
 
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
@@ -376,139 +379,141 @@ describe('Posts (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeDefined();
-      expect(response.body.errors[0].message).toContain('Invalid Authorization Header');
+      expect(response.body.errors[0].message).toContain(
+        'Invalid Authorization Header',
+      );
     });
 
-	it('should fail with title too short', async () => {
-	  const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
-	    input: { ...validPostData, title: 'ab' },
-	  });
+    it('should fail with title too short', async () => {
+      const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
+        input: { ...validPostData, title: 'ab' },
+      });
 
-	  expect(response.status).toBe(200);
-	  expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toHaveLength(1);
 
-	  const error = response.body.errors[0];
-	  expect(error.message).toMatch(/title/i);
-	  expect(error.message).toMatch(/must be longer than or equal to/i);
-	  expect(error.path).toEqual(['createPost']);
-	  expect(error.extensions).toBeDefined();
-	  expect(error.extensions.code).toBe('BAD_REQUEST');
-	  expect(error.extensions.statusCode).toBe(400);
-	  expect(error.extensions.details).toMatch(/Bad Request/i);
-	  expect(response.body.data).toBeNull();
-	});
+      const error = response.body.errors[0];
+      expect(error.message).toMatch(/title/i);
+      expect(error.message).toMatch(/must be longer than or equal to/i);
+      expect(error.path).toEqual(['createPost']);
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('BAD_REQUEST');
+      expect(error.extensions.statusCode).toBe(400);
+      expect(error.extensions.details).toMatch(/Bad Request/i);
+      expect(response.body.data).toBeNull();
+    });
 
-	it('should fail with title too long', async () => {
-	  const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
-	    input: { ...validPostData, title: 'a'.repeat(101) },
-	  });
+    it('should fail with title too long', async () => {
+      const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
+        input: { ...validPostData, title: 'a'.repeat(101) },
+      });
 
-	  expect(response.status).toBe(200);
-	  expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toHaveLength(1);
 
-	  const error = response.body.errors[0];
-	  expect(error.message).toMatch(/title/i);
-	  expect(error.message).toMatch(/must be shorter than or equal to/i);
-	  expect(error.path).toEqual(['createPost']);
-	  expect(error.extensions).toBeDefined();
-	  expect(error.extensions.code).toBe('BAD_REQUEST');
-	  expect(error.extensions.statusCode).toBe(400);
-	  expect(error.extensions.details).toMatch(/Bad Request/i);
-	  expect(response.body.data).toBeNull();
-	});
+      const error = response.body.errors[0];
+      expect(error.message).toMatch(/title/i);
+      expect(error.message).toMatch(/must be shorter than or equal to/i);
+      expect(error.path).toEqual(['createPost']);
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('BAD_REQUEST');
+      expect(error.extensions.statusCode).toBe(400);
+      expect(error.extensions.details).toMatch(/Bad Request/i);
+      expect(response.body.data).toBeNull();
+    });
 
     it('should fail with content too short', async () => {
-	  const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
-	    input: { ...validPostData, content: 'Too short' },
-	  });
+      const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
+        input: { ...validPostData, content: 'Too short' },
+      });
 
-	  expect(response.status).toBe(200);
-	  expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toHaveLength(1);
 
-	  const error = response.body.errors[0];
-	  expect(error.message).toMatch(/content/i);
-	  expect(error.message).toMatch(/must be longer than or equal to/i);
-	  expect(error.path).toEqual(['createPost']);
-	  expect(error.extensions).toBeDefined();
-	  expect(error.extensions.code).toBe('BAD_REQUEST');
-	  expect(error.extensions.statusCode).toBe(400);
-	  expect(error.extensions.details).toMatch(/Bad Request/i);
-	  expect(response.body.data).toBeNull();
-	});
+      const error = response.body.errors[0];
+      expect(error.message).toMatch(/content/i);
+      expect(error.message).toMatch(/must be longer than or equal to/i);
+      expect(error.path).toEqual(['createPost']);
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('BAD_REQUEST');
+      expect(error.extensions.statusCode).toBe(400);
+      expect(error.extensions.details).toMatch(/Bad Request/i);
+      expect(response.body.data).toBeNull();
+    });
 
-	it('should fail with content too long', async () => {
-	  const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
-	    input: { ...validPostData, content: 'a'.repeat(50001) },
-	  });
+    it('should fail with content too long', async () => {
+      const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
+        input: { ...validPostData, content: 'a'.repeat(50001) },
+      });
 
-	  console.log(util.inspect(response.body, { depth: null }));
+      console.log(util.inspect(response.body, { depth: null }));
 
-	  expect(response.status).toBe(200);
-	  expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toHaveLength(1);
 
-	  const error = response.body.errors[0];
-	  expect(error.message).toMatch(/content/i);
-	  expect(error.message).toMatch(/must be shorter than or equal to/i);
-	  expect(error.path).toEqual(['createPost']);
-	  expect(error.extensions).toBeDefined();
-	  expect(error.extensions.code).toBe('BAD_REQUEST');
-	  expect(error.extensions.statusCode).toBe(400);
-	  expect(error.extensions.details).toMatch(/Bad Request/i);
-	  expect(response.body.data).toBeNull();
-	});
+      const error = response.body.errors[0];
+      expect(error.message).toMatch(/content/i);
+      expect(error.message).toMatch(/must be shorter than or equal to/i);
+      expect(error.path).toEqual(['createPost']);
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('BAD_REQUEST');
+      expect(error.extensions.statusCode).toBe(400);
+      expect(error.extensions.details).toMatch(/Bad Request/i);
+      expect(response.body.data).toBeNull();
+    });
 
     it('should fail with empty image', async () => {
-	  const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
-	    input: { ...validPostData, image: '' },
-	  });
+      const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
+        input: { ...validPostData, image: '' },
+      });
 
-	  expect(response.status).toBe(200);
-	  expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toHaveLength(1);
 
-	  const error = response.body.errors[0];
-	  expect(error.message).toMatch(/image/i);
-	  expect(error.message).toMatch(/empty|required/i);
-	  expect(error.path).toEqual(['createPost']);
-	  expect(error.extensions).toBeDefined();
-	  expect(error.extensions.code).toBe('BAD_REQUEST');
-	  expect(error.extensions.statusCode).toBe(400);
-	  expect(error.extensions.details).toMatch(/Bad Request/i);
-	  expect(response.body.data).toBeNull();
-	});
+      const error = response.body.errors[0];
+      expect(error.message).toMatch(/image/i);
+      expect(error.message).toMatch(/empty|required/i);
+      expect(error.path).toEqual(['createPost']);
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('BAD_REQUEST');
+      expect(error.extensions.statusCode).toBe(400);
+      expect(error.extensions.details).toMatch(/Bad Request/i);
+      expect(response.body.data).toBeNull();
+    });
 
     it('should fail with empty description', async () => {
-	  const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
-	    input: { ...validPostData, desc: '' },
-	  });
+      const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
+        input: { ...validPostData, desc: '' },
+      });
 
-	  console.log(util.inspect(response.body, { depth: null }));
+      console.log(util.inspect(response.body, { depth: null }));
 
-	  expect(response.status).toBe(200);
-	  expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toHaveLength(1);
 
-	  const error = response.body.errors[0];
-	  expect(error.message).toMatch(/desc|description/i);
-	  expect(error.message).toMatch(/empty|required/i);
-	  expect(error.path).toEqual(['createPost']);
-	  expect(error.extensions).toBeDefined();
-	  expect(error.extensions.code).toBe('BAD_REQUEST');
-	  expect(error.extensions.statusCode).toBe(400);
-	  expect(error.extensions.details).toMatch(/Bad Request/i);
-	  expect(response.body.data).toBeNull();
-	});
+      const error = response.body.errors[0];
+      expect(error.message).toMatch(/desc|description/i);
+      expect(error.message).toMatch(/empty|required/i);
+      expect(error.path).toEqual(['createPost']);
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('BAD_REQUEST');
+      expect(error.extensions.statusCode).toBe(400);
+      expect(error.extensions.details).toMatch(/Bad Request/i);
+      expect(response.body.data).toBeNull();
+    });
 
     it('should fail with invalid category', async () => {
       const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
         input: { ...validPostData, category: 'INVALID_CATEGORY' },
       });
 
-	  console.log(util.inspect(response.body, { depth: null }));
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(400);
       expect(response.body.errors).toBeDefined();
     });
@@ -600,7 +605,7 @@ describe('Posts (e2e)', () => {
         id: createdPostId,
       });
 
-	  console.log(util.inspect(response.body, { depth: null }));
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.post).toMatchObject({
@@ -663,7 +668,7 @@ describe('Posts (e2e)', () => {
         authorId: thirdUserId,
       });
 
-	  console.log(util.inspect(response.body, { depth: null }));
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.postsByAuthor).toEqual([]);
@@ -887,7 +892,9 @@ describe('Posts (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeDefined();
-      expect(response.body.errors[0].message).toContain('Invalid Authorization Header');
+      expect(response.body.errors[0].message).toContain(
+        'Invalid Authorization Header',
+      );
     });
 
     it("should fail to update another user's post", async () => {
@@ -898,74 +905,76 @@ describe('Posts (e2e)', () => {
         },
       });
 
-	  console.log(util.inspect(response.body, { depth: null }));
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeDefined();
 
-		expect(response.body.errors).toHaveLength(1);
+      expect(response.body.errors).toHaveLength(1);
 
-		const error = response.body.errors[0];
+      const error = response.body.errors[0];
 
-		expect(error.message).toBe('You do not have permission to modify this Post');
-		expect(error.locations).toBeDefined();
-		expect(error.path).toEqual(['updatePost']);
+      expect(error.message).toBe(
+        'You do not have permission to modify this Post',
+      );
+      expect(error.locations).toBeDefined();
+      expect(error.path).toEqual(['updatePost']);
 
-		expect(error.extensions).toBeDefined();
-		expect(error.extensions.code).toBe('FORBIDDEN');
-		expect(error.extensions.statusCode).toBe(403);
-		expect(error.extensions.details).toBe('Forbidden');
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('FORBIDDEN');
+      expect(error.extensions.statusCode).toBe(403);
+      expect(error.extensions.details).toBe('Forbidden');
 
-		expect(response.body.data).toBeNull();
+      expect(response.body.data).toBeNull();
     });
 
-	it('should fail to update non-existent post', async () => {
-	  const response = await gqlRequest(UPDATE_POST_MUTATION, authToken, {
-	    input: {
-	      id: 99999,
-	      title: 'Non-existent post',
-	    },
-	  });
+    it('should fail to update non-existent post', async () => {
+      const response = await gqlRequest(UPDATE_POST_MUTATION, authToken, {
+        input: {
+          id: 99999,
+          title: 'Non-existent post',
+        },
+      });
 
-	  expect(response.status).toBe(200);
-	  expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toHaveLength(1);
 
-	  const error = response.body.errors[0];
+      const error = response.body.errors[0];
 
-	  expect(error.message).toMatch(/not found/i);
-	  expect(error.path).toEqual(['updatePost']);
-	  expect(error.extensions).toBeDefined();
-	  expect(error.extensions.code).toBe('NOT_FOUND');
-	  expect(error.extensions.statusCode).toBe(404);
-	  expect(error.extensions.details).toMatch(/not found/i);
-	  expect(response.body.data).toBeNull();
-	});
+      expect(error.message).toMatch(/not found/i);
+      expect(error.path).toEqual(['updatePost']);
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('NOT_FOUND');
+      expect(error.extensions.statusCode).toBe(404);
+      expect(error.extensions.details).toMatch(/not found/i);
+      expect(response.body.data).toBeNull();
+    });
 
     it('should fail with invalid title length on update', async () => {
-	  const response = await gqlRequest(UPDATE_POST_MUTATION, authToken, {
-	    input: {
-	      id: createdPostId,
-	      title: 'ab',
-	    },
-	  });
+      const response = await gqlRequest(UPDATE_POST_MUTATION, authToken, {
+        input: {
+          id: createdPostId,
+          title: 'ab',
+        },
+      });
 
-	  expect(response.status).toBe(200);
-	  expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toHaveLength(1);
 
-	  const error = response.body.errors[0];
+      const error = response.body.errors[0];
 
-	  expect(error.message).toMatch(/title/i);
-	  expect(error.message).toMatch(/must be longer than or equal to/i);
-	  expect(error.path).toEqual(['updatePost']);
+      expect(error.message).toMatch(/title/i);
+      expect(error.message).toMatch(/must be longer than or equal to/i);
+      expect(error.path).toEqual(['updatePost']);
 
-	  expect(error.extensions).toBeDefined();
-	  expect(error.extensions.code).toBe('BAD_REQUEST');
-	  expect(error.extensions.statusCode).toBe(400);
-	  expect(error.extensions.details).toMatch(/Bad Request/i);
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('BAD_REQUEST');
+      expect(error.extensions.statusCode).toBe(400);
+      expect(error.extensions.details).toMatch(/Bad Request/i);
 
-	  expect(response.body.data).toBeNull();
-	});
+      expect(response.body.data).toBeNull();
+    });
 
     it('should fail with invalid category on update', async () => {
       const response = await gqlRequest(UPDATE_POST_MUTATION, authToken, {
@@ -989,7 +998,7 @@ describe('Posts (e2e)', () => {
         input: {
           title: 'Post to be deleted',
           content:
-            'This post will be deleted in the test suite to verify deletion works properly. It shall be parsed, compiled, and run. or ran? which is it? i can\'t tell atp heathen.',
+            "This post will be deleted in the test suite to verify deletion works properly. It shall be parsed, compiled, and run. or ran? which is it? i can't tell atp heathen.",
           image: 'https://example.com/delete-test.jpg',
           desc: 'Test description for deletion, sweetened with almond and baked with neon',
           category: Category.TECHNOLOGY,
@@ -1024,7 +1033,9 @@ describe('Posts (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeDefined();
-      expect(response.body.errors[0].message).toContain('Invalid Authorization Header');
+      expect(response.body.errors[0].message).toContain(
+        'Invalid Authorization Header',
+      );
     });
 
     it("should fail to delete another user's post", async () => {
@@ -1034,20 +1045,22 @@ describe('Posts (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeDefined();
-        expect(response.body.errors).toHaveLength(1);
+      expect(response.body.errors).toHaveLength(1);
 
-        const error = response.body.errors[0];
+      const error = response.body.errors[0];
 
-        expect(error.message).toBe('You do not have permission to modify this Post');
-        expect(error.locations).toBeDefined();
-        expect(error.path).toEqual(['removePost']);
+      expect(error.message).toBe(
+        'You do not have permission to modify this Post',
+      );
+      expect(error.locations).toBeDefined();
+      expect(error.path).toEqual(['removePost']);
 
-        expect(error.extensions).toBeDefined();
-        expect(error.extensions.code).toBe('FORBIDDEN');
-        expect(error.extensions.statusCode).toBe(403);
-        expect(error.extensions.details).toBe('Forbidden');
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toBe('FORBIDDEN');
+      expect(error.extensions.statusCode).toBe(403);
+      expect(error.extensions.details).toBe('Forbidden');
 
-        expect(response.body.data).toBeNull();
+      expect(response.body.data).toBeNull();
     });
 
     it('should fail to delete non-existent post', async () => {
@@ -1057,7 +1070,7 @@ describe('Posts (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      expect(response.body.errors).toHaveLength(1);
 
       const error = response.body.errors[0];
 
@@ -1071,28 +1084,30 @@ describe('Posts (e2e)', () => {
     });
 
     it('should fail to delete already deleted post', async () => {
-	  const response = await gqlRequest(DELETE_POST_MUTATION, authToken, {
-	    id: postToDelete,
-	  });
+      const response = await gqlRequest(DELETE_POST_MUTATION, authToken, {
+        id: postToDelete,
+      });
 
-	  console.log(util.inspect(response.body, { depth: null }));
-	  
-	  expect(response.status).toBe(200);
-	  expect(response.body.errors).toBeDefined();
-	  expect(response.body.errors).toHaveLength(1);
+      console.log(util.inspect(response.body, { depth: null }));
 
-	  const error = response.body.errors[0];
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors).toHaveLength(1);
 
-	  expect(error.message).toMatch(/(already deleted|not found|does not exist)/i);
-	  expect(error.path).toEqual(['removePost']);
+      const error = response.body.errors[0];
 
-	  expect(error.extensions).toBeDefined();
-	  expect(error.extensions.code).toMatch(/NOT_FOUND|GONE/);
-	  expect(error.extensions.statusCode).toBeGreaterThanOrEqual(404);
-	  expect(error.extensions.details).toMatch(/deleted|not found/i);
+      expect(error.message).toMatch(
+        /(already deleted|not found|does not exist)/i,
+      );
+      expect(error.path).toEqual(['removePost']);
 
-	  expect(response.body.data).toBeNull();
-	});
+      expect(error.extensions).toBeDefined();
+      expect(error.extensions.code).toMatch(/NOT_FOUND|GONE/);
+      expect(error.extensions.statusCode).toBeGreaterThanOrEqual(404);
+      expect(error.extensions.details).toMatch(/deleted|not found/i);
+
+      expect(response.body.data).toBeNull();
+    });
   });
 
   describe('Field Resolvers', () => {
@@ -1100,7 +1115,7 @@ describe('Posts (e2e)', () => {
       const response = await gqlRequest(GET_POST_QUERY, '', {
         id: createdPostId,
       });
-	  console.log(response.body);
+      console.log(response.body);
 
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
@@ -1113,7 +1128,7 @@ describe('Posts (e2e)', () => {
         id: createdPostId,
       });
 
-	  console.log(response.body);
+      console.log(response.body);
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.post.commentCount).toBeDefined();

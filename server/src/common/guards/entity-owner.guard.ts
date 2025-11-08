@@ -68,7 +68,7 @@ export class EntityOwnerGuard implements CanActivate {
       );
     }
 
-	console.log(entity);
+    console.log(entity);
 
     const owner = entity[ownerKey];
     const ownerId = typeof owner === 'object' ? owner.id : owner;

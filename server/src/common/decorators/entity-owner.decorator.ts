@@ -21,7 +21,7 @@ export const OwnedEntity = createParamDecorator(
   (data: unknown, context: ExecutionContext) => {
     const gqlCtx = GqlExecutionContext.create(context);
     const { req } = gqlCtx.getContext();
-	console.log(req.entity);
+    console.log(req.entity);
     return req.entity;
   },
 );

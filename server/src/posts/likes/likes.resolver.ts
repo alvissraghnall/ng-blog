@@ -25,8 +25,8 @@ export class LikesResolver {
     @CurrentUser() user: User,
   ) {
     const like = await this.likesService.toggleLike(createLikeInput, user);
-	console.log(like);
-	return like;
+    console.log(like);
+    return like;
   }
 
   @Query(() => [Like], { name: 'likes' })
