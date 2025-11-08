@@ -1,7 +1,7 @@
 import { Injectable, Logger, Type } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseEntity } from 'common/entities/base.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
 
 type CreateEntityInput<EntityCls extends BaseEntity> = DeepPartial<EntityCls>;
 
@@ -34,6 +34,12 @@ export const CrudService = <EntityCls extends BaseEntity>(
         `Inserting ${entityCls.name} record: (${JSON.stringify(input)})`,
       );
       return this.repo.save(input);
+    }
+
+    findOne(id: CreateEntityInput<EntityCls>['id']) {
+      return this.repo.findOne({
+        where: { id } as FindOptionsWhere<EntityCls>,
+      });
     }
   }
   return CrudServiceHost;

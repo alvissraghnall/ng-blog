@@ -6,11 +6,11 @@ export class HashService {
   async hashPassword(password: string) {
     const saltOrRounds = 10;
 
-    console.log(1);
+    // console.log(1);
 
     const hashedPassword = await bcrypt.hash(password, saltOrRounds);
 
-    console.log(2);
+    // console.log(2);
 
     return hashedPassword;
   }

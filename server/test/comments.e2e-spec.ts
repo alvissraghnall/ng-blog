@@ -173,7 +173,7 @@ describe('CommentsModule (e2e)', () => {
         })
         .expect(200)
         .expect((res) => {
-		  console.log(util.inspect(res.body, { depth: null }));
+          console.log(util.inspect(res.body, { depth: null }));
           expect(res.body.data.createComment).toBeDefined();
           expect(res.body.data.createComment.text).toBe(
             'This is a test comment',
@@ -208,7 +208,9 @@ describe('CommentsModule (e2e)', () => {
         .expect(200)
         .expect((res) => {
           expect(res.body.errors).toBeDefined();
-          expect(res.body.errors[0].message).toContain("Invalid Authorization Header");
+          expect(res.body.errors[0].message).toContain(
+            'Invalid Authorization Header',
+          );
         });
     });
 
@@ -339,7 +341,7 @@ describe('CommentsModule (e2e)', () => {
         })
         .expect(200)
         .expect((res) => {
-		  console.log(util.inspect(res.body, { depth: null }));
+          console.log(util.inspect(res.body, { depth: null }));
           expect(res.body.data.comments).toBeDefined();
           expect(res.body.data.comments).toBeInstanceOf(Array);
           expect(res.body.data.comments.length).toBeGreaterThanOrEqual(3);
@@ -354,9 +356,9 @@ describe('CommentsModule (e2e)', () => {
           title: 'Empty Post',
           content: 'No comments here',
           author: testUser1,
-        	image: 'https://gratatata.io/679854',
-        	desc: 'description',
-	        category: Category.FASHION,
+          image: 'https://gratatata.io/679854',
+          desc: 'description',
+          category: Category.FASHION,
         }),
       );
 
@@ -410,7 +412,7 @@ describe('CommentsModule (e2e)', () => {
         })
         .expect(200)
         .expect((res) => {
-		  console.log(util.inspect(res.body, { depth: null }));
+          console.log(util.inspect(res.body, { depth: null }));
           expect(res.body.data.comment).toBeDefined();
           expect(res.body.data.comment.id).toBe(testComment.id);
           expect(res.body.data.comment.text).toBe(testComment.text);
@@ -437,7 +439,7 @@ describe('CommentsModule (e2e)', () => {
         })
         .expect(200)
         .expect((res) => {
-		  console.log(util.inspect(res.body, { depth: null }));
+          console.log(util.inspect(res.body, { depth: null }));
 
           expect(res.body.data.comment).toBeNull();
         });
@@ -540,7 +542,9 @@ describe('CommentsModule (e2e)', () => {
         .expect(200)
         .expect((res) => {
           expect(res.body.errors).toBeDefined();
-          expect(res.body.errors[0].message).toContain("Invalid Authorization Header");
+          expect(res.body.errors[0].message).toContain(
+            'Invalid Authorization Header',
+          );
         });
     });
 
@@ -637,7 +641,7 @@ describe('CommentsModule (e2e)', () => {
         })
         .expect(200)
         .expect((res) => {
-		  console.log(util.inspect(res.body, { depth: null }));
+          console.log(util.inspect(res.body, { depth: null }));
 
           expect(res.body.data.removeComment).toBeDefined();
           expect(res.body.data.removeComment.id).toBe(commentToDelete.id);
@@ -695,7 +699,9 @@ describe('CommentsModule (e2e)', () => {
         .expect(200)
         .expect((res) => {
           expect(res.body.errors).toBeDefined();
-          expect(res.body.errors[0].message).toContain("Invalid Authorization Header");
+          expect(res.body.errors[0].message).toContain(
+            'Invalid Authorization Header',
+          );
         });
     });
 

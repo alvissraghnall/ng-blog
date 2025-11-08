@@ -46,7 +46,6 @@ export class EntityExistsGuard implements CanActivate {
       typeof metadata.idExtractor === 'function'
         ? metadata.idExtractor(args)
         : this.getNestedProperty(args, metadata.idExtractor);
-        
 
     if (entityId == null) {
       throw new BadRequestException(`${metadata.entity.name} ID not provided`);
@@ -65,7 +64,7 @@ export class EntityExistsGuard implements CanActivate {
     }
 
     const attachPath = metadata.attachAs || metadata.entity.name.toLowerCase();
-	this.setNestedProperty(args, attachPath, entity);
+    this.setNestedProperty(args, attachPath, entity);
 
     return true;
   }
@@ -88,5 +87,4 @@ export class EntityExistsGuard implements CanActivate {
   private getNestedProperty(obj: any, path: string): any {
     return path.split('.').reduce((o, key) => (o ? o[key] : undefined), obj);
   }
-
 }

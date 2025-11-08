@@ -36,8 +36,6 @@ export const FoundEntity = createParamDecorator(
   },
 );
 
-
-
 export type PathTo<T> = T extends object
   ? {
       [K in keyof T & string]: T[K] extends object
@@ -46,14 +44,16 @@ export type PathTo<T> = T extends object
     }[keyof T & string]
   : never;
 
-export type PathValue<T, P extends string> =
-  P extends `${infer K}.${infer Rest}`
-    ? K extends keyof T
-      ? PathValue<T[K], Rest>
-      : never
-    : P extends keyof T
-      ? T[P]
-      : never;
+export type PathValue<
+  T,
+  P extends string,
+> = P extends `${infer K}.${infer Rest}`
+  ? K extends keyof T
+    ? PathValue<T[K], Rest>
+    : never
+  : P extends keyof T
+    ? T[P]
+    : never;
 
 export interface EntityExistsMetadata<
   ArgsType = any,
@@ -97,8 +97,6 @@ export function CheckEntityExistsFor<
   Entity,
   Attach extends PathTo<Args> = PathTo<Args>,
   Id extends PathTo<Args> = PathTo<Args>,
->(
-  metadata: EntityExistsMetadata<Args, Entity, Attach, Id>,
-) {
+>(metadata: EntityExistsMetadata<Args, Entity, Attach, Id>) {
   return CheckEntityExists(metadata);
 }

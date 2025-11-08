@@ -25,13 +25,13 @@ export class UsersService {
   ) {}
 
   async create(createUserInput: CreateUserInput): Promise<User> {
-    const hashedPassword = await this.hashService.hashPassword(
+    /* const hashedPassword = await this.hashService.hashPassword(
       createUserInput.password,
-    );
+    ); */
 
     const user = this.usersRepository.create({
       ...createUserInput,
-      password: hashedPassword,
+      //password: hashedPassword,
       emailVerified: false,
     });
 

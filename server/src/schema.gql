@@ -49,6 +49,23 @@ input CreateLikeInput {
   postId: Int
 }
 
+input CreatePostInput {
+  """Blog post category"""
+  category: Category!
+
+  """Blog post content"""
+  content: String!
+
+  """Blog post short description"""
+  desc: String!
+
+  """Blog post image URL"""
+  image: String!
+
+  """Blog post title"""
+  title: String!
+}
+
 input CreateUserInput {
   """User display photo (avatar)"""
   avatar: String
@@ -108,6 +125,7 @@ input LoginUserInput {
 
 type Mutation {
   createComment(createCommentInput: CreateCommentInput!): Comment!
+  createPost(createPostInput: CreatePostInput!): Post!
   followUser(userToBeFollowedId: String!): User!
   getOAuthUrl(provider: String!): String!
   login(loginUserInput: LoginUserInput!): LoginResponse!
@@ -131,34 +149,19 @@ input OAuthInput {
 }
 
 type Post {
-  """Owner of post"""
   author: User!
-
-  """Blog post content"""
-  category: String!
-
-  """Comments on post"""
+  category: Category!
+  commentCount: Int!
   comments: [Comment!]
-
-  """Blog post content"""
   content: String!
 
   """Date Entity was created."""
   createdAt: DateTime!
-
-  """Blog post description"""
   desc: String!
-
-  """Blog Post ID"""
   id: Int!
-
-  """Blog post image"""
   image: String!
-
-  """Likes on post"""
+  likeCount: Int!
   likes: [Like!]
-
-  """Blog Post Title"""
   title: String!
 
   """Date Entity was last updated."""
@@ -171,12 +174,29 @@ type Query {
   comment(id: Int!): Comment
   comments(postId: Int!): [Comment!]
   findUserById(id: String!): User!
+  hasUserLiked(entity: EntityOwnsLike!, entityId: Int!): Boolean!
   like(id: Int!): Like!
+  likeCount(entity: EntityOwnsLike!, id: Int!): Int!
   likes(entity: EntityOwnsLike!, id: Int!): [Like!]!
+
+  """Get most popular posts ordered by likes"""
+  popularPosts(limit: Int = 10): [Post!]
   post(id: Int!): Post!
 
-  """Get posts by category, and/or author ID"""
-  posts(authorId: String, cat: Category): [Post!]
+  """Get total count of posts with optional filtering"""
+  postCount(authorId: String, category: Category): Int!
+
+  """Get posts with optional filtering by category and/or author"""
+  posts(authorId: String, category: Category, limit: Int, offset: Int): [Post!]!
+
+  """Get all posts by a specific author"""
+  postsByAuthor(authorId: String!, limit: Int): [Post!]
+
+  """Get all posts in a specific category"""
+  postsByCategory(category: Category!, limit: Int): [Post!]
+
+  """Get most recent posts"""
+  recentPosts(limit: Int = 10): [Post!]
   user(username: String!): User!
   whoami: User!
 }
@@ -204,8 +224,6 @@ input UpdatePostInput {
 
   """Blog post image"""
   image: String
-
-  """Blog post title"""
   title: String
 }
 

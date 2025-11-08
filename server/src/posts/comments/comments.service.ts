@@ -50,7 +50,7 @@ export class CommentsService {
       relations: ['author', 'post', 'likes'],
     });
 
-	console.log(comment);
+    console.log(comment);
     return comment ?? null;
   }
 
@@ -71,29 +71,9 @@ export class CommentsService {
   }
 
   async remove(id: number, comment: Comment): Promise<Comment> {
-    // const comment = await this.commentsRepository.findOne({
-    //   where: { id },
-    //   relations: ['author']
-    // });
-    // this.logger.log(`Post comment to be removed: ${comment}`);
-
-    // if(!comment) {
-    //   throw new NotFoundException('Comment with ID: ' + id + ' not found!');
-    // }
-
-    // if (comment.author.id !== currentUser.id) {
-    //   throw new ForbiddenException('Cannot delete post you\'re not the author of!');
-    // }
-    // // return this.commentsRepository.createQueryBuilder('comment')
-    //   .innerJoin('comment.author', 'user')
-    //   .delete()
-    //   .where('comment.id = :commentId', { commentId: id })
-    //   .andWhere('user.id = :currentUserId', { currentUserId })
-    //   .execute()
-
     const tbr = await this.commentsRepository.remove(comment);
-	console.log(tbr, 5000);
-	return Object.assign(tbr, { id }) ?? null;
+    console.log(tbr, 5000);
+    return Object.assign(tbr, { id }) ?? null;
   }
 
   add(comment: Comment) {

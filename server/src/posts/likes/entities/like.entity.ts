@@ -17,6 +17,8 @@ import { BaseEntity } from 'common/entities/base.entity';
 
 @ObjectType()
 @Entity()
+@Unique(['owner', 'comment'])
+@Unique(['owner', 'post'])
 export class Like extends BaseEntity {
   @Field(() => Int, { description: 'Likes Collection ID' })
   @PrimaryGeneratedColumn()
