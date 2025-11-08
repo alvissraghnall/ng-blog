@@ -11,5 +11,5 @@ export class LoginUserInput {
   @Field()
   @MinLength(8)
   @IsAscii()
-  password: String;
+  password: string;
 }

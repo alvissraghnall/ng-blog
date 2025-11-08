@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@ObjectType()
+//@ObjectType()
 export class BaseEntity {
   id: string | number;
 

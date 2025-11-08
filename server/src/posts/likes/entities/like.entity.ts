@@ -1,7 +1,7 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, InputType, Field, Int } from '@nestjs/graphql';
 import { Comment } from '../../../posts/comments/entities/comment.entity';
 import { Post } from '../../../posts/entities/post.entity';
-import { User } from '../../../users/entities/user.entity';
+import { User } from 'users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -17,6 +17,7 @@ import { BaseEntity } from 'common/entities/base.entity';
 
 @ObjectType()
 @Entity()
+@InputType('likeEntityInput')
 @Unique(['owner', 'comment'])
 @Unique(['owner', 'post'])
 export class Like extends BaseEntity {

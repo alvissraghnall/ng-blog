@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, InputType } from '@nestjs/graphql';
 import { IsUnique } from '../../common/is-unique';
 import {
   Column,
@@ -15,6 +15,7 @@ import { Exclude } from 'class-transformer';
 import { BaseEntity } from 'common/entities/base.entity';
 
 @ObjectType()
+@InputType('userInputType')
 @Entity()
 export class User extends BaseEntity {
   @Field(() => String, { description: 'ID' })
@@ -22,11 +23,11 @@ export class User extends BaseEntity {
   id: string;
 
   @Column({ unique: true, length: 255 })
-  @Field()
+  @Field(() => String, { nullable: false })
   username: string;
 
   @Column({ unique: true })
-  @Field()
+  @Field(() => String, { nullable: false })
   email: string;
 
   @Exclude()

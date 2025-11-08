@@ -1,4 +1,10 @@
-import { ObjectType, Field, Int, ResolveField } from '@nestjs/graphql';
+import {
+  ObjectType,
+  Field,
+  Int,
+  ResolveField,
+  InputType,
+} from '@nestjs/graphql';
 import { Post } from '../../entities/post.entity';
 import { Like } from '../../likes/entities/like.entity';
 import { User } from '../../../users/entities/user.entity';
@@ -16,6 +22,7 @@ import {
 import { BaseEntity } from 'common/entities/base.entity';
 
 @ObjectType()
+@InputType('commentInputType')
 @Entity()
 export class Comment extends BaseEntity {
   @Field(() => Int, { description: 'Comment ID' })

@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -25,22 +26,32 @@ export class UpdatePostInput extends PartialType(CreatePostInput) {
   @IsNotEmpty()
   title?: string;
 
-  @Field(() => String, { description: 'Blog post image', nullable: true })
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(3)
-  @IsOptional()
-  image: string;
-
-  @Field(() => String, { description: 'Blog post description', nullable: true })
-  @IsOptional()
-  @IsString()
-  @MinLength(3)
-  @IsNotEmpty()
-  desc: string;
-
-  @Field(() => Category, { description: 'Blog post content', nullable: true })
+  @Field(() => Category, {
+    description: 'Blog post content category',
+    nullable: true,
+  })
   @IsOptional()
   @IsEnum(Category)
   category: Category;
+
+  @Field(() => String, { description: 'Blog post content' })
+  @IsString()
+  @IsOptional()
+  @MinLength(100)
+  @MaxLength(30000)
+  content: string;
+
+  @Field(() => String, { description: 'Blog post image URL' })
+  @IsString()
+  @IsUrl()
+  @IsOptional()
+  @MaxLength(1000)
+  image: string;
+
+  @Field(() => String, { description: 'Blog post short description' })
+  @IsString()
+  @IsOptional()
+  @MinLength(30)
+  @MaxLength(400)
+  desc: string;
 }

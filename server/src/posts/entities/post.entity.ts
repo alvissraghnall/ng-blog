@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, InputType } from '@nestjs/graphql';
 import { Category } from 'posts/enum/category.enum';
 import {
   Column,
@@ -14,6 +14,7 @@ import { Like } from '../likes/entities/like.entity';
 import { BaseEntity } from 'common/entities/base.entity';
 
 @ObjectType()
+@InputType('postInputType')
 @Entity()
 export class Post extends BaseEntity {
   @Field(() => Int)
