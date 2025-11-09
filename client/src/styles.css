@@ -37,6 +37,52 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  --color-nursery: #E59500;
+  --nursery-background-light: #F9F9F9;
+  --nursery-background-dark: #1C1C1C;
+  --nursery-text-light: #222222;
+  --nursery-text-dark: #EAEAEA;
+  --nursery-text-muted-light: #555555;
+  --nursery-text-muted-dark: #AAAAAA;
+  --nursery-surface-light: #FFFFFF;
+  --nursery-surface-dark: #282828;
+  --nursery-border-light: #E0E0E0;
+  --nursery-border-dark: #3A3A3A;
+
+  --nursery-prim-50: #eff6ff;
+  --nursery-prim-100: #dbeafe;
+  --nursery-prim-200: #bfdbfe;
+  --nursery-prim-300: #93c5fd;
+  --nursery-prim-400: #60a5fa;
+  --nursery-prim-500: #3b82f6;
+  --nursery-prim-600: #2563eb;
+  --nursery-prim-700: #1d4ed8;
+  --nursery-prim-800: #1e40af;
+  --nursery-prim-900: #1e3a8a;
+
+  --nursery-blueGray-50: rgba(248, 250, 252);
+  --nursery-blueGray-100: rgba(241, 245, 249);
+  --nursery-blueGray-200: rgba(226, 232, 240);
+  --nursery-blueGray-300: rgba(203, 213, 225);
+  --nursery-blueGray-400: rgba(148, 163, 184);
+  --nursery-blueGray-500: rgba(100, 116, 139);
+  --nursery-blueGray-600: rgba(71, 85, 105);
+  --nursery-blueGray-700: rgba(51, 65, 85);
+  --nursery-blueGray-800: rgba(30, 41, 59);
+
+  --font-display: "Newsreader", serif;
+  --font-body: "Inter", ui-sans-serif, system-ui;
+  --font-poppins: "Poppins", ui-sans-serif, system-ui;
+  --font-dm-sans: "DM Sans", ui-sans-serif, system-ui;
+
+  --radius-default: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  --animate-fade-in: fadeIn 0.2s ease-in-out;
+  --animate-slide-down: slideDown 0.2s ease-out;
 }
 
 .dark {
@@ -111,9 +157,30 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  
+
+  --font-display: "Newsreader", serif;
+  --font-body: "Inter", ui-sans-serif, system-ui;
+  --font-poppins: "Poppins", ui-sans-serif, system-ui;
+  --font-dm-sans: "DM Sans", ui-sans-serif, system-ui;
+
+
+  --radius: 0.625rem;
+
+
+  --animate-fade-in: fadeIn 0.2s ease-in-out;
+  --animate-slide-down: slideDown 0.2s ease-out;
 }
 
+@keyframes fadeIn {
+  0% { opacity: 0 }
+  100% { opacity: 1 }
+}
 
+@keyframes slideDown {
+  0% { transform: translateY(-10px); opacity: 0 }
+  100% { transform: translateY(0); opacity: 1 }
+}
 
 @layer base {
   * {
