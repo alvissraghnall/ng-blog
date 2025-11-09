@@ -11,6 +11,8 @@ import { PostCommentsComponent } from './post-comments/post-comments.component';
 import { PipesModule } from "../pipes/pipes.module";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PostsLoadingSkeletonComponent } from './posts-loading-skeleton/posts-loading-skeleton.component';
+import { TopNavBarComponent } from './top-nav-bar/top-nav-bar.component';
+import { HeroSectionComponent } from './hero-section/hero-section.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,9 @@ import { PostsLoadingSkeletonComponent } from './posts-loading-skeleton/posts-lo
     ToastComponent,
     FileUploadComponent,
     PostCommentsComponent,
-    PostsLoadingSkeletonComponent
+    PostsLoadingSkeletonComponent,
+    TopNavBarComponent,
+    HeroSectionComponent
   ],
   imports: [
     CommonModule,
