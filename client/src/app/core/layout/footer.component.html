@@ -1,0 +1,41 @@
+<footer class="bg-surface-light dark:bg-surface-dark">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+      <div class="flex items-center gap-3 text-text-light dark:text-text-dark">
+        <span class="material-symbols-outlined text-primary text-xl">draw</span>
+        <h2 class="font-display text-xl font-bold">shareWithAlviss()</h2>
+      </div>
+
+      <p class="text-sm text-text-muted-light dark:text-text-muted-dark">
+        &copy; {{ today | date: 'yyyy' }}. All rights reserved.
+      </p>
+
+      <div class="flex items-center space-x-4">
+        <a
+          class="text-text-muted-light dark:text-text-muted-dark hover:text-primary dark:hover:text-primary transition-colors"
+          href="#"
+        >
+          <z-icon [zType]="atSignIcon" zSize="xl"></z-icon>
+        </a>
+        <a
+          class="text-text-muted-light dark:text-text-muted-dark hover:text-primary dark:hover:text-primary transition-colors"
+          href="#"
+        >
+          <z-icon [zType]="githubIcon" zSize="xl"></z-icon>
+        </a>
+        <a
+          class="text-text-muted-light dark:text-text-muted-dark hover:text-primary dark:hover:text-primary transition-colors"
+          href="#"
+        >
+          <z-icon [zType]="twitterIcon" zSize="xl"></z-icon>
+        </a>
+        <a
+          class="text-text-muted-light dark:text-text-muted-dark hover:text-primary dark:hover:text-primary transition-colors"
+          href="#"
+        >
+          <z-icon [zType]="facebookIcon" zSize="xl"></z-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
