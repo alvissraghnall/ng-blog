@@ -1,56 +1,19 @@
-import {NgModule} from '@angular/core';
-import {ApolloModule, APOLLO_FLAGS, APOLLO_OPTIONS} from 'apollo-angular';
-import { ApolloClientOptions, InMemoryCache, ApolloLink } from '@apollo/client/core';
-import {HttpLink} from 'apollo-angular/http';
-import { setContext } from "@apollo/client/link/context";
-import { KeyStorageService } from './services/key-storage.service';
+import { provideApollo } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular/http';
+import { inject, NgModule } from '@angular/core';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 
-const uri = 'http://[::1]:3000/graphql'; // <-- add the URL of the GraphQL server here
-export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
-  const basic = setContext((operation, context) => ({
-    headers: {
-      Accept: 'charset=utf-8',
-    },
-  }));
+export function createApollo(): ApolloClient.Options {
+  const uri = 'sharewithalviss-api.vercel.app/graphql'; // <-- add the URL of the GraphQL server here
+  const httpLink = inject(HttpLink);
 
-  const auth = setContext((operation, context) => {
-    const token = new KeyStorageService().getToken();
- 
-    if (token === null) {
-      return {};
-    } else {
-      return {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-    }
-  });
-
-  const link = ApolloLink.from([basic, auth, httpLink.create({ uri })]);
- 
   return {
-    link: link,
+    link: httpLink.create({ uri }),
     cache: new InMemoryCache(),
   };
 }
 
 @NgModule({
-  exports: [ApolloModule],
-  providers: [
-    {
-      provide: APOLLO_FLAGS,
-      useValue: {
-        useMutationLoading: true,
-      }
-    },
-    {
-      provide: APOLLO_OPTIONS,
-      useFactory: createApollo,
-      deps: [HttpLink],
-
-    },
-    KeyStorageService
-  ],
+  providers: [provideApollo(createApollo)],
 })
 export class GraphQLModule {}
