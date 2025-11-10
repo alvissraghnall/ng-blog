@@ -12,6 +12,7 @@
     "paths": {
       "@ui/*": ["src/app/shared/components/ui/*"],
       "@components/*": ["src/app/shared/components/*"],
+      "@features/*": ["src/app/shared/features/*"],
       "@utils/*": ["src/app/shared/utils/*"],
       "@gen": ["src/generated-api"],
       "@graphql/*": ["src/app/graphql/*"],

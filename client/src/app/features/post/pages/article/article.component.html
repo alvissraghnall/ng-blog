@@ -1,0 +1,48 @@
+<main class="bg-surface-light dark:bg-surface-dark px-4 sm:px-10 py-8 lg:py-12">
+  <div class="flex flex-col gap-6 mb-8">
+    <div class="flex flex-col gap-3">
+      <p
+        class="text-neutral-light dark:text-neutral-dark font-display text-4xl lg:text-5xl font-black leading-tight tracking-[-0.033em]"
+      >
+        {{ article.title }}
+      </p>
+    </div>
+    <div class="flex items-center gap-4">
+      <z-avatar
+        [zImage]="{
+                url: article.author.avatar,
+                alt: article.author.username + ALT_TEXT,
+                fallback: 'AA',
+              }"
+        class="w-12 h-12"
+      />
+      <div>
+        <p class="text-neutral-light dark:text-gray-200 text-base font-semibold leading-normal">
+          {{ article.author.username }}
+        </p>
+        <p class="text-muted-light dark:text-gray-400 text-sm font-normal leading-normal">
+          Published on {{ article.publishedDate }} • {{ article.readTime }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full grow aspect-[16/9] mb-8">
+    <div
+      class="w-full h-full bg-center bg-no-repeat bg-cover rounded-lg"
+      [attr.data-alt]="article.featuredImageAlt"
+      [style.background-image]="'url(' + article.featuredImageUrl + ')'"
+    ></div>
+  </div>
+
+  <div
+    class="prose prose-lg dark:prose-invert max-w-none font-display text-neutral-light dark:text-gray-300 text-lg leading-relaxed space-y-6"
+    [innerHTML]="article.bodyHtml"
+  ></div>
+
+  <app-social-share></app-social-share>
+
+  <app-author-bio [author]="article.author"></app-author-bio>
+
+  <app-comments-section></app-comments-section>
+</main>

@@ -12,7 +12,7 @@ import { Component, Input } from '@angular/core';
       ></div>
       <div>
         <h3
-          class="text-text-light dark:text-text-dark text-xl font-display font-bold leading-snug mb-1 group-hover:text-primary transition-colors"
+          class="text-text-light dark:text-text-dark text-xl font-display font-bold leading-snug mb-1 group-hover:text-primary-custom transition-colors"
         >
           {{ article.title }}
         </h3>

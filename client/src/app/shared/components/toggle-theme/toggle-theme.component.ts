@@ -10,14 +10,14 @@ import { ZardIconComponent } from '@ui/icon/icon.component';
   template: `
       <div class="relative">
         <button 
-          class="group relative p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 flex items-center gap-2 border border-gray-200 dark:border-gray-700"
+          class="group relative p-2 rounded-lg bg-surface-light dark:bg-surface-dark hover:bg-background-light dark:hover:bg-background-dark transition-all duration-300 flex items-center gap-2 border border-border-light dark:border-border-dark"
           (click)="toggleOptions()"
           [attr.aria-label]="'Theme options'"
           [attr.title]="'Theme options'"
         >
-          <z-icon [zType]="iconName()" zSize="xl" class="text-gray-700 dark:text-gray-300 group-hover:scale-110 transition-transform" />
-          <span class="text-sm text-gray-700 dark:text-gray-300 hidden sm:block capitalize">{{ currentMode() }}</span>
-          <svg class="w-4 h-4 text-gray-700 dark:text-gray-300 transition-transform duration-200" 
+          <z-icon [zType]="iconName()" zSize="xl" class="text-text-light dark:text-text-dark group-hover:scale-110 transition-transform" />
+          <span class="text-sm text-text-light dark:text-text-dark hidden sm:block capitalize">{{ currentMode() }}</span>
+          <svg class="w-4 h-4 text-text-light dark:text-text-dark transition-transform duration-200" 
                [class.rotate-180]="showOptions()" 
                fill="none" 
                stroke="currentColor" 
@@ -27,41 +27,41 @@ import { ZardIconComponent } from '@ui/icon/icon.component';
         </button>
 
         @if (showOptions()) {
-          <div class="absolute top-full mt-2 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-1 z-50 min-w-[160px] animate-fade-in">
+          <div class="absolute top-full mt-2 right-0 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-lg shadow-xl p-1 z-50 min-w-[160px] animate-fade-in">
             <div class="py-1">
               <button 
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
-                [class.bg-blue-50.dark:bg-blue-900/30.text-blue-600.dark:text-blue-400]="currentMode() === 'light'"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-background-light dark:hover:bg-background-dark transition-colors text-left"
+                [class.bg-primary-custom/10.text-primary-custom]="currentMode() === 'light'"
                 (click)="setTheme('light')"
               >
-                <z-icon [zType]="sunIcon" zSize="xl" [class]="currentMode() === 'light' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'" />
+                <z-icon [zType]="sunIcon" zSize="xl" [class]="currentMode() === 'light' ? 'text-primary-custom' : 'text-text-muted-light dark:text-text-muted-dark'" />
                 <div class="flex flex-col">
-                  <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Light</span>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">Always light mode</span>
+                  <span class="text-sm font-medium text-text-light dark:text-text-dark">Light</span>
+                  <span class="text-xs text-text-muted-light dark:text-text-muted-dark">Always light mode</span>
                 </div>
               </button>
       
               <button 
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
-                [class.bg-blue-50.dark:bg-blue-900/30.text-blue-600.dark:text-blue-400]="currentMode() === 'dark'"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-background-light dark:hover:bg-background-dark transition-colors text-left"
+                [class.bg-primary-custom/10.text-primary-custom]="currentMode() === 'dark'"
                 (click)="setTheme('dark')"
               >
-                <z-icon [zType]="moonIcon" zSize="xl" [class]="currentMode() === 'dark' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'" />
+                <z-icon [zType]="moonIcon" zSize="xl" [class]="currentMode() === 'dark' ? 'text-primary-custom' : 'text-text-muted-light dark:text-text-muted-dark'" />
                 <div class="flex flex-col">
-                  <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Dark</span>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">Always dark mode</span>
+                  <span class="text-sm font-medium text-text-light dark:text-text-dark">Dark</span>
+                  <span class="text-xs text-text-muted-light dark:text-text-muted-dark">Always dark mode</span>
                 </div>
               </button>
       
               <button 
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
-                [class.bg-blue-50.dark:bg-blue-900/30.text-blue-600.dark:text-blue-400]="currentMode() === 'system'"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-background-light dark:hover:bg-background-dark transition-colors text-left"
+                [class.bg-primary-custom/10.text-primary-custom]="currentMode() === 'system'"
                 (click)="setTheme('system')"
               >
-                <z-icon [zType]="monitorIcon" zSize="xl" [class]="currentMode() === 'system' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'" />
+                <z-icon [zType]="monitorIcon" zSize="xl" [class]="currentMode() === 'system' ? 'text-primary-custom' : 'text-text-muted-light dark:text-text-muted-dark'" />
                 <div class="flex flex-col">
-                  <span class="text-sm font-medium text-gray-900 dark:text-gray-100">System</span>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">Follow system preference</span>
+                  <span class="text-sm font-medium text-text-light dark:text-text-dark">System</span>
+                  <span class="text-xs text-text-muted-light dark:text-text-muted-dark">Follow system preference</span>
                 </div>
               </button>
             </div>

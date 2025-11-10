@@ -14,6 +14,10 @@ export const routes: Routes = [
     canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
   },
   {
+    path: 'post',
+    loadComponent: () => import('./features/post/pages/article/article.component'),
+  },
+  {
     path: 'register',
     loadComponent: () => import('./core/auth/auth.component'),
     canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],

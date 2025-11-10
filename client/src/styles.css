@@ -161,3 +161,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+}
+
+.error-messages {
+  @apply list-none p-0 m-0;
+}
+
+.error-messages li {
+  @apply text-destructive text-sm py-1;
+}
