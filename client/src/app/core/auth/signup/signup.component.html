@@ -1,0 +1,25 @@
+<main class="w-full max-w-md space-y-8 py-12">
+  <div class="space-y-3 text-center">
+    <h1 class="font-display text-4xl font-black text-foreground">Become a Contributor</h1>
+    <p class="text-base text-muted-foreground">Create your account to start sharing your stories.</p>
+  </div>
+
+  <app-auth mode="signUp" submitButtonText="Create Account" (submitForm)="handleSignUp($event)" />
+
+  <div class="text-center text-sm text-muted-foreground">
+    <p>
+      By creating an account, you agree to our
+      <a class="font-medium text-primary hover:underline" href="#">Terms of Service</a> and
+      <a class="font-medium text-primary hover:underline" href="#">Privacy Policy</a>.
+    </p>
+  </div>
+
+  <z-divider />
+
+  <div class="text-center">
+    <p class="text-base text-muted-foreground">
+      Already have an account?
+      <a class="font-medium text-primary hover:underline" href="#">Sign In</a>
+    </p>
+  </div>
+</main>

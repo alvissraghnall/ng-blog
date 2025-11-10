@@ -1,82 +1,69 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { Validators, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ListErrorsComponent } from '../../shared/components/list-errors.component';
-import { Errors } from '../models/errors.model';
-import { UserService } from './services/user.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-interface AuthForm {
-  email: FormControl<string>;
-  password: FormControl<string>;
-  username?: FormControl<string>;
-}
+import { Component, EventEmitter, Input, OnInit, output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators, ValidatorFn } from '@angular/forms';
+import { ZardButtonComponent } from '@ui/button/button.component';
+import { ZardInputDirective } from '@ui/input/input.directive';
+import { ZardIconComponent } from '@ui/icon/icon.component';
+import { passwordMatchValidator } from '@core/validators/password-match.validator';
 
 @Component({
-  selector: 'app-auth-page',
+  selector: 'app-auth',
+  imports: [CommonModule, ReactiveFormsModule, ZardButtonComponent, ZardInputDirective, ZardIconComponent],
   templateUrl: './auth.component.html',
-  imports: [RouterLink, ListErrorsComponent, ReactiveFormsModule],
+  styles: ``,
 })
-export default class AuthComponent implements OnInit {
-  authType = '';
-  title = '';
-  errors: Errors = { errors: {} };
-  isSubmitting = false;
-  authForm: FormGroup<AuthForm>;
-  destroyRef = inject(DestroyRef);
+export class AuthComponent implements OnInit {
+  @Input({ required: true }) mode: 'signIn' | 'signUp' = 'signIn';
+  @Input() submitButtonText: string = 'Submit';
 
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly userService: UserService,
-  ) {
-    this.authForm = new FormGroup<AuthForm>({
-      email: new FormControl('', {
-        validators: [Validators.required],
-        nonNullable: true,
-      }),
-      password: new FormControl('', {
-        validators: [Validators.required],
-        nonNullable: true,
-      }),
-    });
-  }
+  submitForm = output<FormGroup>();
+
+  authForm!: FormGroup;
+  passwordVisible = false;
+
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    this.authType = this.route.snapshot.url.at(-1)!.path;
-    this.title = this.authType === 'login' ? 'Sign in' : 'Sign up';
-    if (this.authType === 'register') {
-      this.authForm.addControl(
-        'username',
-        new FormControl('', {
-          validators: [Validators.required],
-          nonNullable: true,
-        }),
-      );
-    }
+    this.buildForm();
   }
 
-  submitForm(): void {
-    this.isSubmitting = true;
-    this.errors = { errors: {} };
+  buildForm(): void {
+    const controls = {
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+    };
 
-    let observable =
-      this.authType === 'login'
-        ? this.userService.login(this.authForm.value as { email: string; password: string })
-        : this.userService.register(
-            this.authForm.value as {
-              email: string;
-              password: string;
-              username: string;
-            },
-          );
+    if (this.mode === 'signUp') {
+      (controls as any).confirmPassword = ['', Validators.required];
+      (controls as any).avatar = [''];
+    }
 
-    observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => void this.router.navigate(['/']),
-      error: err => {
-        this.errors = err;
-        this.isSubmitting = false;
-      },
+    this.authForm = this.fb.group(controls, {
+      validators: this.mode === 'signUp' ? passwordMatchValidator : [],
     });
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+  }
+
+  get username() {
+    return this.authForm.get('username');
+  }
+  get password() {
+    return this.authForm.get('password');
+  }
+  get confirmPassword() {
+    return this.authForm.get('confirmPassword');
+  }
+  get avatar() {
+    return this.authForm.get('avatar');
+  }
+
+  onSubmit(): void {
+    this.authForm.markAllAsTouched();
+    if (this.authForm.valid) {
+      this.submitForm.emit(this.authForm);
+    }
   }
 }

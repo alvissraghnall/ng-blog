@@ -29,7 +29,7 @@ export default class ArticleComponent {
   protected ALT_TEXT = "'s profile avatar'";
   author: Author = {
     username: 'Alex Johnson',
-    avatar: 'https://lorem.picsum/3000/100/100',
+    avatar: 'https://picsum.photos/id/555/100/100',
     bio: "Alex is a senior product designer with over a decade of experience in creating intuitive and beautiful user interfaces. He's passionate about user-centric design and the intersection of technology and creativity.",
   };
 

@@ -10,8 +10,8 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () => import('./core/auth/auth.component'),
-    canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
+    loadComponent: () => import('./core/auth/signin/signin.component'),
+    // canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
   },
   {
     path: 'post',
@@ -19,8 +19,8 @@ export const routes: Routes = [
   },
   {
     path: 'register',
-    loadComponent: () => import('./core/auth/auth.component'),
-    canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
+    loadComponent: () => import('./core/auth/signup/signup.component'),
+    // canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
   },
   {
     path: 'settings',
