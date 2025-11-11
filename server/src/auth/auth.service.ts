@@ -36,7 +36,7 @@ export class AuthService {
 
     return {
       access_token: this.jwtService.sign(payload, {
-        algorithm: 'RS256',
+        //algorithm: 'RS256',
         privateKey: await this.jwtKeyService.getPrivKey(),
         expiresIn: new Date().setMonth(new Date().getMonth() + 1),
         issuer: 'reblog',
