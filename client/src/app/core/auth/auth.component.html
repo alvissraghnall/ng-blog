@@ -1,69 +1,58 @@
-<form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-3">
+<form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-4 max-w-md">
   @if (mode === 'signUp') {
-  <div class="flex flex-col">
-    <label for="avatar">Avatar (Optional)</label>
-    <input z-input id="avatar" type="file" formControlName="avatar" />
-  </div>
-
+  <z-form-field>
+    <label z-form-label for="avatar">Avatar (Optional)</label>
+    <z-form-control>
+      <input z-input id="avatar" type="file" formControlName="avatar" />
+    </z-form-control>
+  </z-form-field>
   }
 
-  <div class="flex flex-col">
-    <label for="username">Username</label>
-    <input z-input id="username" type="text" formControlName="username" placeholder="Enter your username" />
+  <z-form-field>
+    <label z-form-label zRequired for="username">Username</label>
+    <z-form-control [errorMessage]="getUsernameError()">
+      <input z-input id="username" type="text" formControlName="username" placeholder="Enter your username" />
+    </z-form-control>
+  </z-form-field>
 
-    @if (username?.invalid && username?.touched) {
-    <div class="error-messages">
-      <li>@if (username?.errors?.['required']) { Username is required. }</li>
-      <li>@if (username?.errors?.['minlength']) { Username must be at least 3 characters. }</li>
-    </div>
-    }
-  </div>
+  <z-form-field>
+    <label z-form-label zRequired for="password">Password</label>
+    <z-form-control [errorMessage]="getPasswordError()">
+      <div class="relative flex items-center">
+        <input
+          z-input
+          id="password"
+          [type]="passwordVisible() ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="8+ characters"
+          class="pr-10"
+        />
+        <z-icon
+          [zType]="passwordVisible() ? 'eyeOff' : 'eye'"
+          zSize="xl"
+          (click)="togglePasswordVisibility()"
+          class="absolute right-3 cursor-pointer text-muted-foreground top-0 bottom-0"
+        />
+      </div>
+    </z-form-control>
+  </z-form-field>
 
-  <div class="flex flex-col">
-    <label for="password">Password</label>
-    <div class="relative flex items-center">
+  @if (mode === 'signUp') {
+  <z-form-field>
+    <label z-form-label zRequired for="confirmPassword">Confirm Password</label>
+    <z-form-control [errorMessage]="getConfirmPasswordError()">
       <input
         z-input
-        id="password"
-        [type]="passwordVisible ? 'text' : 'password'"
-        formControlName="password"
-        placeholder="8+ characters"
-        class="pr-10"
+        id="confirmPassword"
+        [type]="passwordVisible() ? 'text' : 'password'"
+        formControlName="confirmPassword"
+        placeholder="Confirm your password"
       />
-      <z-icon
-        [zType]="passwordVisible ? 'eyeOff' : 'eye'"
-		zSize="xl"
-        (click)="togglePasswordVisibility()"
-        class="absolute right-3 cursor-pointer text-muted-foreground top-0 bottom-0"
-      />
-    </div>
-    @if (password?.invalid && password?.touched) {
-    <div class="error-messages">
-      <li>@if (password?.errors?.['required']) { Password is required. }</li>
-      <li>@if (password?.errors?.['minlength']) { Password must be at least 8 characters. }</li>
-    </div>
-    }
-  </div>
-
-  @if (mode === 'signUp') {
-  <div class="flex flex-col">
-    <label for="confirmPassword">Confirm Password</label>
-    <input
-      z-input
-      id="confirmPassword"
-      [type]="passwordVisible ? 'text' : 'password'"
-      formControlName="confirmPassword"
-      placeholder="Confirm your password"
-    />
-
-    @if (confirmPassword?.invalid && confirmPassword?.touched) {
-    <div class="error-messages">
-      <li>@if (confirmPassword?.errors?.['required']) { Please confirm your password. }</li>
-      <li>@if (confirmPassword?.errors?.['passwordMismatch']) { Passwords do not match. }</li>
-    </div>
-    }
-  </div>
+    </z-form-control>
+  </z-form-field>
   }
 
-  <z-button type="submit" class="w-full h-14 mt-3"> {{ submitButtonText }} </z-button>
+  <button z-button type="submit" class="w-full h-14 mt-3" [zLoading]="isSubmitting()" [disabled]="isSubmitting()">
+    {{ submitButtonText }}
+  </button>
 </form>

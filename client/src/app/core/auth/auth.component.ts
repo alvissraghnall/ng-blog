@@ -29,6 +29,7 @@ export class AuthComponent implements OnInit {
 
   authForm!: FormGroup;
   passwordVisible = signal(false);
+  isSubmitting = signal(false);
 
   constructor(private fb: FormBuilder) {}
 
@@ -106,9 +107,13 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.isSubmitting.set(true);
+
     this.authForm.markAllAsTouched();
     if (this.authForm.valid) {
       this.submitForm.emit(this.authForm);
     }
+
+    this.isSubmitting.set(false);
   }
 }

@@ -143,8 +143,9 @@
   --color-border-dark: var(--border-dark);
 
   /* Custom font families */
-  --font-family-display: Newsreader, serif;
-  --font-family-body: Inter, sans-serif;
+  --font-display: Newsreader, serif;
+  --font-body: Inter, sans-serif;
+  --font-noto: 'Noto Sans', sans;
 
   /* Custom border radius values */
   --radius-default-custom: var(--radius-default);

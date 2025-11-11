@@ -1,4 +1,4 @@
-<div class="flex flex-1 items-center justify-center p-4">
+<div class="flex flex-1 items-center justify-center p-4 min-h-dvh">
   <z-card class="w-full max-w-md p-6 sm:p-8">
     <div class="flex flex-col items-center gap-2">
       <h1 class="text-foreground text-[32px] font-bold tracking-tight text-center">Welcome Back</h1>
@@ -7,10 +7,11 @@
 
     <app-auth mode="signIn" submitButtonText="Sign In" (submitForm)="handleSignIn($event)" class="mt-6" />
 
-    <a href="#" class="text-primary text-sm self-end underline hover:text-primary/80 mt-2"> Forgot Password? </a>
+    <a href="#" class="text-primary text-sm self-end underline hover:text-primary/80 mt-4"> Forgot Password? </a>
     <p class="text-muted-foreground text-sm text-center mt-6">
       Don't have an account?
-      <a class="font-semibold text-primary underline hover:text-primary/80" href="#"> Sign Up </a>
+	  <!-- router link heathennn -->
+      <a class="font-semibold text-primary underline hover:text-primary/80" href="/register"> Sign Up </a>
     </p>
   </z-card>
 </div>
