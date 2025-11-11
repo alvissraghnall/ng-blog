@@ -1,12 +1,13 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, Int } from '@nestjs/graphql';
 import {
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-//@ObjectType()
+@ObjectType()
 export class BaseEntity {
+  @Field(() => Int)
   id: string | number;
 
   @CreateDateColumn()

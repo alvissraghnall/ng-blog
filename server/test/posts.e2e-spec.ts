@@ -61,6 +61,10 @@ describe('Posts (e2e)', () => {
         content
         image
         desc
+        tags {
+          id
+          name
+        }
         category
         author {
           id
@@ -106,6 +110,10 @@ describe('Posts (e2e)', () => {
         content
         image
         desc
+        tags {
+          id
+          name
+        }
         category
         author {
           id
@@ -125,6 +133,10 @@ describe('Posts (e2e)', () => {
         content
         image
         desc
+        tags {
+          id
+          name
+        }
         category
         author {
           id
@@ -158,6 +170,10 @@ describe('Posts (e2e)', () => {
         id
         title
         category
+        tags {
+          id
+          name
+        }
         author {
           id
           username
@@ -172,6 +188,10 @@ describe('Posts (e2e)', () => {
         id
         title
         category
+        tags {
+          id
+          name
+        }
         author {
           id
           username
@@ -184,6 +204,10 @@ describe('Posts (e2e)', () => {
     query GetPopularPosts($limit: Int) {
       popularPosts(limit: $limit) {
         id
+        tags {
+          id
+          name
+        }
         title
         likeCount
         author {
@@ -200,6 +224,10 @@ describe('Posts (e2e)', () => {
         id
         title
         createdAt
+        tags {
+          id
+          name
+        }
         author {
           id
           username
@@ -220,6 +248,7 @@ describe('Posts (e2e)', () => {
 	  It provides enough detail to demonstrate proper formatting, readability, and completeness 
 	  for testing purposes within a content management or publishing system.`,
     image: 'https://example.com/image.jpg',
+    tags: ['tech', 'bismillah', 'great-britain'],
     desc: 'This is a test description for the blog post',
     category: 'TECHNOLOGY',
   };
@@ -230,6 +259,7 @@ describe('Posts (e2e)', () => {
 	  It provides enough detail to demonstrate proper formatting, readability, and completeness 
 	  for testing purposes within a content management or publishing system.`,
     image: 'https://example.com/another-image.jpg',
+    tags: ['tech', 'bismillah', 'bizarre'],
     desc: 'Another test description — but for second user haha',
     category: 'LIFESTYLE',
   };
@@ -321,6 +351,8 @@ describe('Posts (e2e)', () => {
     if (dataSource && dataSource.isInitialized) {
       await dataSource.query('DELETE FROM "like"');
       await dataSource.query('DELETE FROM "comment"');
+      await dataSource.query('DELETE FROM "post_tags"');
+      await dataSource.query('DELETE FROM "tag"');
       await dataSource.query('DELETE FROM "post"');
       await dataSource.query('DELETE FROM "user"');
     }
@@ -342,6 +374,11 @@ describe('Posts (e2e)', () => {
         content: validPostData.content,
         image: validPostData.image,
         desc: validPostData.desc,
+        tags: expect.arrayContaining([
+          expect.objectContaining({
+            name: validPostData.tags[0],
+          }),
+        ]),
         category: validPostData.category,
         author: {
           id: userId,
@@ -756,6 +793,7 @@ describe('Posts (e2e)', () => {
   describe('Get Recent Posts', () => {
     it('should get recent posts', async () => {
       const response = await gqlRequest(GET_RECENT_POSTS_QUERY);
+      console.log(util.inspect(response.body, { depth: null }));
 
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
@@ -767,6 +805,7 @@ describe('Posts (e2e)', () => {
         limit: 5,
       });
 
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.recentPosts.length).toBeLessThanOrEqual(5);
@@ -777,6 +816,7 @@ describe('Posts (e2e)', () => {
         limit: 10,
       });
 
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(200);
       const posts = response.body.data.recentPosts;
 
@@ -844,13 +884,14 @@ describe('Posts (e2e)', () => {
         input: updatedData,
       });
 
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.updatePost).toMatchObject({
         id: createdPostId,
         title: updatedData.title,
         desc: updatedData.desc,
-        content: validPostData.content, // Should remain unchanged
+        content: validPostData.content,
       });
     });
 
@@ -862,6 +903,7 @@ describe('Posts (e2e)', () => {
         },
       });
 
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.updatePost.category).toBe(Category.LIFESTYLE);
@@ -993,7 +1035,6 @@ describe('Posts (e2e)', () => {
     let postToDelete: number;
 
     beforeAll(async () => {
-      // Create a post specifically for deletion tests
       const response = await gqlRequest(CREATE_POST_MUTATION, authToken, {
         input: {
           title: 'Post to be deleted',
@@ -1005,6 +1046,7 @@ describe('Posts (e2e)', () => {
         },
       });
 
+      console.log(response.body);
       postToDelete = response.body.data.createPost.id;
     });
 
@@ -1013,6 +1055,7 @@ describe('Posts (e2e)', () => {
         id: postToDelete,
       });
 
+      console.log(util.inspect(response.body, { depth: null }));
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.removePost).toMatchObject({

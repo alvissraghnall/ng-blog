@@ -14,25 +14,24 @@ export const ENTITY_EXISTS_KEY = 'entity-exists-metadata';
 //   attachAs?: string; //name to attach entity as in args
 // }
 
-// export const CheckEntityExists = (metadata: EntityExistsMetadata) =>
-//   SetMetadata(ENTITY_EXISTS_KEY, metadata);
-
 export const FoundEntity = createParamDecorator(
   (data: string | undefined, context: ExecutionContext) => {
     const gqlCtx = GqlExecutionContext.create(context);
-    const args = gqlCtx.getArgs();
+    const { req } = gqlCtx.getContext();
+
+    return req.entity;
 
     // If data is provided, use it as the key, otherwise use the entity attached to args
-    if (data) {
-      return args[data];
-    }
+    // if (data) {
+    //   return args[data];
+    // }
 
-    // Find the first entity property in args (the one we attached)
-    const entityKeys = Object.keys(args).filter(
-      (key) => args[key] && typeof args[key] === 'object' && args[key].id,
-    );
+    // // Find the first entity property in args (the one we attached)
+    // const entityKeys = Object.keys(args).filter(
+    //   (key) => args[key] && typeof args[key] === 'object' && args[key].id,
+    // );
 
-    return entityKeys.length > 0 ? args[entityKeys[0]] : null;
+    // return entityKeys.length > 0 ? args[entityKeys[0]] : null;
   },
 );
 

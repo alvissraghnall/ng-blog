@@ -3,6 +3,7 @@ import { Post } from '../entities/post.entity';
 import { User } from 'users/entities/user.entity';
 import { Comment } from 'posts/comments/entities/comment.entity';
 import { Like } from 'posts/likes/entities/like.entity';
+import { Tag } from 'posts/entities/tag.entity';
 
 export class PostBuilder {
   private readonly post: Post;
@@ -48,6 +49,11 @@ export class PostBuilder {
 
   withLikes(likes: Array<Like>): this {
     this.post.likes = likes;
+    return this;
+  }
+
+  withTags(tags: Array<Tag>): this {
+    this.post.tags = tags;
     return this;
   }
 

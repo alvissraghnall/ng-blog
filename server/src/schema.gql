@@ -16,6 +16,9 @@ type Comment {
   """Author of blog comment"""
   author: User!
 
+  """Date Entity was created."""
+  createdAt: DateTime!
+
   """Comment ID"""
   id: Int!
 
@@ -25,11 +28,12 @@ type Comment {
   """Post that was commented on"""
   post: Post!
   text: String!
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
 }
 
 input CreateCommentInput {
-  post: postInputType
-
   """ID of Post that was commented on"""
   postId: Int!
 
@@ -58,6 +62,9 @@ input CreatePostInput {
   """Blog post image URL"""
   image: String!
 
+  """Blog post tags"""
+  tags: [String!]
+
   """Blog post title"""
   title: String!
 }
@@ -79,6 +86,11 @@ input CreateUserInput {
   username: String!
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 enum EntityOwnsLike {
   COMMENT
   POST
@@ -88,6 +100,9 @@ type Like {
   """Comment that was liked"""
   comment: Comment
 
+  """Date Entity was created."""
+  createdAt: DateTime!
+
   """Likes Collection ID"""
   id: Int!
 
@@ -96,6 +111,9 @@ type Like {
 
   """Post that was liked"""
   post: Post
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
 }
 
 type LoginResponse {
@@ -139,12 +157,22 @@ type Post {
   commentCount: Int!
   comments: [Comment!]
   content: String!
+
+  """Date Entity was created."""
+  createdAt: DateTime!
+
+  """Date Entity was deleted."""
+  deletedAt: DateTime!
   desc: String!
   id: Int!
   image: String!
   likeCount: Int!
   likes: [Like!]
+  tags: [Tag!]
   title: String!
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
 }
 
 type Query {
@@ -180,10 +208,20 @@ type Query {
   whoami: User!
 }
 
+type Tag {
+  """Date Entity was created."""
+  createdAt: DateTime!
+  id: Int!
+  name: String!
+  posts: [Post!]
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
+}
+
 input UpdateCommentInput {
   """ID of comment to be updated."""
   id: Int!
-  post: postInputType
 
   """Comment text content"""
   text: String!
@@ -194,16 +232,19 @@ input UpdatePostInput {
   category: Category
 
   """Blog post content"""
-  content: String!
+  content: String
 
   """Blog post short description"""
-  desc: String!
+  desc: String
 
   """Post id to be updated."""
   id: Int!
 
   """Blog post image URL"""
-  image: String!
+  image: String
+
+  """Blog post tags"""
+  tags: [String!]
   title: String
 }
 
@@ -228,6 +269,9 @@ input UpdateUserInput {
 type User {
   avatar: String
   bio: String
+
+  """Date Entity was created."""
+  createdAt: DateTime!
   email: String!
 
   """Email verification status"""
@@ -242,50 +286,10 @@ type User {
   """OAuth2 Provider name, e.g. Google, GitHub.."""
   oauthProvider: String
   password: String
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
   username: String!
-}
-
-input commentInputType {
-  """Author of blog comment"""
-  author: userInputType!
-
-  """Comment ID"""
-  id: Int!
-
-  """Likes on Comment"""
-  likes: [likeEntityInput!]
-
-  """Post that was commented on"""
-  post: postInputType!
-  text: String!
-}
-
-input likeEntityInput {
-  """Comment that was liked"""
-  comment: commentInputType
-
-  """Likes Collection ID"""
-  id: Int!
-
-  """User who liked post."""
-  owner: userInputType!
-
-  """Post that was liked"""
-  post: postInputType
-}
-
-input postInputType {
-  author: userInputType!
-  category: Category!
-  commentCount: Int!
-  comments: [commentInputType!]
-  content: String!
-  desc: String!
-  id: Int!
-  image: String!
-  likeCount: Int!
-  likes: [likeEntityInput!]
-  title: String!
 }
 
 input userInputType {

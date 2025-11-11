@@ -6,6 +6,12 @@ import {
   MaxLength,
   IsUrl,
   MinLength,
+  IsArray,
+  MIN,
+  ArrayMaxSize,
+  ArrayNotContains,
+  IsOptional,
+  Matches,
 } from 'class-validator';
 import { Category } from 'posts/enum/category.enum';
 
@@ -42,4 +48,16 @@ export class CreatePostInput {
   @Field(() => Category, { description: 'Blog post category' })
   @IsEnum(Category, { message: 'Invalid category.' })
   category: Category;
+
+  @Field(() => [String], { description: 'Blog post tags', nullable: true })
+  @IsArray()
+  @ArrayMaxSize(5)
+  @IsString({ each: true })
+  @MaxLength(22, { each: true })
+  @Matches(/^[a-zA-Z0-9-]+$/, {
+    each: true,
+    message: 'Tags can only contain letters, numbers, or dashes',
+  })
+  @IsOptional()
+  tags?: string[];
 }

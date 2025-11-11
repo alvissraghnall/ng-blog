@@ -12,8 +12,4 @@ export class CreateCommentInput {
   @IsNumber()
   @IsNotEmpty()
   postId: number;
-
-  @IsOptional()
-  @Field(() => Post, { nullable: true })
-  post: Post;
 }

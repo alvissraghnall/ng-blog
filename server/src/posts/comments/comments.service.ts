@@ -26,12 +26,13 @@ export class CommentsService {
 
   async create(
     createCommentInput: CreateCommentInput,
+    post: Post,
     author: User,
   ): Promise<Comment> {
     const newComment = new CommentBuilder()
       .withAuthor(author)
       .withText(createCommentInput.text)
-      .withPost(createCommentInput.post)
+      .withPost(post)
       .build();
 
     return this.commentsRepository.save(newComment);

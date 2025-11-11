@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Unique } from 'typeorm';
 import { User } from './user.entity';
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field } from '@nestjs/graphql';
 
 @Entity('user_follows')
 @Unique(['follower', 'following'])
@@ -10,11 +10,17 @@ export class UserFollow {
   @Field(() => String, { description: 'User Follow ID' })
   id: string;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @Field(() => User)
   follower: User;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @Field(() => User)
   following: User;
 }

@@ -1,9 +1,12 @@
-import { ObjectType, Field, Int, InputType } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Category } from 'posts/enum/category.enum';
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -12,9 +15,9 @@ import { User } from 'users/entities/user.entity';
 import { Comment } from '../comments/entities/comment.entity';
 import { Like } from '../likes/entities/like.entity';
 import { BaseEntity } from 'common/entities/base.entity';
+import { Tag } from './tag.entity';
 
 @ObjectType()
-@InputType('postInputType')
 @Entity()
 export class Post extends BaseEntity {
   @Field(() => Int)
@@ -41,19 +44,35 @@ export class Post extends BaseEntity {
   @Column({ type: 'enum', enum: Category })
   category: Category;
 
+  @Field(() => [Tag], { nullable: true })
+  @ManyToMany(() => Tag, (tag) => tag.posts, {
+    cascade: ['insert', 'update'],
+    onDelete: 'CASCADE', // Clean up join table when post deleted
+  })
+  @JoinTable({
+    name: 'post_tags',
+    joinColumn: { name: 'post_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
+  })
+  tags: Tag[];
+
   @Field(() => [Comment], { nullable: true })
-  @OneToMany(() => Comment, (comment) => comment.post)
+  @OneToMany(() => Comment, (comment) => comment.post, {
+    cascade: ['remove'], // Delete comments when post is deleted
+  })
   comments: Comment[];
 
   @Field(() => [Like], { nullable: true })
-  @OneToMany(() => Like, (like) => like.post)
+  @OneToMany(() => Like, (like) => like.post, {
+    cascade: ['remove'], // Delete likes when post is deleted
+  })
   likes: Like[];
 
   @Field(() => User)
   @ManyToOne(() => User, {
     nullable: false,
     eager: false,
-    onDelete: 'CASCADE',
+    onDelete: 'RESTRICT',
   })
   @JoinColumn({ name: 'author_id' })
   author: User;
@@ -63,4 +82,11 @@ export class Post extends BaseEntity {
 
   @Field(() => Int)
   commentCount: number;
+
+  @DeleteDateColumn()
+  @Field(() => Date, {
+    nullable: false,
+    description: 'Date Entity was deleted.',
+  })
+  deletedAt: Date;
 }

@@ -34,6 +34,7 @@ export class EntityExistsGuard implements CanActivate {
 
     const gqlCtx = GqlExecutionContext.create(context);
     const args = gqlCtx.getArgs();
+    const { req } = gqlCtx.getContext();
 
     console.log(args);
 
@@ -63,8 +64,9 @@ export class EntityExistsGuard implements CanActivate {
       );
     }
 
-    const attachPath = metadata.attachAs || metadata.entity.name.toLowerCase();
-    this.setNestedProperty(args, attachPath, entity);
+    req.entity = entity;
+    // const attachPath = metadata.attachAs || metadata.entity.name.toLowerCase();
+    // this.setNestedProperty(args, attachPath, entity);
 
     return true;
   }

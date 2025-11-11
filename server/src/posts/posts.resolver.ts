@@ -32,7 +32,7 @@ export class PostsResolver {
     @CurrentUser() user: User,
   ) {
     // console.log(createPostInput.desc);
-    // console.log(user);
+    console.log(user);
     return this.postsService.create(createPostInput, user);
   }
 

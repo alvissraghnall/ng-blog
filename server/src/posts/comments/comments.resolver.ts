@@ -43,14 +43,13 @@ export class CommentsResolver {
     entity: Post,
     idExtractor: 'createCommentInput.postId',
     // idExtractor: (args) => args.createCommentInput.postId,
-    attachAs: 'createCommentInput.post',
   })
   createComment(
     @Args('createCommentInput') createCommentInput: CreateCommentInput,
     @CurrentUser() user: User,
     @FoundEntity('post') post: Post,
   ) {
-    return this.commentsService.create(createCommentInput, user);
+    return this.commentsService.create(createCommentInput, post, user);
   }
 
   @Query(() => [Comment], { name: 'comments', nullable: true })

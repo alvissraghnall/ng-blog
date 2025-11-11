@@ -15,6 +15,8 @@ import { UpdatePostInput } from './dto/update-post.input';
 import { Post } from './entities/post.entity';
 import { Category } from './enum/category.enum';
 import { PostBuilder } from './builders/post.builder';
+import { Tag } from './entities/tag.entity';
+import { TagBuilder } from './builders/tag.builder';
 
 export interface FindPostsOptions {
   category?: Category;
@@ -28,12 +30,37 @@ export interface FindPostsOptions {
 export class PostsService {
   constructor(
     @InjectRepository(Post) private readonly postsRepository: Repository<Post>,
+    @InjectRepository(Tag) private readonly tagsRepository: Repository<Tag>,
     private readonly usersService: UsersService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(createPostInput: CreatePostInput, user: User): Promise<Post> {
-    const { title, content, category, desc, image } = createPostInput;
+    const { title, content, category, desc, image, tags } = createPostInput;
+
+    let allTags: Tag[];
+
+    if (tags && tags.length > 0) {
+      const normalizedTagNames = tags.map((tag) => tag.trim().toLowerCase());
+
+      const existingTags = await this.tagsRepository.find({
+        where: normalizedTagNames.map((name) => ({ name })),
+      });
+
+      const existingTagNames = existingTags.map((tag) => tag.name);
+
+      const newTagNames = normalizedTagNames.filter(
+        (name) => !existingTagNames.includes(name),
+      );
+
+      const newTags = newTagNames.map((name) =>
+        new TagBuilder().withName(name).build(),
+      );
+
+      const savedNewTags = await this.tagsRepository.save(newTags);
+
+      allTags = [...existingTags, ...savedNewTags];
+    }
 
     const newPost = new PostBuilder()
       .withAuthor(user)
@@ -42,9 +69,10 @@ export class PostsService {
       .withImage(image)
       .withDesc(desc?.trim() || '')
       .withCategory(category)
+      .withTags(allTags || [])
       .build();
 
-    return this.postsRepository.save(newPost);
+    return await this.postsRepository.save(newPost);
   }
 
   async findAll(options: FindPostsOptions = {}): Promise<Post[]> {
@@ -75,6 +103,7 @@ export class PostsService {
       queryOptions.relations = [
         'author',
         'likes',
+        'tags',
         'likes.owner',
         'comments',
         'comments.author',
@@ -102,6 +131,7 @@ export class PostsService {
         'author',
         'likes',
         'likes.owner',
+        'tags',
         'comments',
         'comments.author',
         'comments.likes',
@@ -138,13 +168,32 @@ export class PostsService {
     user: User,
     existingPost: Post,
   ): Promise<Post> {
-    const { id, title, image, desc, content, category } = updatePostInput;
+    const { id, title, image, desc, content, category, tags } = updatePostInput;
 
-    // const existingPost = await this.findOne(id, false);
+    let updatedTags = existingPost.tags;
 
-    // if (existingPost.author.id !== user.id) {
-    //   throw new BadRequestException('You can only update your own posts');
-    // }
+    if (tags && tags.length > 0) {
+      const normalizedTagNames = tags.map((tag) => tag.trim().toLowerCase());
+
+      const existingTags = await this.tagsRepository.find({
+        where: normalizedTagNames.map((name) => ({ name })),
+      });
+
+      const existingTagNames = existingTags.map((tag) => tag.name);
+
+      const newTagNames = normalizedTagNames.filter(
+        (name) => !existingTagNames.includes(name),
+      );
+
+      const newTags = newTagNames.map((name) =>
+        new TagBuilder().withName(name).build(),
+      );
+      const savedNewTags = newTags.length
+        ? await this.tagsRepository.save(newTags)
+        : [];
+
+      updatedTags = [...existingTags, ...savedNewTags];
+    }
 
     const updatedPost = new PostBuilder()
       .withAuthor(existingPost.author)
@@ -153,11 +202,12 @@ export class PostsService {
       .withImage(image ?? existingPost.image)
       .withDesc(desc ?? existingPost.desc)
       .withCategory(category ?? existingPost.category)
+      .withTags(updatedTags)
       .build();
 
     updatedPost.id = id;
 
-    return this.postsRepository.save(updatedPost);
+    return await this.postsRepository.save(updatedPost);
   }
 
   async remove(id: number, post: Post): Promise<Post> {
@@ -176,7 +226,7 @@ export class PostsService {
       }
     }
 
-    const removed = await this.postsRepository.remove(post);
+    const removed = await this.postsRepository.softRemove(post);
     return { ...removed, id };
   }
 

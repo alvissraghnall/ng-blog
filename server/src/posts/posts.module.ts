@@ -14,6 +14,7 @@ import { CloudinaryModule } from 'cloudinary/cloudinary.module';
 import { LikesService } from './likes/likes.service';
 import { EntityExistsGuard } from 'common/guards/entity-exists.guard';
 import { EntityOwnerGuard } from 'common/guards/entity-owner.guard';
+import { Tag } from './entities/tag.entity';
 
 @Module({
   providers: [
@@ -30,7 +31,7 @@ import { EntityOwnerGuard } from 'common/guards/entity-owner.guard';
   imports: [
     LikesModule,
     CommentsModule,
-    TypeOrmModule.forFeature([Post]),
+    TypeOrmModule.forFeature([Post, Tag]),
     UsersModule,
     CloudinaryModule,
     JwtKeyModule,
