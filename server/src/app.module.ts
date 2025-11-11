@@ -34,7 +34,8 @@ import { SharedJwtModule } from 'common/shared-jwt.module';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      //autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: true,
       sortSchema: true,
       graphiql: true,
       formatError: (formattedError: GraphQLFormattedError, error: unknown) => {
