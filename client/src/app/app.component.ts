@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
+import { HeaderComponent } from './core/layout/header.component';
+import { RouterOutlet } from '@angular/router';
+import { FooterComponent } from './core/layout/footer.component';
+import { TopNavBar } from '@components/top-nav-bar/top-nav-bar.component';
 
 @Component({
   selector: 'app-root',
-  template: '<router-outlet></router-outlet>',
-  styles: []
+  templateUrl: './app.component.html',
+  imports: [HeaderComponent, RouterOutlet, FooterComponent, TopNavBar],
 })
-export class AppComponent {
-  title = 'ng-blog';
-}
+export class AppComponent {}

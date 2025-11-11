@@ -1,0 +1,57 @@
+[language-server.angular-ls]
+command = "ngserver"
+
+args = [
+  "--ngProbeLocations",
+  "/root/.nvm/versions/node/v22.15.1/lib/node_modules",
+  "--tsProbeLocations",
+  "/root/.nvm/versions/node/v22.15.1/lib/node_modules",
+  "--stdio",
+  # If this for some reason doesn't work, try replacing ${NODE_MODULES_GLOBAL} with the absolute paths, e.g. output of `npm root -g`
+]
+
+
+file-types = ["ts", "typescript", "html"]
+
+[[language]]
+name = "typescript"
+language-servers = ["angular-ls", "typescript-language-server"]
+
+[[language]]
+name = "html"
+language-servers = ["angular-ls", "vscode-html-language-server"]
+
+[language-server.tailwindcss-ls]
+command = "tailwindcss-language-server"
+args = ["--stdio"]
+
+
+[[language]]
+name = "html"
+formatter = { command = 'prettier', args = ["--parser", "html"] }
+
+[[language]]
+name = "json"
+formatter = { command = 'prettier', args = ["--parser", "json"] }
+
+[[language]]
+name = "css"
+formatter = { command = 'prettier', args = ["--parser", "css"] }
+
+[[language]]
+name = "javascript"
+formatter = { command = 'prettier', args = ["--parser", "typescript"] }
+auto-format = true
+
+[[language]]
+name = "typescript"
+
+auto-format = true
+
+[language.formatter]
+command = "prettier"
+args = ["--parser", "typescript"]
+
+[language-server.typescript-language-server]
+# pass format options according to https://github.com/typescript-language-server/typescript-language-server#workspacedidchangeconfiguration omitting the "[language].format." prefix.
+config = { format = { "semicolons" = "insert", "insertSpaceBeforeFunctionParenthesis" = true } }

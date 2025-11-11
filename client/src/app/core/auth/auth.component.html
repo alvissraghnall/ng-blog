@@ -1,0 +1,65 @@
+<form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  <div *ngIf="mode === 'signUp'" class="flex flex-col">
+    <label for="avatar">Avatar (Optional)</label>
+    <input z-input id="avatar" type="file" formControlName="avatar" />
+  </div>
+
+  <div class="flex flex-col">
+    <label for="username">Username</label>
+    <input z-input id="username" type="text" formControlName="username" placeholder="Enter your username" />
+
+    @if (username?.invalid && username?.touched) {
+    <div class="error-messages">
+      <li>@if (username?.errors?.['required']) { Username is required. }</li>
+      <li>@if (username?.errors?.['minlength']) { Username must be at least 3 characters. }</li>
+    </div>
+    }
+  </div>
+
+  <div class="flex flex-col">
+    <label for="password">Password</label>
+    <div class="relative flex items-center">
+      <input
+        z-input
+        id="password"
+        [type]="passwordVisible ? 'text' : 'password'"
+        formControlName="password"
+        placeholder="8+ characters"
+        class="pr-10"
+      />
+      <z-icon
+        [zType]="passwordVisible ? 'eyeOff' : 'eye'"
+        (click)="togglePasswordVisibility()"
+        class="absolute right-3 cursor-pointer text-muted-foreground"
+      />
+    </div>
+    @if (password?.invalid && password?.touched) {
+    <div class="error-messages">
+      <li>@if (password?.errors?.['required']) { Password is required. }</li>
+      <li>@if (password?.errors?.['minlength']) { Password must be at least 8 characters. }</li>
+    </div>
+    }
+  </div>
+
+  @if (mode === 'signUp') {
+  <div class="flex flex-col">
+    <label for="confirmPassword">Confirm Password</label>
+    <input
+      z-input
+      id="confirmPassword"
+      [type]="passwordVisible ? 'text' : 'password'"
+      formControlName="confirmPassword"
+      placeholder="Confirm your password"
+    />
+
+    @if (confirmPassword?.invalid && confirmPassword?.touched) {
+    <div class="error-messages">
+      <li>@if (confirmPassword?.errors?.['required']) { Please confirm your password. }</li>
+      <li>@if (confirmPassword?.errors?.['passwordMismatch']) { Passwords do not match. }</li>
+    </div>
+    }
+  </div>
+  }
+
+  <z-button type="submit" class="w-full h-14"> {{ submitButtonText }} </z-button>
+</form>
