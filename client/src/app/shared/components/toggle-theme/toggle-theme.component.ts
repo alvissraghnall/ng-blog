@@ -10,7 +10,7 @@ import { ZardIconComponent } from '@ui/icon/icon.component';
   template: `
       <div class="relative">
         <button 
-          class="group relative p-2 rounded-lg bg-surface-light dark:bg-surface-dark hover:bg-background-light dark:hover:bg-background-dark transition-all duration-300 flex items-center gap-2 border border-border-light dark:border-border-dark"
+          class="group relative p-2 rounded-lg bg-background hover:bg-background/80 dark:hover:bg-background/80 transition-all duration-300 flex items-center gap-2 border border-border-light dark:border-border-dark"
           (click)="toggleOptions()"
           [attr.aria-label]="'Theme options'"
           [attr.title]="'Theme options'"
@@ -27,10 +27,10 @@ import { ZardIconComponent } from '@ui/icon/icon.component';
         </button>
 
         @if (showOptions()) {
-          <div class="absolute top-full mt-2 right-0 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-lg shadow-xl p-1 z-50 min-w-[160px] animate-fade-in">
+          <div class="absolute top-full mt-2 right-0 bg-background border border-border-light dark:border-border-dark rounded-lg shadow-xl p-1 z-50 min-w-[160px] animate-fade-in">
             <div class="py-1">
               <button 
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-background-light dark:hover:bg-background-dark transition-colors text-left"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-background transition-colors text-left"
                 [class.bg-primary-custom/10.text-primary-custom]="currentMode() === 'light'"
                 (click)="setTheme('light')"
               >
@@ -42,7 +42,7 @@ import { ZardIconComponent } from '@ui/icon/icon.component';
               </button>
       
               <button 
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-background-light dark:hover:bg-background-dark transition-colors text-left"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-background transition-colors text-left"
                 [class.bg-primary-custom/10.text-primary-custom]="currentMode() === 'dark'"
                 (click)="setTheme('dark')"
               >
@@ -54,7 +54,7 @@ import { ZardIconComponent } from '@ui/icon/icon.component';
               </button>
       
               <button 
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-background-light dark:hover:bg-background-dark transition-colors text-left"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-background transition-colors text-left"
                 [class.bg-primary-custom/10.text-primary-custom]="currentMode() === 'system'"
                 (click)="setTheme('system')"
               >

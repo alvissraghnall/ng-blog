@@ -5,9 +5,7 @@ import { ZardAvatarComponent } from '@ui/avatar/avatar.component';
   selector: 'app-author-bio',
   imports: [ZardAvatarComponent],
   template: `
-    <div
-      class="mt-12 p-6 rounded-lg bg-background-light dark:bg-background-dark flex flex-col sm:flex-row items-start gap-6"
-    >
+    <div class="mt-12 p-6 rounded-lg bg-background flex flex-col sm:flex-row items-start gap-6">
       <z-avatar
         [zImage]="{
           url: author.avatar,

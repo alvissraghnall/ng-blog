@@ -1,25 +1,34 @@
-import { Component, EventEmitter, Input, OnInit, output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators, ValidatorFn } from '@angular/forms';
 import { ZardButtonComponent } from '@ui/button/button.component';
 import { ZardInputDirective } from '@ui/input/input.directive';
 import { ZardIconComponent } from '@ui/icon/icon.component';
 import { passwordMatchValidator } from '@core/validators/password-match.validator';
+import { ZardFormModule } from '@ui/form/form.module';
 
 @Component({
   selector: 'app-auth',
-  imports: [CommonModule, ReactiveFormsModule, ZardButtonComponent, ZardInputDirective, ZardIconComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ZardButtonComponent,
+    ZardFormModule,
+    ZardInputDirective,
+    ZardIconComponent,
+  ],
   templateUrl: './auth.component.html',
   styles: ``,
 })
 export class AuthComponent implements OnInit {
   @Input({ required: true }) mode: 'signIn' | 'signUp' = 'signIn';
   @Input() submitButtonText: string = 'Submit';
+  private readonly destroyRef = inject(DestroyRef);
 
   submitForm = output<FormGroup>();
 
   authForm!: FormGroup;
-  passwordVisible = false;
+  passwordVisible = signal(false);
 
   constructor(private fb: FormBuilder) {}
 
@@ -44,7 +53,43 @@ export class AuthComponent implements OnInit {
   }
 
   togglePasswordVisibility(): void {
-    this.passwordVisible = !this.passwordVisible;
+    this.passwordVisible.set(!this.passwordVisible);
+  }
+
+  getUsernameError(): string {
+    if (!this.username?.touched) return '';
+
+    if (this.username?.errors?.['required']) {
+      return 'Username is required';
+    }
+    if (this.username?.errors?.['minlength']) {
+      return 'Username must be at least 3 characters';
+    }
+    return '';
+  }
+
+  getPasswordError(): string {
+    if (!this.password?.touched) return '';
+
+    if (this.password?.errors?.['required']) {
+      return 'Password is required';
+    }
+    if (this.password?.errors?.['minlength']) {
+      return 'Password must be at least 8 characters';
+    }
+    return '';
+  }
+
+  getConfirmPasswordError(): string {
+    if (!this.confirmPassword?.touched) return '';
+
+    if (this.confirmPassword?.errors?.['required']) {
+      return 'Please confirm your password';
+    }
+    if (this.authForm?.errors?.['passwordMismatch'] && this.confirmPassword?.touched) {
+      return 'Passwords do not match';
+    }
+    return '';
   }
 
   get username() {

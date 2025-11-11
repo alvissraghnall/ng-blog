@@ -8,7 +8,9 @@ import { Menu, X, type LucideIconData } from 'lucide-angular';
   selector: 'app-top-nav-bar',
   imports: [ZardButtonComponent, ToggleThemeComponent, ZardIconComponent],
   template: `
-    <header class="sticky top-0 z-50 w-full bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-border-light dark:border-border-dark">
+    <header
+      class="sticky top-0 z-50 w-full bg-background/80 dark:bg-background/80 backdrop-blur-sm border-b border-border-light dark:border-border-dark"
+    >
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16 md:h-20">
           <a class="flex items-center gap-3 text-text-light dark:text-text-dark" href="#">
@@ -20,19 +22,23 @@ import { Menu, X, type LucideIconData } from 'lucide-angular';
             <a
               class="text-text-light dark:text-text-dark hover:text-primary-custom transition-colors text-sm font-medium"
               href="#"
-            >Home</a>
+              >Home</a
+            >
             <a
               class="text-text-muted-light dark:text-text-muted-dark hover:text-primary-custom transition-colors text-sm font-medium"
               href="#"
-            >Blog</a>
+              >Blog</a
+            >
             <a
               class="text-text-muted-light dark:text-text-muted-dark hover:text-primary-custom transition-colors text-sm font-medium"
               href="#"
-            >About</a>
+              >About</a
+            >
             <a
               class="text-text-muted-light dark:text-text-muted-dark hover:text-primary-custom transition-colors text-sm font-medium"
               href="#"
-            >Contribute</a>
+              >Contribute</a
+            >
           </nav>
 
           <div class="hidden md:flex items-center gap-4">
@@ -56,25 +62,29 @@ import { Menu, X, type LucideIconData } from 'lucide-angular';
           <div class="md:hidden border-t border-border-light dark:border-border-dark">
             <nav class="flex flex-col py-4 space-y-1">
               <a
-                class="px-4 py-3 text-text-light dark:text-text-dark hover:bg-surface-light dark:hover:bg-surface-dark hover:text-primary-custom transition-colors text-base font-medium"
+                class="px-4 py-3 text-text-light dark:text-text-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium"
                 href="#"
                 (click)="closeMobileMenu()"
-              >Home</a>
+                >Home</a
+              >
               <a
-                class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-surface-light dark:hover:bg-surface-dark hover:text-primary-custom transition-colors text-base font-medium"
+                class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium"
                 href="#"
                 (click)="closeMobileMenu()"
-              >Blog</a>
+                >Blog</a
+              >
               <a
-                class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-surface-light dark:hover:bg-surface-dark hover:text-primary-custom transition-colors text-base font-medium"
+                class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium"
                 href="#"
                 (click)="closeMobileMenu()"
-              >About</a>
+                >About</a
+              >
               <a
-                class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-surface-light dark:hover:bg-surface-dark hover:text-primary-custom transition-colors text-base font-medium"
+                class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium"
                 href="#"
                 (click)="closeMobileMenu()"
-              >Contribute</a>
+                >Contribute</a
+              >
               <div class="px-4 pt-4 border-t border-border-light dark:border-border-dark">
                 <button z-button class="w-full">Subscribe</button>
               </div>

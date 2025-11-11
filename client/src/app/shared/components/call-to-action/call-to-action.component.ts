@@ -6,7 +6,7 @@ import { ZardInputDirective } from '@ui/input/input.directive';
   selector: 'app-call-to-action',
   imports: [ZardButtonComponent, ZardInputDirective],
   template: `
-    <section class="bg-background-light dark:bg-background-dark py-12 md:py-20">
+    <section class="bg-background py-12 md:py-20">
       <div class="max-w-3xl mx-auto px-4 sm:px-6">
         <div class="flex flex-col items-center justify-center gap-6 text-center">
           <h2 class="text-text-light dark:text-text-dark text-3xl md:text-4xl font-display font-bold leading-tight">

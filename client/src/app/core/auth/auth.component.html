@@ -1,8 +1,11 @@
-<form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-6">
-  <div *ngIf="mode === 'signUp'" class="flex flex-col">
+<form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-3">
+  @if (mode === 'signUp') {
+  <div class="flex flex-col">
     <label for="avatar">Avatar (Optional)</label>
     <input z-input id="avatar" type="file" formControlName="avatar" />
   </div>
+
+  }
 
   <div class="flex flex-col">
     <label for="username">Username</label>
@@ -29,8 +32,9 @@
       />
       <z-icon
         [zType]="passwordVisible ? 'eyeOff' : 'eye'"
+		zSize="xl"
         (click)="togglePasswordVisibility()"
-        class="absolute right-3 cursor-pointer text-muted-foreground"
+        class="absolute right-3 cursor-pointer text-muted-foreground top-0 bottom-0"
       />
     </div>
     @if (password?.invalid && password?.touched) {
@@ -61,5 +65,5 @@
   </div>
   }
 
-  <z-button type="submit" class="w-full h-14"> {{ submitButtonText }} </z-button>
+  <z-button type="submit" class="w-full h-14 mt-3"> {{ submitButtonText }} </z-button>
 </form>

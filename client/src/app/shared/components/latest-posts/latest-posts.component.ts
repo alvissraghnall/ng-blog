@@ -5,7 +5,7 @@ import { Article, ArticleCardComponent } from '@components/article-card/article-
   selector: 'app-latest-posts',
   imports: [ArticleCardComponent],
   template: `
-    <section class="bg-surface-light dark:bg-surface-dark py-12 md:py-20">
+    <section class="bg-background py-12 md:py-20">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="text-center pb-12 md:pb-16">
           <h2 class="text-3xl md:text-4xl font-display font-bold text-text-light dark:text-text-dark">

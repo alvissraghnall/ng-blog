@@ -167,7 +167,9 @@ body {
 }
 
 .error-messages {
-  @apply list-none p-0 m-0;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 .error-messages li {

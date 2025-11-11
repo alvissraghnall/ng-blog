@@ -1,5 +1,10 @@
-<app-top-nav-bar />
 
-<router-outlet></router-outlet>
+<div classclass="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+  <!-- <div class="layout-container flex h-full grow flex-col"> -->
+  <app-top-nav-bar></app-top-nav-bar>
 
-<app-layout-footer />
+  <router-outlet></router-outlet>
+
+  <app-layout-footer />
+  <!-- </div> -->
+</div>
