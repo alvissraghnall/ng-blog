@@ -34,6 +34,13 @@ services:
       DB_DATABASE: ${POSTGRES_DB:-sharewithalviss_db}
       
       NODE_ENV: development
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.client.rule=Host(`ngblogapi.piree.xyz`)
+      - traefik.http.routers.client.entryPoints=https
+      - traefik.http.routers.client.tls=true
+      - traefik.http.routers.client.tls.certresolver=letsencrypt
+      - traefik.http.services.client.loadbalancer.server.port=3000
     # ports:
     #   - "3000:3000"
     # command: pnpm start:dev
