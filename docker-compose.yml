@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: ng_blog_postgres
+    # restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-sharewithalviss_db}
+      - POSTGRES_USER=${POSTGRES_USER:-blog_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-blog_user} -d ${POSTGRES_DB:-sharewithalviss_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: ng_blog_api
+    # restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${POSTGRES_USER:-blog_user}      
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_DATABASE: ${POSTGRES_DB:-sharewithalviss_db}
+      
+      NODE_ENV: development
+    # ports:
+    #   - "3000:3000"
+    command: pnpm start:dev
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+
+volumes:
+  postgres_data:

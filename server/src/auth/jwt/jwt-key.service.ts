@@ -1,25 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class JwtKeyService {
+  constructor(private readonly configService: ConfigService) {}
+
   async getPrivKey(): Promise<Buffer> {
-    return await new Promise((resolve, reject) => {
-      fs.readFile(path.join(process.cwd(), './private.pem'), (err, data) => {
-        if (err) reject(err);
-        resolve(data);
-      });
-    });
+    const base64Key = this.configService.get<string>("JWT_PRIVATE_KEY_BASE64");
+    if (!base64Key) {
+      throw new Error("Missing environment variable: JWT_PRIVATE_KEY_BASE64");
+    }
+    return Buffer.from(base64Key, "base64");
   }
 
   async getPubKey(): Promise<Buffer> {
-    return await new Promise((resolve, reject) => {
-      fs.readFile(path.join(process.cwd(), './public.pem'), (err, data) => {
-        if (err) reject(err);
-        resolve(data);
-      });
-    });
+    const base64Key = this.configService.get<string>("JWT_PUBLIC_KEY_BASE64");
+    if (!base64Key) {
+      throw new Error("Missing environment variable: JWT_PUBLIC_KEY_BASE64");
+    }
+    return Buffer.from(base64Key, "base64");
   }
 }
