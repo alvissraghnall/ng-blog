@@ -6,26 +6,24 @@ import { JwtKeyService } from 'auth/jwt/jwt-key.service';
 
 @Module({
   imports: [
-    JwtKeyModule,
     JwtModule.registerAsync({
-      imports: [JwtKeyModule],
-      useFactory: async (keyService: JwtKeyService) => {
-        return {
-          privateKey: await keyService.getPrivKey(),
-          publicKey: await keyService.getPubKey(),
-          signOptions: {
-            expiresIn: '30d',
-            algorithm: 'RS256',
-            issuer: 'reblog',
-          },
-          verifyOptions: { algorithms: ['RS256'] },
-        };
-      },
-      inject: [JwtKeyService],
+      imports: [ConfigModule, JwtKeyModule],
+      inject: [JwtKeyService, ConfigService],
+      useFactory: async (
+        keyService: JwtKeyService,
+        configService: ConfigService,
+      ) => ({
+        privateKey: await keyService.getPrivKey(),
+        publicKey: await keyService.getPubKey(),
+        signOptions: {
+          expiresIn: '30d',
+          algorithm: 'RS256',
+          issuer: configService.get<string>('JWT_ISSUER') || 'reblog',
+        },
+        verifyOptions: { algorithms: ['RS256'] },
+      }),
     }),
   ],
-
-  providers: [JwtKeyService],
   exports: [JwtModule],
 })
 export class SharedJwtModule {}

@@ -37,8 +37,6 @@ services:
     # ports:
     #   - "3000:3000"
     # command: pnpm start:dev
-    volumes:
-      - /usr/src/app/node_modules
 
 volumes:
   postgres_data:
