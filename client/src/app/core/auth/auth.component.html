@@ -1,9 +1,17 @@
-<form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-4 max-w-md">
+<form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-y-4 max-w-md">
   @if (mode === 'signUp') {
   <z-form-field>
     <label z-form-label for="avatar">Avatar (Optional)</label>
     <z-form-control>
       <input z-input id="avatar" type="file" formControlName="avatar" />
+    </z-form-control>
+  </z-form-field>
+
+  @if (mode === 'signUp') {
+  <z-form-field>
+    <label z-form-label zRequired for="email">Email</label>
+    <z-form-control [errorMessage]="getEmailError()">
+      <input z-input id="email" type="email" formControlName="email" placeholder="Enter your email" />
     </z-form-control>
   </z-form-field>
   }
@@ -27,12 +35,13 @@
           placeholder="8+ characters"
           class="pr-10"
         />
-        <z-icon
+        <div
+          z-icon
           [zType]="passwordVisible() ? 'eyeOff' : 'eye'"
           zSize="xl"
-          (click)="togglePasswordVisibility()"
-          class="absolute right-3 cursor-pointer text-muted-foreground top-0 bottom-0"
-        />
+          (click)="togglePasswordVisibility($event)"
+          class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-muted-foreground"
+        ></div>
       </div>
     </z-form-control>
   </z-form-field>
@@ -52,7 +61,7 @@
   </z-form-field>
   }
 
-  <button z-button type="submit" class="w-full h-14 mt-3" [zLoading]="isSubmitting()" [disabled]="isSubmitting()">
+  <button z-button type="submit" class="w-full h-14 mt-2" [zLoading]="isSubmitting()" [disabled]="isSubmitting()">
     {{ submitButtonText }}
   </button>
 </form>

@@ -6,6 +6,7 @@ import { ZardInputDirective } from '@ui/input/input.directive';
 import { ZardIconComponent } from '@ui/icon/icon.component';
 import { passwordMatchValidator } from '@core/validators/password-match.validator';
 import { ZardFormModule } from '@ui/form/form.module';
+import { Errors } from '@core/models/errors.model';
 
 @Component({
   selector: 'app-auth',
@@ -24,6 +25,7 @@ export class AuthComponent implements OnInit {
   @Input({ required: true }) mode: 'signIn' | 'signUp' = 'signIn';
   @Input() submitButtonText: string = 'Submit';
   private readonly destroyRef = inject(DestroyRef);
+  errors: Errors = { errors: {} };
 
   submitForm = output<FormGroup>();
 
@@ -46,6 +48,7 @@ export class AuthComponent implements OnInit {
     if (this.mode === 'signUp') {
       (controls as any).confirmPassword = ['', Validators.required];
       (controls as any).avatar = [''];
+      (controls as any).email = ['', [Validators.required, Validators.email]];
     }
 
     this.authForm = this.fb.group(controls, {
@@ -53,8 +56,13 @@ export class AuthComponent implements OnInit {
     });
   }
 
-  togglePasswordVisibility(): void {
-    this.passwordVisible.set(!this.passwordVisible);
+  togglePasswordVisibility(ev: Event): void {
+    console.log(ev, 3009);
+    ev.preventDefault();
+    ev.stopPropagation();
+    console.log(this.passwordVisible());
+    this.passwordVisible.set(!this.passwordVisible());
+    console.log(this.passwordVisible());
   }
 
   getUsernameError(): string {
@@ -65,6 +73,18 @@ export class AuthComponent implements OnInit {
     }
     if (this.username?.errors?.['minlength']) {
       return 'Username must be at least 3 characters';
+    }
+    return '';
+  }
+
+  getEmailError(): string {
+    if (!this.email?.touched) return '';
+
+    if (this.email?.errors?.['required']) {
+      return 'Email is required';
+    }
+    if (this.email?.errors?.['minlength']) {
+      return 'Email must be at least 3 characters';
     }
     return '';
   }
@@ -95,6 +115,9 @@ export class AuthComponent implements OnInit {
 
   get username() {
     return this.authForm.get('username');
+  }
+  get email() {
+    return this.authForm.get('email');
   }
   get password() {
     return this.authForm.get('password');

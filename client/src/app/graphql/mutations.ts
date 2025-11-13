@@ -13,14 +13,34 @@ export const signup = mutation(m => [
 export const login = mutation(m => [
   m.login({ loginUserInput: $('loginUserInput') }, response => [
     response.access_token,
-    response.user(user => [user.id, user.username, user.email, user.avatar, user.bio, user.emailVerified]),
+    response.user(user => [
+      user.id,
+      user.username,
+      user.email,
+      user.avatar,
+      user.bio,
+      user.emailVerified,
+      user.createdAt,
+      user.updatedAt,
+    ]),
   ]),
 ]);
 
 export const oauthLogin = mutation(m => [
   m.oauthLogin({ oauthInput: $('oauthInput') }, response => [
     response.access_token,
-    response.user(user => [user.id, user.username, user.email, user.avatar, user.bio, user.emailVerified]),
+    response.user(user => [
+      user.id,
+      user.username,
+      user.email,
+      user.avatar,
+      user.bio,
+      user.emailVerified,
+      user.createdAt,
+      user.updatedAt,
+      user.oauthId,
+      user.oauthProvider,
+    ]),
   ]),
 ]);
 
@@ -34,6 +54,8 @@ export const updateUser = mutation(m => [
     user.avatar,
     user.bio,
     user.emailVerified,
+    user.createdAt,
+    user.updatedAt,
   ]),
 ]);
 

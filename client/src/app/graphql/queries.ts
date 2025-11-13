@@ -1,7 +1,18 @@
 import { $, query } from '@gen';
 
 export const getCurrentUser = query(q => [
-  q.whoami(user => [user.id, user.username, user.email, user.avatar, user.bio, user.emailVerified]),
+  q.whoami(user => [
+    user.id,
+    user.username,
+    user.email,
+    user.avatar,
+    user.bio,
+    user.emailVerified,
+    user.createdAt,
+    user.oauthId,
+    user.oauthProvider,
+    user.updatedAt,
+  ]),
 ]);
 
 export const getUserByUsername = query(q => [

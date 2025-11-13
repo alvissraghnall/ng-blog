@@ -165,6 +165,7 @@
 
 body {
   font-family: 'Noto Sans', sans-serif;
+  font-optical-sizing: auto;
 }
 
 .error-messages {
@@ -175,4 +176,28 @@ body {
 
 .error-messages li {
   @apply text-destructive text-sm py-1;
+}
+
+.gentium-book-plus-regular {
+  font-family: 'Gentium Book Plus', serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.gentium-book-plus-bold {
+  font-family: 'Gentium Book Plus', serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.gentium-book-plus-regular-italic {
+  font-family: 'Gentium Book Plus', serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.gentium-book-plus-bold-italic {
+  font-family: 'Gentium Book Plus', serif;
+  font-weight: 700;
+  font-style: italic;
 }

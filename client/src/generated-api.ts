@@ -498,6 +498,14 @@ export class Comment extends $Base<"Comment"> {
 
       
 /**
+ * Date Entity was created.
+ */
+      get createdAt(): $Field<"createdAt", DateTime>  {
+       return this.$_select("createdAt") as any
+      }
+
+      
+/**
  * Comment ID
  */
       get id(): $Field<"id", number>  {
@@ -540,12 +548,19 @@ export class Comment extends $Base<"Comment"> {
       get text(): $Field<"text", string>  {
        return this.$_select("text") as any
       }
+
+      
+/**
+ * Date Entity was last updated.
+ */
+      get updatedAt(): $Field<"updatedAt", DateTime>  {
+       return this.$_select("updatedAt") as any
+      }
 }
 
 
 export type CreateCommentInput = {
-  post?: postInputType | null,
-postId: number,
+  postId: number,
 text: string
 }
     
@@ -563,6 +578,7 @@ export type CreatePostInput = {
 content: string,
 desc: string,
 image: string,
+tags?: Readonly<Array<string>> | null,
 title: string
 }
     
@@ -576,6 +592,13 @@ password: string,
 username: string
 }
     
+
+
+/**
+ * A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+ */
+export type DateTime = string
+
 
   
 export enum EntityOwnsLike {
@@ -608,6 +631,14 @@ export class Like extends $Base<"Like"> {
       return this.$_select("comment", options as any) as any
     }
   
+
+      
+/**
+ * Date Entity was created.
+ */
+      get createdAt(): $Field<"createdAt", DateTime>  {
+       return this.$_select("createdAt") as any
+      }
 
       
 /**
@@ -648,6 +679,14 @@ export class Like extends $Base<"Like"> {
       return this.$_select("post", options as any) as any
     }
   
+
+      
+/**
+ * Date Entity was last updated.
+ */
+      get updatedAt(): $Field<"updatedAt", DateTime>  {
+       return this.$_select("updatedAt") as any
+      }
 }
 
 
@@ -1052,6 +1091,22 @@ export class Post extends $Base<"Post"> {
       }
 
       
+/**
+ * Date Entity was created.
+ */
+      get createdAt(): $Field<"createdAt", DateTime>  {
+       return this.$_select("createdAt") as any
+      }
+
+      
+/**
+ * Date Entity was deleted.
+ */
+      get deletedAt(): $Field<"deletedAt", DateTime>  {
+       return this.$_select("deletedAt") as any
+      }
+
+      
       get desc(): $Field<"desc", string>  {
        return this.$_select("desc") as any
       }
@@ -1085,8 +1140,29 @@ export class Post extends $Base<"Post"> {
   
 
       
+      tags<Sel extends Selection<Tag>>(selectorFn: (s: Tag) => [...Sel]):$Field<"tags", Array<GetOutput<Sel>> | null , GetVariables<Sel>> {
+      
+      const options = {
+        
+        
+
+        selection: selectorFn(new Tag)
+      };
+      return this.$_select("tags", options as any) as any
+    }
+  
+
+      
       get title(): $Field<"title", string>  {
        return this.$_select("title") as any
+      }
+
+      
+/**
+ * Date Entity was last updated.
+ */
+      get updatedAt(): $Field<"updatedAt", DateTime>  {
+       return this.$_select("updatedAt") as any
       }
 }
 
@@ -1461,9 +1537,55 @@ recentPosts(arg1: any, arg2?: any) {
 }
 
 
+export class Tag extends $Base<"Tag"> {
+  constructor() {
+    super("Tag")
+  }
+
+  
+      
+/**
+ * Date Entity was created.
+ */
+      get createdAt(): $Field<"createdAt", DateTime>  {
+       return this.$_select("createdAt") as any
+      }
+
+      
+      get id(): $Field<"id", number>  {
+       return this.$_select("id") as any
+      }
+
+      
+      get name(): $Field<"name", string>  {
+       return this.$_select("name") as any
+      }
+
+      
+      posts<Sel extends Selection<Post>>(selectorFn: (s: Post) => [...Sel]):$Field<"posts", Array<GetOutput<Sel>> | null , GetVariables<Sel>> {
+      
+      const options = {
+        
+        
+
+        selection: selectorFn(new Post)
+      };
+      return this.$_select("posts", options as any) as any
+    }
+  
+
+      
+/**
+ * Date Entity was last updated.
+ */
+      get updatedAt(): $Field<"updatedAt", DateTime>  {
+       return this.$_select("updatedAt") as any
+      }
+}
+
+
 export type UpdateCommentInput = {
   id: number,
-post?: postInputType | null,
 text: string
 }
     
@@ -1471,10 +1593,11 @@ text: string
 
 export type UpdatePostInput = {
   category?: Category | null,
-content: string,
-desc: string,
+content?: string | null,
+desc?: string | null,
 id: number,
-image: string,
+image?: string | null,
+tags?: Readonly<Array<string>> | null,
 title?: string | null
 }
     
@@ -1505,6 +1628,14 @@ export class User extends $Base<"User"> {
       
       get bio(): $Field<"bio", string | null>  {
        return this.$_select("bio") as any
+      }
+
+      
+/**
+ * Date Entity was created.
+ */
+      get createdAt(): $Field<"createdAt", DateTime>  {
+       return this.$_select("createdAt") as any
       }
 
       
@@ -1550,45 +1681,18 @@ export class User extends $Base<"User"> {
       }
 
       
+/**
+ * Date Entity was last updated.
+ */
+      get updatedAt(): $Field<"updatedAt", DateTime>  {
+       return this.$_select("updatedAt") as any
+      }
+
+      
       get username(): $Field<"username", string>  {
        return this.$_select("username") as any
       }
 }
-
-
-export type commentInputType = {
-  author: userInputType,
-id: number,
-likes?: Readonly<Array<likeEntityInput>> | null,
-post: postInputType,
-text: string
-}
-    
-
-
-export type likeEntityInput = {
-  comment?: commentInputType | null,
-id: number,
-owner: userInputType,
-post?: postInputType | null
-}
-    
-
-
-export type postInputType = {
-  author: userInputType,
-category: Category,
-commentCount: number,
-comments?: Readonly<Array<commentInputType>> | null,
-content: string,
-desc: string,
-id: number,
-image: string,
-likeCount: number,
-likes?: Readonly<Array<likeEntityInput>> | null,
-title: string
-}
-    
 
 
 export type userInputType = {
@@ -1659,8 +1763,7 @@ export function mutation<Sel extends Selection<$RootTypes.query>>(name: any, sel
 
 const $InputTypes: {[key: string]: {[key: string]: string}} = {
     CreateCommentInput: {
-    post: "postInputType",
-postId: "Int!",
+    postId: "Int!",
 text: "String!"
   },
   CreateLikeInput: {
@@ -1672,6 +1775,7 @@ postId: "Int"
 content: "String!",
 desc: "String!",
 image: "String!",
+tags: "[String!]",
 title: "String!"
   },
   CreateUserInput: {
@@ -1692,15 +1796,15 @@ redirectUri: "String"
   },
   UpdateCommentInput: {
     id: "Int!",
-post: "postInputType",
 text: "String!"
   },
   UpdatePostInput: {
     category: "Category",
-content: "String!",
-desc: "String!",
+content: "String",
+desc: "String",
 id: "Int!",
-image: "String!",
+image: "String",
+tags: "[String!]",
 title: "String"
   },
   UpdateUserInput: {
@@ -1710,32 +1814,6 @@ email: "String",
 id: "ID!",
 password: "String",
 username: "String"
-  },
-  commentInputType: {
-    author: "userInputType!",
-id: "Int!",
-likes: "[likeEntityInput!]",
-post: "postInputType!",
-text: "String!"
-  },
-  likeEntityInput: {
-    comment: "commentInputType",
-id: "Int!",
-owner: "userInputType!",
-post: "postInputType"
-  },
-  postInputType: {
-    author: "userInputType!",
-category: "Category!",
-commentCount: "Int!",
-comments: "[commentInputType!]",
-content: "String!",
-desc: "String!",
-id: "Int!",
-image: "String!",
-likeCount: "Int!",
-likes: "[likeEntityInput!]",
-title: "String!"
   },
   userInputType: {
     avatar: "String",

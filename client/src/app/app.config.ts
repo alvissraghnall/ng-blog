@@ -21,14 +21,19 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(withInterceptors([apiInterceptor, tokenInterceptor, errorInterceptor])),
-    provideApollo(() => {
-      const httpLink = inject(HttpLink);
+    provideApollo(
+      () => {
+        const httpLink = inject(HttpLink);
 
-      return {
-        link: httpLink.create({ uri: '/graphql' }),
-        cache: new InMemoryCache(),
-      };
-    }),
+        return {
+          link: httpLink.create({ uri: '/graphql' }),
+          cache: new InMemoryCache(),
+        };
+      },
+      {
+        useMutationLoading: true,
+      },
+    ),
     provideAppInitializer(() => {
       const initializerFn = initAuth(inject(JwtService), inject(UserService));
       return initializerFn();
