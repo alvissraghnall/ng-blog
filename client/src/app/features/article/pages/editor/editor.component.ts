@@ -43,7 +43,7 @@ export default class EditorComponent implements OnInit {
     if (this.route.snapshot.params['slug']) {
       combineLatest([this.articleService.get(this.route.snapshot.params['slug']), this.userService.getCurrentUser()])
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(([article, { user }]) => {
+        .subscribe(([article, user]) => {
           if (user.username === article.author.username) {
             this.tagList = article.tagList;
             this.articleForm.patchValue(article);

@@ -1,6 +1,13 @@
 import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators, ValidatorFn } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { ZardButtonComponent } from '@ui/button/button.component';
 import { ZardInputDirective } from '@ui/input/input.directive';
 import { ZardIconComponent } from '@ui/icon/icon.component';
@@ -8,13 +15,26 @@ import { passwordMatchValidator } from '@core/validators/password-match.validato
 import { ZardFormModule } from '@ui/form/form.module';
 import { Errors } from '@core/models/errors.model';
 
+export type SignInForm = {
+  username: FormControl<string>;
+  password: FormControl<string>;
+};
+
+export type SignUpForm = {
+  username: FormControl<string>;
+  password: FormControl<string>;
+  confirmPassword: FormControl<string>;
+  email: FormControl<string>;
+  avatar: FormControl<string>;
+};
+
 @Component({
   selector: 'app-auth',
   imports: [
     CommonModule,
+    ZardFormModule,
     ReactiveFormsModule,
     ZardButtonComponent,
-    ZardFormModule,
     ZardInputDirective,
     ZardIconComponent,
   ],
@@ -23,116 +43,100 @@ import { Errors } from '@core/models/errors.model';
 })
 export class AuthComponent implements OnInit {
   @Input({ required: true }) mode: 'signIn' | 'signUp' = 'signIn';
-  @Input() submitButtonText: string = 'Submit';
+  @Input() submitButtonText = 'Submit';
+
   private readonly destroyRef = inject(DestroyRef);
+  private readonly fb = inject(FormBuilder);
+
   errors: Errors = { errors: {} };
+  submitForm = output<FormGroup<SignInForm | SignUpForm>>();
+  authForm!: FormGroup<SignInForm | SignUpForm>;
 
-  submitForm = output<FormGroup>();
-
-  authForm!: FormGroup;
   passwordVisible = signal(false);
   isSubmitting = signal(false);
-
-  constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.buildForm();
   }
 
-  buildForm(): void {
-    const controls = {
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-    };
-
+  private buildForm(): void {
     if (this.mode === 'signUp') {
-      (controls as any).confirmPassword = ['', Validators.required];
-      (controls as any).avatar = [''];
-      (controls as any).email = ['', [Validators.required, Validators.email]];
+      this.authForm = this.fb.nonNullable.group<SignUpForm>(
+        {
+          username: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
+          password: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(8)]),
+          confirmPassword: this.fb.nonNullable.control('', Validators.required),
+          email: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
+          avatar: this.fb.nonNullable.control(''),
+        },
+        { validators: passwordMatchValidator },
+      ) as FormGroup<SignUpForm | SignInForm>;
+    } else {
+      this.authForm = this.fb.nonNullable.group<SignInForm>({
+        username: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
+        password: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(8)]),
+      });
     }
-
-    this.authForm = this.fb.group(controls, {
-      validators: this.mode === 'signUp' ? passwordMatchValidator : [],
-    });
   }
 
-  togglePasswordVisibility(ev: Event): void {
-    console.log(ev, 3009);
-    ev.preventDefault();
-    ev.stopPropagation();
-    console.log(this.passwordVisible());
-    this.passwordVisible.set(!this.passwordVisible());
-    console.log(this.passwordVisible());
+  togglePasswordVisibility(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.passwordVisible.update(v => !v);
   }
 
   getUsernameError(): string {
-    if (!this.username?.touched) return '';
-
-    if (this.username?.errors?.['required']) {
-      return 'Username is required';
-    }
-    if (this.username?.errors?.['minlength']) {
-      return 'Username must be at least 3 characters';
-    }
+    const ctrl = this.username;
+    if (!ctrl.touched) return '';
+    if (ctrl.hasError('required')) return 'Username is required';
+    if (ctrl.hasError('minlength')) return 'Username must be at least 3 characters';
     return '';
   }
 
   getEmailError(): string {
-    if (!this.email?.touched) return '';
-
-    if (this.email?.errors?.['required']) {
-      return 'Email is required';
-    }
-    if (this.email?.errors?.['minlength']) {
-      return 'Email must be at least 3 characters';
-    }
+    const ctrl = this.email;
+    if (!ctrl?.touched) return '';
+    if (ctrl.hasError('required')) return 'Email is required';
+    if (ctrl.hasError('email')) return 'Invalid email format';
     return '';
   }
 
   getPasswordError(): string {
-    if (!this.password?.touched) return '';
-
-    if (this.password?.errors?.['required']) {
-      return 'Password is required';
-    }
-    if (this.password?.errors?.['minlength']) {
-      return 'Password must be at least 8 characters';
-    }
+    const ctrl = this.password;
+    if (!ctrl.touched) return '';
+    if (ctrl.hasError('required')) return 'Password is required';
+    if (ctrl.hasError('minlength')) return 'Password must be at least 8 characters';
     return '';
   }
 
   getConfirmPasswordError(): string {
-    if (!this.confirmPassword?.touched) return '';
-
-    if (this.confirmPassword?.errors?.['required']) {
-      return 'Please confirm your password';
-    }
-    if (this.authForm?.errors?.['passwordMismatch'] && this.confirmPassword?.touched) {
-      return 'Passwords do not match';
-    }
+    const ctrl = this.confirmPassword;
+    if (!ctrl?.touched) return '';
+    if (ctrl.hasError('required')) return 'Please confirm your password';
+    if (this.authForm.hasError('passwordMismatch')) return 'Passwords do not match';
     return '';
   }
 
-  get username() {
-    return this.authForm.get('username');
+  get username(): FormControl<string> {
+    return this.authForm.get('username') as FormControl<string>;
   }
-  get email() {
-    return this.authForm.get('email');
+  get email(): FormControl<string> | null {
+    return this.mode === 'signUp' ? (this.authForm.get('email') as FormControl<string>) : null;
   }
-  get password() {
-    return this.authForm.get('password');
+  get password(): FormControl<string> {
+    return this.authForm.get('password') as FormControl<string>;
   }
-  get confirmPassword() {
-    return this.authForm.get('confirmPassword');
+  get confirmPassword(): FormControl<string> | null {
+    return this.mode === 'signUp' ? (this.authForm.get('confirmPassword') as FormControl<string>) : null;
   }
-  get avatar() {
-    return this.authForm.get('avatar');
+  get avatar(): FormControl<string> | null {
+    return this.mode === 'signUp' ? (this.authForm.get('avatar') as FormControl<string>) : null;
   }
 
   onSubmit(): void {
     this.isSubmitting.set(true);
-
     this.authForm.markAllAsTouched();
+
     if (this.authForm.valid) {
       this.submitForm.emit(this.authForm);
     }

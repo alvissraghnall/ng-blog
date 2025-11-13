@@ -6,7 +6,7 @@ import { AuthComponent } from '../auth.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
-import { Errors } from '@core/models/errors.model';
+import { AuthenticationError, Errors, NetworkError } from '@core/models/errors.model';
 
 @Component({
   selector: 'app-signup',
@@ -15,7 +15,7 @@ import { Errors } from '@core/models/errors.model';
   styles: ``,
 })
 export default class SignupComponent {
-  errors: Errors = { errors: {} };
+  errors: string[] = [];
   destroyRef = inject(DestroyRef);
 
   constructor(
@@ -24,20 +24,19 @@ export default class SignupComponent {
   ) {}
 
   handleSignUp(data: FormGroup) {
-    let observable = this.userService.register(
-      data.value as {
-        email: string;
-        password: string;
-        username: string;
-        confirmPassword: string;
-      },
-    );
-
-    observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => void this.router.navigate(['/']),
-      error: err => {
-        this.errors = err;
-      },
-    });
+    this.userService
+      .register(data.value satisfies { username: string; password: string; email: string; confirmPassword: string })
+      .subscribe({
+        next: ({}) => {
+          this.router.navigate(['/login']);
+        },
+        error: error => {
+          if (error instanceof AuthenticationError) {
+            this.errors.push(error.message);
+          } else if (error instanceof NetworkError) {
+            this.errors.push('Network issue. Please check your connection.');
+          }
+        },
+      });
   }
 }

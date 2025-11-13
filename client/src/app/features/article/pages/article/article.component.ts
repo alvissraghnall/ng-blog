@@ -73,7 +73,7 @@ export default class ArticleComponent implements OnInit {
       .subscribe(([article, comments, currentUser]) => {
         this.article = article;
         this.comments = comments;
-        this.currentUser = currentUser;
+        // this.currentUser = currentUser;
         this.canModify = currentUser?.username === article.author.username;
       });
   }

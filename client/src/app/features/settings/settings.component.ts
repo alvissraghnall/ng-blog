@@ -56,7 +56,7 @@ export default class SettingsComponent implements OnInit {
       .update(this.settingsForm.value)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ user }) => void this.router.navigate(['/profile/', user.username]),
+        next: user => void this.router.navigate(['/profile/', user.username]),
         error: err => {
           this.errors = err;
           this.isSubmitting = false;

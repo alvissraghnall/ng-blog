@@ -1,8 +1,8 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { ZardCardComponent } from '@ui/card/card.component';
-import { AuthComponent } from '@core/auth/auth.component';
+import { AuthComponent, SignInForm } from '@core/auth/auth.component';
 import { FormGroup } from '@angular/forms';
-import { Errors } from '@core/models/errors.model';
+import { AuthenticationError, Errors, NetworkError } from '@core/models/errors.model';
 import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -14,7 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styles: ``,
 })
 export default class SigninComponent {
-  errors: Errors = { errors: {} };
+  errors: string[] = [];
   destroyRef = inject(DestroyRef);
 
   constructor(
@@ -22,13 +22,17 @@ export default class SigninComponent {
     private readonly userService: UserService,
   ) {}
 
-  handleSignIn(data: FormGroup) {
-    let observable = this.userService.login(data.value satisfies { username: string; password: string });
-
-    observable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => void this.router.navigate(['/', 'profile']),
-      error: err => {
-        this.errors = err;
+  handleSignIn(data: FormGroup<SignInForm>) {
+    this.userService.login(data.getRawValue()).subscribe({
+      next: ({ user, token }) => {
+        this.router.navigate(['/profile']);
+      },
+      error: error => {
+        if (error instanceof AuthenticationError) {
+          this.errors.push(error.message);
+        } else if (error instanceof NetworkError) {
+          this.errors.push('Network issue. Please check your connection.');
+        }
       },
     });
   }

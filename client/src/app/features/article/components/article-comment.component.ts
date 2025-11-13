@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { UserService } from '../../../core/auth/services/user.service';
-import { User } from '../../../core/auth/user.model';
 import { RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { Comment } from '../models/comment.model';
 import { AsyncPipe, DatePipe } from '@angular/common';
+import { User } from '@/gql-types';
 
 @Component({
   selector: 'app-article-comment',

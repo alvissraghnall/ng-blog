@@ -6,8 +6,7 @@
       <input z-input id="avatar" type="file" formControlName="avatar" />
     </z-form-control>
   </z-form-field>
-
-  @if (mode === 'signUp') {
+  } @if (mode === 'signUp') {
   <z-form-field>
     <label z-form-label zRequired for="email">Email</label>
     <z-form-control [errorMessage]="getEmailError()">
@@ -61,7 +60,7 @@
   </z-form-field>
   }
 
-  <button z-button type="submit" class="w-full h-14 mt-2" [zLoading]="isSubmitting()" [disabled]="isSubmitting()">
+  <button z-button type="submit" class="w-full h-14 mt-2" [zLoading]="isSubmitting()" [disabled]="isSubmitting() || !authForm.valid">
     {{ submitButtonText }}
   </button>
 </form>
