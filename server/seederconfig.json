@@ -1,0 +1,11 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "root",
+  "database": "root",
+  "entities": ["src/**/*.entity.ts"],
+  "synchronize": false,
+  "seeds": ["src/database/seeds/**/*.seed.ts"],
+  "factories": ["src/database/factories/**/*.factory.ts"]
+}
