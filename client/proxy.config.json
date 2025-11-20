@@ -1,5 +1,8 @@
 {
   "/graphql": {
-    "target": "https://ngblogapi.piree.xyz"
+    "target": "https://ngblogapi.piree.xyz",
+	"changeOrigin": true,
+    "secure": false,
+    "logLevel": "debug"
   }
 }

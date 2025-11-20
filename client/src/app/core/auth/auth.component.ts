@@ -133,14 +133,15 @@ export class AuthComponent implements OnInit {
     return this.mode === 'signUp' ? (this.authForm.get('avatar') as FormControl<string>) : null;
   }
 
-  onSubmit(): void {
-    this.isSubmitting.set(true);
+  onSubmit() {
     this.authForm.markAllAsTouched();
-
     if (this.authForm.valid) {
+      this.isSubmitting.set(true);
       this.submitForm.emit(this.authForm);
     }
+  }
 
+  finishSubmitting() {
     this.isSubmitting.set(false);
   }
 }

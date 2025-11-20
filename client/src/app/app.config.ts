@@ -31,7 +31,7 @@ export const appConfig: ApplicationConfig = {
         };
       },
       {
-        useMutationLoading: true,
+        //useMutationLoading: true,
       },
     ),
     provideAppInitializer(() => {
