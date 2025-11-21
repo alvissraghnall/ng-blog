@@ -41,8 +41,8 @@ services:
       - traefik.http.routers.client.tls=true
       - traefik.http.routers.client.tls.certresolver=letsencrypt
       - traefik.http.services.client.loadbalancer.server.port=3000
-    # ports:
-    #   - "3000:3000"
+    ports:
+      - "6789:3000"
     # command: pnpm start:dev
 
 volumes:
