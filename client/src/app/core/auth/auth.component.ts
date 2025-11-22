@@ -1,19 +1,23 @@
-import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, output, signal } from '@angular/core';
+import { Component, DestroyRef, inject, Input, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
   Validators,
   FormControl,
-  NonNullableFormBuilder,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { finalize, take } from 'rxjs/operators';
+
 import { ZardButtonComponent } from '@ui/button/button.component';
 import { ZardInputDirective } from '@ui/input/input.directive';
 import { ZardIconComponent } from '@ui/icon/icon.component';
-import { passwordMatchValidator } from '@core/validators/password-match.validator';
 import { ZardFormModule } from '@ui/form/form.module';
+
+import { passwordMatchValidator } from '@core/validators/password-match.validator';
 import { Errors } from '@core/models/errors.model';
+import { UserService } from './services/user.service';
 
 export type SignInForm = {
   username: FormControl<string>;
@@ -30,6 +34,7 @@ export type SignUpForm = {
 
 @Component({
   selector: 'app-auth',
+  standalone: true,
   imports: [
     CommonModule,
     ZardFormModule,
@@ -39,24 +44,100 @@ export type SignUpForm = {
     ZardIconComponent,
   ],
   templateUrl: './auth.component.html',
-  styles: ``,
+  styles: '',
 })
 export class AuthComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly userService = inject(UserService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
   @Input({ required: true }) mode: 'signIn' | 'signUp' = 'signIn';
   @Input() submitButtonText = 'Submit';
-
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly fb = inject(FormBuilder);
-
-  errors: Errors = { errors: {} };
   submitForm = output<FormGroup<SignInForm | SignUpForm>>();
-  authForm!: FormGroup<SignInForm | SignUpForm>;
 
+  authForm!: FormGroup<SignInForm | SignUpForm>;
+  errors: Errors = { errors: {} };
+  
   passwordVisible = signal(false);
   isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.buildForm();
+    this.checkOAuthCallback();
+  }
+
+  onGoogleSignIn() {
+    this.initiateOAuth('google');
+  }
+
+  onGithubSignIn() {
+    this.initiateOAuth('github');
+  }
+
+  private initiateOAuth(provider: 'google' | 'github') {
+    this.isSubmitting.set(true);
+    this.errorMessage.set(null);
+
+    sessionStorage.setItem('oauth_provider', provider);
+
+    this.userService.getOAuthUrl(provider)
+      .pipe(
+        take(1),
+        finalize(() => this.isSubmitting.set(false))
+      )
+      .subscribe({
+        next: (url) => {
+          window.location.href = url;
+        },
+        error: (err) => {
+          this.errorMessage.set(err.message || 'Failed to initialize login.');
+        }
+      });
+  }
+
+  private checkOAuthCallback() {
+    this.route.queryParams.pipe(take(1)).subscribe(params => {
+      const code = params['code'];
+      const storedProvider = sessionStorage.getItem('oauth_provider');
+
+      if (code && storedProvider) {
+        this.handleOAuthCompletion(code, storedProvider as 'google' | 'github');
+      } else if (code && !storedProvider) {
+        this.errorMessage.set('Login session expired. Please try again.');
+        this.router.navigate([], { queryParams: { code: null, state: null }, replaceUrl: true });
+      }
+    });
+  }
+
+  private handleOAuthCompletion(code: string, provider: 'google' | 'github') {
+    this.isSubmitting.set(true);
+    this.errorMessage.set(null);
+
+    this.userService.oauthLogin({ code, provider })
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isSubmitting.set(false);
+          // Remove query params to clean up URL
+          this.router.navigate([], {
+             queryParams: { code: null, state: null },
+             queryParamsHandling: 'merge',
+             replaceUrl: true
+          });
+        })
+      )
+      .subscribe({
+        next: ({ user }) => {
+          // possibly emit an event here (????????)
+          this.router.navigate(['/profile']); 
+        },
+        error: (err) => {
+          this.errorMessage.set(err.message || 'OAuth login failed.');
+        }
+      });
   }
 
   private buildForm(): void {
@@ -84,6 +165,12 @@ export class AuthComponent implements OnInit {
     event.stopPropagation();
     this.passwordVisible.update(v => !v);
   }
+
+  get username(): FormControl<string> { return this.authForm.get('username') as FormControl<string>; }
+  get email(): FormControl<string> | null { return this.mode === 'signUp' ? (this.authForm.get('email') as FormControl<string>) : null; }
+  get password(): FormControl<string> { return this.authForm.get('password') as FormControl<string>; }
+  get confirmPassword(): FormControl<string> | null { return this.mode === 'signUp' ? (this.authForm.get('confirmPassword') as FormControl<string>) : null; }
+  get avatar(): FormControl<string> | null { return this.mode === 'signUp' ? (this.authForm.get('avatar') as FormControl<string>) : null; }
 
   getUsernameError(): string {
     const ctrl = this.username;
@@ -117,26 +204,11 @@ export class AuthComponent implements OnInit {
     return '';
   }
 
-  get username(): FormControl<string> {
-    return this.authForm.get('username') as FormControl<string>;
-  }
-  get email(): FormControl<string> | null {
-    return this.mode === 'signUp' ? (this.authForm.get('email') as FormControl<string>) : null;
-  }
-  get password(): FormControl<string> {
-    return this.authForm.get('password') as FormControl<string>;
-  }
-  get confirmPassword(): FormControl<string> | null {
-    return this.mode === 'signUp' ? (this.authForm.get('confirmPassword') as FormControl<string>) : null;
-  }
-  get avatar(): FormControl<string> | null {
-    return this.mode === 'signUp' ? (this.authForm.get('avatar') as FormControl<string>) : null;
-  }
-
   onSubmit() {
     this.authForm.markAllAsTouched();
     if (this.authForm.valid) {
       this.isSubmitting.set(true);
+      this.errorMessage.set(null);
       this.submitForm.emit(this.authForm);
     }
   }
