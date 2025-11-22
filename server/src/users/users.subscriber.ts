@@ -23,23 +23,36 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
 
   async beforeInsert(event: InsertEvent<User>) {
     const { password } = event.entity;
+
+    if (!password) return;
     console.log(`BEFORE USER INSERTED: `, event.entity);
-    const newPwd = await this.hashService.hashPassword(password);
-    event.entity.password = newPwd;
+
+    event.entity.password = await this.hashService.hashPassword(password);
     console.log(`PASSWORD NOW: `, event.entity);
   }
 
+  // async beforeUpdate(event: UpdateEvent<User>): Promise<void> {
+  //   if (
+  //     event.entity &&
+  //     event.entity.password &&
+  //     event.updatedColumns.some((col) => col.propertyName === 'password')
+  //   ) {
+  //     if (!event.entity.password) return;
+
+  //     event.entity.password = await this.hashService.hashPassword(
+  //       event.entity.password,
+  //     );
+  //   }
+  // }
+
   async beforeUpdate(event: UpdateEvent<User>): Promise<void> {
-    if (
-      event.entity &&
-      event.entity.password &&
-      event.updatedColumns.some((col) => col.propertyName === 'password')
-    ) {
-      console.log(`BEFORE USER updaTED: `, event.entity);
-      event.entity.password = await this.hashService.hashPassword(
-        event.entity.password,
-      );
-      console.log(`PASSWORD NOW: `, event.entity);
+    if (!event.entity || !event.databaseEntity) return;
+
+    const newPassword = event.entity.password;
+    const oldPassword = event.databaseEntity.password;
+
+    if (newPassword && newPassword !== oldPassword) {
+      event.entity.password = await this.hashService.hashPassword(newPassword);
     }
   }
 }
