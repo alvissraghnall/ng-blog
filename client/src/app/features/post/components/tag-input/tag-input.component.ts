@@ -1,11 +1,12 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
+import { ZardBadgeComponent } from '@ui/badge/badge.component';
+import { ZardIconComponent } from '@ui/icon/icon.component';
 
 @Component({
   selector: 'app-tag-input',
   standalone: true,
-  imports: [FormsModule, NgIf],
+  imports: [FormsModule, ZardBadgeComponent, ZardIconComponent],
   templateUrl: './tag-input.component.html',
   providers: [
     {
@@ -17,7 +18,7 @@ import { NgIf } from '@angular/common';
 })
 export class TagInputComponent {
   @Input() placeholder = 'Add a tag...';
-  @Input<number>() maxTags: number = 5;
+  @Input() maxTags: number = 5;
 
   @Input() suggestions: string[] = [];
 
@@ -64,7 +65,7 @@ export class TagInputComponent {
     this.filteredSuggestions = [];
   }
 
-  handleEnter(event: KeyboardEvent) {
+  handleEnter(event: Event) {
     event.preventDefault();
 
     if (this.filteredSuggestions.length > 0) {

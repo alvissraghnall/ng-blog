@@ -1,4 +1,5 @@
 import { $, mutation, Post } from '@gen';
+import { postFields } from './shared';
 
 export const signup = mutation(m => [
   m.signup({ createUserInput: $('createUserInput') }, user => [
@@ -122,17 +123,3 @@ export const toggleLike = mutation(m => [
 
 export const removeLike = mutation(m => [m.removeLike({ id: $('id') }, like => [like.id])]);
 
-const postFields = (post: Post) => [
-  post.id,
-  post.slug,
-  post.title,
-  post.desc,
-  post.content,
-  post.image,
-  post.category,
-  post.likeCount,
-  post.commentCount,
-  post.createdAt,
-  post.author(author => [author.id, author.username, author.avatar]),
-  post.tags(tag => [tag.id, tag.name]),
-];

@@ -1,6 +1,7 @@
 import { Component, Input, signal, effect } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
-import { ZardIconComponent } from '@zard/ui/icon';
+import { ZardIconComponent } from '@ui/icon/icon.component';
+import { CircleXIcon, CloudUploadIcon } from 'lucide-angular';
 
 @Component({
   selector: 'app-image-uploader',
@@ -31,18 +32,17 @@ import { ZardIconComponent } from '@zard/ui/icon';
               <z-icon [zType]="closeIcon" class="text-sm" />
             </button>
 
-            @if (uploadProgress() < 100)
+            @if (uploadProgress() < 100) {
               <div class="absolute bottom-0 left-0 w-full bg-gray-200 h-1 rounded-b-xl overflow-hidden">
                 <div
                   class="bg-green-500 h-1 transition-all duration-300"
                   [style.width.%]="uploadProgress()"
                 ></div>
               </div>
-            @endif
+            }
           </div>
         }
 
-        <!-- Upload Placeholder -->
         @if (!previewUrl()) {
           <div class="flex flex-col items-center justify-center pt-5 pb-6">
             <z-icon [zType]="cloudUploadIcon" class="text-4xl text-muted-foreground" />
@@ -52,12 +52,13 @@ import { ZardIconComponent } from '@zard/ui/icon';
             <p class="text-xs text-muted-foreground">
               JPG, JPEG, PNG (max {{ maxSizeKB }} KB)
             </p>
-            @if (error())
+            @if (error()) {
               <p class="text-xs text-red-500 mt-1">{{ error() }}</p>
-            @endif
+            }
           </div>
-        </div>
+        }
 
+        
         <input
           type="file"
           class="hidden"
@@ -77,8 +78,8 @@ export class ImageUploaderComponent implements ControlValueAccessor {
   uploadProgress = signal<number>(100);
   error = signal<string | null>(null);
 
-  cloudUploadIcon = 'cloud-upload';
-  closeIcon = 'close';
+  cloudUploadIcon = CloudUploadIcon;
+  closeIcon = CircleXIcon;
 
   private onChange = (value: File | null) => {};
   private onTouched = () => {};

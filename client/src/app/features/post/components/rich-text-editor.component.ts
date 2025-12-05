@@ -1,16 +1,17 @@
 import { Component, forwardRef, Input, ViewChild, AfterViewInit, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { QuillEditorComponent, QuillModule } from 'ngx-quill';
 
 import { ZardButtonComponent } from '@ui/button/button.component';
 import { ZardIconComponent } from '@ui/icon/icon.component';
 import { ZardTooltipComponent } from '@ui/tooltip/tooltip';
+import { BoldIcon, ImageIcon, ItalicIcon, LinkIcon, ListIcon, ListOrderedIcon, UnderlineIcon } from 'lucide-angular';
 
 @Component({
   selector: 'app-rich-text-editor',
   standalone: true,
-  imports: [CommonModule, QuillModule, ZardButtonComponent, ZardIconComponent, ZardTooltipComponent],
+  imports: [CommonModule, QuillModule, FormsModule, ZardButtonComponent, ZardIconComponent, ZardTooltipComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -60,7 +61,6 @@ import { ZardTooltipComponent } from '@ui/tooltip/tooltip';
         </z-tooltip>
       </div>
 
-      <!-- Quill Editor -->
       <quill-editor
         #quillEditor
         class="flex-1"
@@ -85,6 +85,14 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
   @Input() placeholder: string = '';
   @ViewChild('quillEditor') quillEditor!: QuillEditorComponent;
 
+  formatBoldIcon = BoldIcon;
+  formatItalicIcon = ItalicIcon;
+  formatUnderlineIcon = UnderlineIcon;
+  formatListOrderedIcon = ListOrderedIcon;
+  formatListUnorderedIcon = ListIcon;
+  linkIcon = LinkIcon;
+  imageIcon = ImageIcon;
+
   value: string = '';
   wordCount: number = 0;
   isSaving: boolean = false;
@@ -104,7 +112,7 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
       [{ font: [] }],
       [{ align: [] }],
       ['clean'],
-      ['link', 'image', 'video'],
+      ['link', 'image',],
     ],
   };
 

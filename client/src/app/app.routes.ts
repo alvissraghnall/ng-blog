@@ -36,12 +36,12 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () => import('./features/article/pages/editor/editor.component'),
+        loadComponent: () => import('./features/post/pages/editor/editor.component'),
         canActivate: [() => inject(UserService).isAuthenticated],
       },
       {
         path: ':slug',
-        loadComponent: () => import('./features/article/pages/editor/editor.component'),
+        loadComponent: () => import('./features/post/pages/editor/editor.component'),
         canActivate: [() => inject(UserService).isAuthenticated],
       },
     ],
@@ -49,9 +49,9 @@ export const routes: Routes = [
   {
     path: 'article/:slug',
     loadComponent: () => import('./features/article/pages/article/article.component'),
-  }, 
-  { 
-    path: 'oauth/:provider/callback', 
+  },
+  {
+    path: 'oauth/:provider/callback',
     loadComponent: () => import('./core/auth/oauth-callback/oauth-callback.component'),
   },
 ];

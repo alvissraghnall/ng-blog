@@ -1,19 +1,22 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { ZardCardComponent } from '@ui/card/card.component';
 import { ZardButtonComponent } from '@ui/button/button.component';
 import { ZardIconComponent } from '@ui/icon/icon.component';
+import { CalendarDaysIcon } from 'lucide-angular';
 
 @Component({
   selector: 'app-post-status-panel',
   standalone: true,
-  imports: [CommonModule, ZardCardComponent, ZardButtonComponent, ZardIconComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ZardCardComponent, ZardButtonComponent, ZardIconComponent],
   templateUrl: './post-status-panel.component.html',
 })
 export class PostStatusPanelComponent {
   @Input({ required: true }) form!: FormGroup;
+
+  calendarIcon = CalendarDaysIcon;
 
   onEditVisibility() {
     console.log('Edit Visibility clicked');

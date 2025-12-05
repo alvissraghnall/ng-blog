@@ -47,7 +47,7 @@ import { PostStatusPanelComponent } from '../../components/post-status-panel/pos
   ],
   templateUrl: './editor.component.html',
 })
-export class EditorComponent implements OnInit {
+export default class EditorComponent implements OnInit {
   allTags: string[] = [];
   postForm!: FormGroup;
 
