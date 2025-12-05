@@ -30,12 +30,17 @@ import { SharedJwtModule } from 'common/shared-jwt.module';
       synchronize: true,
       // dropSchema: true,
       autoLoadEntities: true,
-      // schema: "all"
+      // schema: 'all',
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: false }
+          : false,
+      logger: 'formatted-console',
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      //autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      autoSchemaFile: true,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      // autoSchemaFile: true,
       sortSchema: true,
       graphiql: true,
       formatError: (formattedError: GraphQLFormattedError, error: unknown) => {

@@ -1,6 +1,8 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, HideField } from '@nestjs/graphql';
 import { Category } from 'posts/enum/category.enum';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   DeleteDateColumn,
   Entity,
@@ -16,6 +18,7 @@ import { Comment } from '../comments/entities/comment.entity';
 import { Like } from '../likes/entities/like.entity';
 import { BaseEntity } from 'common/entities/base.entity';
 import { Tag } from './tag.entity';
+import slugify from 'slugify';
 
 @ObjectType()
 @Entity()
@@ -44,6 +47,10 @@ export class Post extends BaseEntity {
   @Column({ type: 'enum', enum: Category })
   category: Category;
 
+  @Field()
+  @Column({ unique: true })
+  slug: string;
+
   @Field(() => [Tag], { nullable: true })
   @ManyToMany(() => Tag, (tag) => tag.posts, {
     cascade: ['insert', 'update'],
@@ -62,7 +69,7 @@ export class Post extends BaseEntity {
   })
   comments: Comment[];
 
-  @Field(() => [Like], { nullable: true })
+  @HideField()
   @OneToMany(() => Like, (like) => like.post, {
     cascade: ['remove'], // Delete likes when post is deleted
   })
@@ -77,11 +84,11 @@ export class Post extends BaseEntity {
   @JoinColumn({ name: 'author_id' })
   author: User;
 
-  @Field(() => Int)
-  likeCount: number;
+  @Field(() => Int, { defaultValue: 0 })
+  likeCount: number = 0;
 
-  @Field(() => Int)
-  commentCount: number;
+  @Field(() => Int, { defaultValue: 0 })
+  commentCount: number = 0;
 
   @DeleteDateColumn()
   @Field(() => Date, {
@@ -89,4 +96,22 @@ export class Post extends BaseEntity {
     description: 'Date Entity was deleted.',
   })
   deletedAt: Date;
+
+  @BeforeInsert()
+  generateSlug() {
+    if (!this.slug) {
+      this.slug = this.createSlug(this.title);
+    }
+  }
+
+  private createSlug(title: string): string {
+    const baseSlug = slugify(title, {
+      lower: true,
+      strict: true,
+      trim: true,
+    });
+
+    const uniqueSuffix = Math.random().toString(36).substring(2, 7);
+    return `${baseSlug}-${uniqueSuffix}`;
+  }
 }

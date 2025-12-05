@@ -21,9 +21,7 @@ type Comment {
 
   """Comment ID"""
   id: Int!
-
-  """Likes on Comment"""
-  likes: [Like!]
+  likeCount: Int!
 
   """Post that was commented on"""
   post: Post!
@@ -167,7 +165,7 @@ type Post {
   id: Int!
   image: String!
   likeCount: Int!
-  likes: [Like!]
+  slug: String!
   tags: [Tag!]
   title: String!
 
@@ -179,7 +177,7 @@ type Query {
   auth: String!
   checkJwt: Boolean!
   comment(id: Int!): Comment
-  comments(postId: Int!): [Comment!]
+  comments(limit: Int! = 20, offset: Int! = 0, postId: Int!): [Comment!]
   findUserById(id: String!): User!
   hasUserLiked(entity: EntityOwnsLike!, entityId: Int!): Boolean!
   like(id: Int!): Like!
@@ -188,7 +186,7 @@ type Query {
 
   """Get most popular posts ordered by likes"""
   popularPosts(limit: Int = 10): [Post!]
-  post(id: Int!): Post!
+  post(id: Int, slug: String): Post!
 
   """Get total count of posts with optional filtering"""
   postCount(authorId: String, category: Category): Int!
@@ -204,6 +202,7 @@ type Query {
 
   """Get most recent posts"""
   recentPosts(limit: Int = 10): [Post!]
+  tags: [Tag!]!
   user(username: String!): User!
   whoami: User!
 }

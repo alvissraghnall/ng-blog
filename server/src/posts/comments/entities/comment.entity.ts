@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, HideField } from '@nestjs/graphql';
 import { Post } from '../../entities/post.entity';
 import { Like } from '../../likes/entities/like.entity';
 import { User } from '../../../users/entities/user.entity';
@@ -38,10 +38,13 @@ export class Comment extends BaseEntity {
   @JoinColumn()
   author: User;
 
-  @Field(() => [Like], { description: 'Likes on Comment', nullable: true })
+  @HideField()
   @OneToMany(() => Like, (like) => like.comment, {
     cascade: ['remove'], // Delete likes when comment is deleted
     nullable: true,
   })
   likes: Like[];
+
+  @Field(() => Int)
+  likeCount: number = 0;
 }

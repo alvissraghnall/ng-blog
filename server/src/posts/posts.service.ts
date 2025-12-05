@@ -76,70 +76,44 @@ export class PostsService {
   }
 
   async findAll(options: FindPostsOptions = {}): Promise<Post[]> {
-    const {
-      category,
-      authorId,
-      includeRelations = true,
-      limit,
-      offset,
-    } = options;
+    const { category, authorId, limit = 10, offset = 0 } = options;
 
-    const where: FindOptionsWhere<Post> = {};
+    const query = this.postsRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('post.tags', 'tags')
+
+      .loadRelationCountAndMap('post.likeCount', 'post.likes')
+
+      .loadRelationCountAndMap('post.commentCount', 'post.comments');
 
     if (category) {
-      where.category = category;
+      query.andWhere('post.category = :category', { category });
     }
-
     if (authorId) {
-      where.author = { id: authorId };
+      query.andWhere('author.id = :authorId', { authorId });
     }
 
-    const queryOptions: any = {
-      where: Object.keys(where).length > 0 ? where : undefined,
-      order: { createdAt: 'DESC' },
-    };
+    query.take(limit).skip(offset);
 
-    if (includeRelations) {
-      queryOptions.relations = [
-        'author',
-        'likes',
-        'tags',
-        'likes.owner',
-        'comments',
-        'comments.author',
-      ];
-    }
+    query.orderBy('post.createdAt', 'DESC');
 
-    if (limit) {
-      queryOptions.take = limit;
-    }
-
-    if (offset) {
-      queryOptions.skip = offset;
-    }
-
-    return this.postsRepository.find(queryOptions);
+    return query.getMany();
   }
 
-  async findOne(id: number, includeRelations = true): Promise<Post> {
-    const queryOptions: FindOneOptions<Post> = {
-      where: { id },
-    };
+  async findOne(id: number): Promise<Post> {
+    const query = this.postsRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('post.tags', 'tags')
 
-    if (includeRelations) {
-      queryOptions.relations = [
-        'author',
-        'likes',
-        'likes.owner',
-        'tags',
-        'comments',
-        'comments.author',
-        'comments.likes',
-      ];
-    }
+      .loadRelationCountAndMap('post.likeCount', 'post.likes')
 
-    const post = await this.postsRepository.findOne(queryOptions);
+      .loadRelationCountAndMap('post.commentCount', 'post.comments');
 
+    query.andWhere('id = :id', { id });
+
+    const post = query.getOne();
     if (!post) {
       throw new NotFoundException(`Post with id ${id} not found`);
     }
@@ -161,6 +135,16 @@ export class PostsService {
       includeRelations: true,
       limit,
     });
+  }
+
+  async findBySlug(slug: string, includeRelations = true): Promise<Post> {
+    const options: FindOneOptions<Post> = {
+      where: { slug },
+      relations: includeRelations ? ['author', 'tags'] : [],
+    };
+    const post = await this.postsRepository.findOne(options);
+    if (!post) throw new NotFoundException(`Post with slug ${slug} not found`);
+    return post;
   }
 
   async update(
@@ -227,7 +211,8 @@ export class PostsService {
     }
 
     const removed = await this.postsRepository.softRemove(post);
-    return { ...removed, id };
+    removed.id = id;
+    return removed;
   }
 
   async getPostCount(
@@ -275,6 +260,10 @@ export class PostsService {
   async exists(id: number): Promise<boolean> {
     const count = await this.postsRepository.count({ where: { id } });
     return count > 0;
+  }
+
+  async getTags(): Promise<Tag[]> {
+    return this.tagsRepository.find({ take: 50 });
   }
 
   // async update(updatePostInput: UpdatePostInput, user: User) {

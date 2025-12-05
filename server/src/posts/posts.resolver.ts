@@ -12,7 +12,7 @@ import { Post } from './entities/post.entity';
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
 import { Category } from './enum/category.enum';
-import { UseGuards } from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Public } from 'common/public.decorator';
 import { User } from 'users/entities/user.entity';
 import { CurrentUser } from 'common/current-user.decorator';
@@ -21,6 +21,7 @@ import {
   CheckEntityOwner,
   OwnedEntity,
 } from 'common/decorators/entity-owner.decorator';
+import { Tag } from './entities/tag.entity';
 
 @Resolver(() => Post)
 export class PostsResolver {
@@ -110,8 +111,23 @@ export class PostsResolver {
 
   @Public()
   @Query(() => Post, { name: 'post' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.postsService.findOne(id);
+  async findOne(
+    @Args('id', { type: () => Int, nullable: true }) id?: number,
+    @Args('slug', { type: () => String, nullable: true }) slug?: string,
+  ) {
+    if (slug) {
+      return this.postsService.findBySlug(slug);
+    }
+    if (id) {
+      return this.postsService.findOne(id);
+    }
+    throw new BadRequestException('Either ID or Slug must be provided');
+  }
+
+  @Public()
+  @Query(() => [Tag], { name: 'tags' })
+  getTags() {
+    return this.postsService.getTags();
   }
 
   @Public()
@@ -156,23 +172,21 @@ export class PostsResolver {
     return this.postsService.remove(id, post);
   }
 
-  @ResolveField(() => Int, { name: 'likeCount' })
-  async getLikeCount(@Parent() post: Post): Promise<number> {
-    // If likes are already loaded, return count
-    if (post.likes) {
-      return post.likes.length;
-    }
-    // Otherwise fetch count from database
-    const fullPost = await this.postsService.findOne(post.id, true);
-    return fullPost.likes?.length || 0;
-  }
+  // @ResolveField(() => Int, { name: 'likeCount' })
+  // async getLikeCount(@Parent() post: Post): Promise<number> {
+  //   if (post.likes) {
+  //     return post.likes.length;
+  //   }
+  //   const fullPost = await this.postsService.findOne(post.id, true);
+  //   return fullPost.likes?.length || 0;
+  // }
 
-  @ResolveField(() => Int, { name: 'commentCount' })
-  async getCommentCount(@Parent() post: Post): Promise<number> {
-    if (post.comments) {
-      return post.comments.length;
-    }
-    const fullPost = await this.postsService.findOne(post.id, true);
-    return fullPost.comments?.length || 0;
-  }
+  // @ResolveField(() => Int, { name: 'commentCount' })
+  // async getCommentCount(@Parent() post: Post): Promise<number> {
+  //   if (post.comments) {
+  //     return post.comments.length;
+  //   }
+  //   const fullPost = await this.postsService.findOne(post.id, true);
+  //   return fullPost.comments?.length || 0;
+  // }
 }

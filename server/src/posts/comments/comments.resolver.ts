@@ -54,10 +54,12 @@ export class CommentsResolver {
 
   @Query(() => [Comment], { name: 'comments', nullable: true })
   @Public()
-  async getCommentsOnPost(@Args('postId', { type: () => Int }) postId: number) {
-    const cmt = await this.commentsService.findAllOnPost(postId);
-    console.log(cmt);
-    return cmt;
+  getCommentsOnPost(
+    @Args('postId', { type: () => Int }) postId: number,
+    @Args('limit', { type: () => Int, defaultValue: 20 }) limit: number,
+    @Args('offset', { type: () => Int, defaultValue: 0 }) offset: number,
+  ) {
+    return this.commentsService.findAllOnPost(postId, limit, offset);
   }
 
   @Query(() => Comment, { name: 'comment', nullable: true })

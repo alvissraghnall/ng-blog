@@ -54,6 +54,7 @@
     "pg": "^8.8.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.2.0",
+    "slugify": "^1.6.6",
     "swagger-ui-express": "^4.6.0",
     "typeorm": "^0.3.11"
   },
