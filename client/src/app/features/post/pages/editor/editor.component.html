@@ -1,0 +1,64 @@
+<app-top-nav-bar />
+
+<form [formGroup]="postForm" (ngSubmit)="onPublish()">
+  <main class="flex-1 px-4 sm:px-6 lg:px-10 py-8">
+    <div class="layout-content-container flex flex-col max-w-7xl mx-auto">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+        <h1 class="text-foreground text-4xl lg:text-5xl font-black font-display tracking-[-0.033em]">
+          Create New Post
+        </h1>
+        <div class="flex items-center gap-3">
+          <z-button zType="secondary" (click)="onSaveDraft()" type="button">
+            <z-icon [zType]="draftIcon" class="text-lg" />
+            <span>Save Draft</span>
+          </z-button>
+          <z-button type="submit">
+            <z-icon [zType]="publishIcon" class="text-lg" />
+            <span>Publish</span>
+          </z-button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 flex flex-col gap-6">
+          <div class="flex flex-col w-full">
+            <z-label for="title" class="pb-2">Post Title</z-label>
+            <z-input
+              id="title"
+              formControlName="title"
+              placeholder="Enter your post title here..."
+              class="h-14 text-lg"
+            />
+          </div>
+
+          <div class="flex flex-col">
+            <z-label class="pb-2">Content</z-label>
+            <app-rich-text-editor formControlName="content" placeholder="Start writing your content..." />
+          </div>
+        </div>
+
+        <div class="lg:col-span-1 flex flex-col gap-6" [formGroup]="statusForm">
+          <div class="flex flex-col">
+            <h3 class="text-foreground text-lg font-bold font-display pb-2">Featured Image</h3>
+            <app-image-uploader formControlName="featuredImage" />
+          </div>
+
+          <div class="flex flex-col">
+            <h3 class="text-foreground text-lg font-bold font-display pb-2">Tags</h3>
+            <app-tag-input
+              formControlName="tags"
+              [suggestions]="allTags"
+              [maxTags]="5"
+              placeholder="Add up to 5 tags..."
+            ></app-tag-input>
+          </div>
+
+          <div class="flex flex-col">
+            <h3 class="text-foreground text-lg font-bold font-display pb-2">Status</h3>
+            <app-post-status-panel [form]="statusForm" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</form>

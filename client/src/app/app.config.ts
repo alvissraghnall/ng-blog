@@ -12,6 +12,7 @@ import { EMPTY } from 'rxjs';
 import { provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache } from '@apollo/client';
+import { provideQuillConfig } from 'ngx-quill';
 
 export function initAuth(jwtService: JwtService, userService: UserService) {
   return () => (jwtService.getToken() ? userService.getCurrentUser() : EMPTY);
@@ -37,6 +38,19 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const initializerFn = initAuth(inject(JwtService), inject(UserService));
       return initializerFn();
+    }),
+    provideQuillConfig({
+      modules: {
+        syntax: true,
+        toolbar: true,
+        theme: 'snow',
+      },
+      customOptions: [
+        {
+          import: 'formats/font',
+          whitelist: ['mirza', 'roboto', 'aref', 'serif', 'sansserif', 'monospace'],
+        },
+      ],
     }),
   ],
 };

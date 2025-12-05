@@ -513,20 +513,9 @@ export class Comment extends $Base<"Comment"> {
       }
 
       
-/**
- * Likes on Comment
- */
-      likes<Sel extends Selection<Like>>(selectorFn: (s: Like) => [...Sel]):$Field<"likes", Array<GetOutput<Sel>> | null , GetVariables<Sel>> {
-      
-      const options = {
-        
-        
-
-        selection: selectorFn(new Like)
-      };
-      return this.$_select("likes", options as any) as any
-    }
-  
+      get likeCount(): $Field<"likeCount", number>  {
+       return this.$_select("likeCount") as any
+      }
 
       
 /**
@@ -1127,17 +1116,9 @@ export class Post extends $Base<"Post"> {
       }
 
       
-      likes<Sel extends Selection<Like>>(selectorFn: (s: Like) => [...Sel]):$Field<"likes", Array<GetOutput<Sel>> | null , GetVariables<Sel>> {
-      
-      const options = {
-        
-        
-
-        selection: selectorFn(new Like)
-      };
-      return this.$_select("likes", options as any) as any
-    }
-  
+      get slug(): $Field<"slug", string>  {
+       return this.$_select("slug") as any
+      }
 
       
       tags<Sel extends Selection<Tag>>(selectorFn: (s: Tag) => [...Sel]):$Field<"tags", Array<GetOutput<Sel>> | null , GetVariables<Sel>> {
@@ -1204,14 +1185,20 @@ export class Query extends $Base<"Query"> {
 
       
       comments<Args extends VariabledInput<{
-        postId: number,
+        limit?: number
+offset?: number
+postId: number,
       }>,Sel extends Selection<Comment>>(args: ExactArgNames<Args, {
-        postId: number,
+        limit?: number
+offset?: number
+postId: number,
       }>, selectorFn: (s: Comment) => [...Sel]):$Field<"comments", Array<GetOutput<Sel>> | null , GetVariables<Sel, Args>> {
       
       const options = {
         argTypes: {
-              postId: "Int!"
+              limit: "Int!",
+offset: "Int!",
+postId: "Int!"
             },
         args,
 
@@ -1352,14 +1339,20 @@ popularPosts(arg1: any, arg2?: any) {
 
       
       post<Args extends VariabledInput<{
-        id: number,
+        id?: number | null
+slug?: string | null,
       }>,Sel extends Selection<Post>>(args: ExactArgNames<Args, {
-        id: number,
-      }>, selectorFn: (s: Post) => [...Sel]):$Field<"post", GetOutput<Sel> , GetVariables<Sel, Args>> {
-      
+        id?: number | null
+slug?: string | null,
+      }>, selectorFn: (s: Post) => [...Sel]):$Field<"post", GetOutput<Sel> , GetVariables<Sel, Args>>
+post<Sel extends Selection<Post>>(selectorFn: (s: Post) => [...Sel]):$Field<"post", GetOutput<Sel> , GetVariables<Sel>>
+post(arg1: any, arg2?: any) {
+      const { args, selectorFn } = !arg2 ? { args: {}, selectorFn: arg1 } : { args: arg1, selectorFn: arg2 };
+
       const options = {
         argTypes: {
-              id: "Int!"
+              id: "Int",
+slug: "String"
             },
         args,
 
@@ -1500,6 +1493,19 @@ recentPosts(arg1: any, arg2?: any) {
         selection: selectorFn(new Post)
       };
       return this.$_select("recentPosts", options as any) as any
+    }
+  
+
+      
+      tags<Sel extends Selection<Tag>>(selectorFn: (s: Tag) => [...Sel]):$Field<"tags", Array<GetOutput<Sel>> , GetVariables<Sel>> {
+      
+      const options = {
+        
+        
+
+        selection: selectorFn(new Tag)
+      };
+      return this.$_select("tags", options as any) as any
     }
   
 

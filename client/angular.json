@@ -25,11 +25,13 @@
             "tsConfig": "tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
-              "src/styles.css",
-              "./node_modules/ngx-simple-modal/styles/simple-modal.css",
-              "./node_modules/ngx-toastr/toastr.css"
+              "./node_modules/quill/dist/quill.core.css",
+              "./node_modules/quill/dist/quill.bubble.css",
+              "./node_modules/quill/dist/quill.snow.css",
+              "./node_modules/quill-mention/dist/quill.mention.css",
+              "src/styles.css"
             ],
-            "scripts": [],
+            "scripts": ["./node_modules/quill/dist/quill.js"],
             "browser": "src/main.ts"
           },
           "configurations": {
@@ -63,11 +65,11 @@
           "configurations": {
             "production": {
               "buildTarget": "ng-blog:build:production",
-			  "proxyConfig": "proxy.config.json"
+              "proxyConfig": "proxy.config.json"
             },
             "development": {
               "buildTarget": "ng-blog:build:development",
-			  "proxyConfig": "proxy.config.json"
+              "proxyConfig": "proxy.config.json"
             }
           },
           "defaultConfiguration": "development"

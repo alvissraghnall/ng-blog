@@ -1,4 +1,5 @@
-import { $, query } from '@gen';
+import { $, Post, query } from '@gen';
+import { postFields } from './shared';
 
 export const getCurrentUser = query(q => [
   q.whoami(user => [
@@ -38,18 +39,16 @@ export const findUserById = query(q => [
 ]);
 
 export const getPost = query(q => [
-  q.post({ id: $('id') }, post => [
-    post.id,
-    post.title,
-    post.desc,
-    post.content,
-    post.image,
-    post.category,
-    post.likeCount,
-    post.commentCount,
-    post.author(author => [author.id, author.username, author.avatar]),
-  ]),
+  q.post(
+    {
+      id: $('id'),
+      slug: $('slug'),
+    },
+    post => postFields(post),
+  ),
 ]);
+
+export const getTags = query(q => [q.tags(tag => [tag.id, tag.name])]);
 
 export const getAllPosts = query(q => [
   q.posts(
@@ -59,45 +58,13 @@ export const getAllPosts = query(q => [
       limit: $('limit'),
       offset: $('offset'),
     },
-    post => [
-      post.id,
-      post.title,
-      post.desc,
-      post.content,
-      post.image,
-      post.category,
-      post.likeCount,
-      post.commentCount,
-      post.author(author => [author.id, author.username, author.avatar]),
-    ],
+    post => postFields(post),
   ),
 ]);
 
-export const getRecentPosts = query(q => [
-  q.recentPosts({ limit: $('limit') }, post => [
-    post.id,
-    post.title,
-    post.desc,
-    post.image,
-    post.category,
-    post.likeCount,
-    post.commentCount,
-    post.author(author => [author.id, author.username, author.avatar]),
-  ]),
-]);
+export const getRecentPosts = query(q => [q.recentPosts({ limit: $('limit') }, post => postFields(post))]);
 
-export const getPopularPosts = query(q => [
-  q.popularPosts({ limit: $('limit') }, post => [
-    post.id,
-    post.title,
-    post.desc,
-    post.image,
-    post.category,
-    post.likeCount,
-    post.commentCount,
-    post.author(author => [author.id, author.username, author.avatar]),
-  ]),
-]);
+export const getPopularPosts = query(q => [q.popularPosts({ limit: $('limit') }, post => postFields(post))]);
 
 export const getPostsByCategory = query(q => [
   q.postsByCategory(
@@ -105,16 +72,7 @@ export const getPostsByCategory = query(q => [
       category: $('category'),
       limit: $('limit'),
     },
-    post => [
-      post.id,
-      post.title,
-      post.desc,
-      post.image,
-      post.category,
-      post.likeCount,
-      post.commentCount,
-      post.author(author => [author.id, author.username, author.avatar]),
-    ],
+    post => postFields(post),
   ),
 ]);
 
@@ -124,16 +82,7 @@ export const getPostsByAuthor = query(q => [
       authorId: $('authorId'),
       limit: $('limit'),
     },
-    post => [
-      post.id,
-      post.title,
-      post.desc,
-      post.image,
-      post.category,
-      post.likeCount,
-      post.commentCount,
-      post.author(author => [author.id, author.username, author.avatar]),
-    ],
+    post => postFields(post),
   ),
 ]);
 
@@ -145,12 +94,20 @@ export const getPostCount = query(q => [
 ]);
 
 export const getComments = query(q => [
-  q.comments({ postId: $('postId') }, comment => [
-    comment.id,
-    comment.text,
-    comment.author(author => [author.id, author.username, author.avatar]),
-    comment.likes(like => [like.id, like.owner(owner => [owner.id, owner.username])]),
-  ]),
+  q.comments(
+    {
+      postId: $('postId'),
+      limit: $('limit'),
+      offset: $('offset'),
+    },
+    comment => [
+      comment.id,
+      comment.text,
+      comment.createdAt,
+      comment.author(author => [author.id, author.username, author.avatar]),
+      comment.likeCount,
+    ],
+  ),
 ]);
 
 export const getComment = query(q => [

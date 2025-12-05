@@ -1,4 +1,4 @@
-import { $, mutation } from '@gen';
+import { $, mutation, Post } from '@gen';
 
 export const signup = mutation(m => [
   m.signup({ createUserInput: $('createUserInput') }, user => [
@@ -78,20 +78,16 @@ export const createPost = mutation(m => [
     post.image,
     post.category,
     post.author(author => [author.id, author.username, author.avatar]),
+    post.createdAt,
+    post.likeCount,
+    post.commentCount,
+    post.slug,
+    post.tags(tag => [tag.name]),
   ]),
 ]);
 
 export const updatePost = mutation(m => [
-  m.updatePost({ updatePostInput: $('updatePostInput') }, post => [
-    post.id,
-    post.title,
-    post.desc,
-    post.content,
-    post.image,
-    post.category,
-    post.likeCount,
-    post.commentCount,
-  ]),
+  m.updatePost({ updatePostInput: $('updatePostInput') }, post => postFields(post)),
 ]);
 
 export const removePost = mutation(m => [m.removePost({ id: $('id') }, post => [post.id, post.title])]);
@@ -101,7 +97,8 @@ export const createComment = mutation(m => [
     comment.id,
     comment.text,
     comment.author(author => [author.id, author.username, author.avatar]),
-    comment.post(post => [post.id, post.title]),
+    comment.createdAt,
+    comment.likeCount,
   ]),
 ]);
 
@@ -109,19 +106,33 @@ export const updateComment = mutation(m => [
   m.updateComment({ updateCommentInput: $('updateCommentInput') }, comment => [
     comment.id,
     comment.text,
-    comment.author(author => [author.id, author.username, author.avatar]),
+    comment.createdAt,
+    comment.likeCount,
   ]),
 ]);
 
-export const removeComment = mutation(m => [m.removeComment({ id: $('id') }, comment => [comment.id, comment.text])]);
+export const removeComment = mutation(m => [m.removeComment({ id: $('id') }, comment => [comment.id])]);
 
 export const toggleLike = mutation(m => [
   m.toggleLike({ createLikeInput: $('createLikeInput') }, like => [
     like.id,
     like.owner(owner => [owner.id, owner.username]),
-    like.post(post => [post.id]),
-    like.comment(comment => [comment.id]),
   ]),
 ]);
 
 export const removeLike = mutation(m => [m.removeLike({ id: $('id') }, like => [like.id])]);
+
+const postFields = (post: Post) => [
+  post.id,
+  post.slug,
+  post.title,
+  post.desc,
+  post.content,
+  post.image,
+  post.category,
+  post.likeCount,
+  post.commentCount,
+  post.createdAt,
+  post.author(author => [author.id, author.username, author.avatar]),
+  post.tags(tag => [tag.id, tag.name]),
+];

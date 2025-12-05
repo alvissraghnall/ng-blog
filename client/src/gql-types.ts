@@ -20,13 +20,13 @@ export type Scalars = {
 };
 
 export enum Category {
-  Cinema = 'CINEMA',
-  Cuisine = 'CUISINE',
-  Diy = 'DIY',
-  Fashion = 'FASHION',
-  Lifestyle = 'LIFESTYLE',
-  Technology = 'TECHNOLOGY',
-  Travel = 'TRAVEL'
+  CINEMA = 'CINEMA',
+  CUISINE = 'CUISINE',
+  DIY = 'DIY',
+  FASHION = 'FASHION',
+  LIFESTYLE = 'LIFESTYLE',
+  TECHNOLOGY = 'TECHNOLOGY',
+  TRAVEL = 'TRAVEL'
 }
 
 export type Comment = {
@@ -37,8 +37,7 @@ export type Comment = {
   createdAt: Scalars['DateTime']['output'];
   /** Comment ID */
   id: Scalars['Int']['output'];
-  /** Likes on Comment */
-  likes?: Maybe<Array<Like>>;
+  likeCount: Scalars['Int']['output'];
   /** Post that was commented on */
   post: Post;
   text: Scalars['String']['output'];
@@ -89,8 +88,8 @@ export type CreateUserInput = {
 };
 
 export enum EntityOwnsLike {
-  Comment = 'COMMENT',
-  Post = 'POST'
+  COMMENT = 'COMMENT',
+  POST = 'POST'
 }
 
 export type Like = {
@@ -241,7 +240,7 @@ export type Post = {
   id: Scalars['Int']['output'];
   image: Scalars['String']['output'];
   likeCount: Scalars['Int']['output'];
-  likes?: Maybe<Array<Like>>;
+  slug: Scalars['String']['output'];
   tags?: Maybe<Array<Tag>>;
   title: Scalars['String']['output'];
   /** Date Entity was last updated. */
@@ -272,6 +271,7 @@ export type Query = {
   postsByCategory?: Maybe<Array<Post>>;
   /** Get most recent posts */
   recentPosts?: Maybe<Array<Post>>;
+  tags: Array<Tag>;
   user: User;
   whoami: User;
 };
@@ -283,6 +283,8 @@ export type QueryCommentArgs = {
 
 
 export type QueryCommentsArgs = {
+  limit?: Scalars['Int']['input'];
+  offset?: Scalars['Int']['input'];
   postId: Scalars['Int']['input'];
 };
 
@@ -321,7 +323,8 @@ export type QueryPopularPostsArgs = {
 
 
 export type QueryPostArgs = {
-  id: Scalars['Int']['input'];
+  id?: InputMaybe<Scalars['Int']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -588,7 +591,7 @@ export type CommentResolvers<ContextType = any, ParentType extends ResolversPare
   author?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  likes?: Resolver<Maybe<Array<ResolversTypes['Like']>>, ParentType, ContextType>;
+  likeCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   post?: Resolver<ResolversTypes['Post'], ParentType, ContextType>;
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -643,7 +646,7 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   image?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   likeCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  likes?: Resolver<Maybe<Array<ResolversTypes['Like']>>, ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -653,19 +656,20 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   auth?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   checkJwt?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   comment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<QueryCommentArgs, 'id'>>;
-  comments?: Resolver<Maybe<Array<ResolversTypes['Comment']>>, ParentType, ContextType, RequireFields<QueryCommentsArgs, 'postId'>>;
+  comments?: Resolver<Maybe<Array<ResolversTypes['Comment']>>, ParentType, ContextType, RequireFields<QueryCommentsArgs, 'limit' | 'offset' | 'postId'>>;
   findUserById?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryFindUserByIdArgs, 'id'>>;
   hasUserLiked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<QueryHasUserLikedArgs, 'entity' | 'entityId'>>;
   like?: Resolver<ResolversTypes['Like'], ParentType, ContextType, RequireFields<QueryLikeArgs, 'id'>>;
   likeCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<QueryLikeCountArgs, 'entity' | 'id'>>;
   likes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType, RequireFields<QueryLikesArgs, 'entity' | 'id'>>;
   popularPosts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryPopularPostsArgs, 'limit'>>;
-  post?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<QueryPostArgs, 'id'>>;
+  post?: Resolver<ResolversTypes['Post'], ParentType, ContextType, Partial<QueryPostArgs>>;
   postCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryPostCountArgs>>;
   posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, Partial<QueryPostsArgs>>;
   postsByAuthor?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryPostsByAuthorArgs, 'authorId'>>;
   postsByCategory?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryPostsByCategoryArgs, 'category'>>;
   recentPosts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryRecentPostsArgs, 'limit'>>;
+  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryUserArgs, 'username'>>;
   whoami?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
 };

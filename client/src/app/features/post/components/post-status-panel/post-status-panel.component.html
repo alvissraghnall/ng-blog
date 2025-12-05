@@ -1,0 +1,19 @@
+<div class="flex flex-col gap-2" [formGroup]="form">
+  <z-card class="flex items-center gap-2 p-3">
+    <z-icon name="visibility" class="text-muted-foreground" />
+    <p class="text-sm font-medium text-muted-foreground">
+      Visibility:
+      <span class="font-bold text-foreground">{{ form.value.visibility }}</span>
+    </p>
+    <z-button [zType]="link" class="ml-auto text-sm">Edit</z-button>
+  </z-card>
+
+  <z-card class="flex items-center gap-2 p-3">
+    <z-icon name="calendar_month" class="text-muted-foreground" />
+    <p class="text-sm font-medium text-muted-foreground">
+      Publish:
+      <span class="font-bold text-foreground">{{ form.value.publishDate | titlecase }}</span>
+    </p>
+    <z-button zType="link" class="ml-auto text-sm">Edit</z-button>
+  </z-card>
+</div>
