@@ -50,15 +50,12 @@ export class AuthComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly userService = inject(UserService);
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
 
   @Input({ required: true }) mode: 'signIn' | 'signUp' = 'signIn';
   @Input() submitButtonText = 'Submit';
   submitForm = output<FormGroup<SignInForm | SignUpForm>>();
 
   authForm!: FormGroup<SignInForm | SignUpForm>;
-  errors: Errors = { errors: {} };
   
   passwordVisible = signal(false);
   isSubmitting = signal(false);
@@ -66,7 +63,11 @@ export class AuthComponent implements OnInit {
 
   ngOnInit(): void {
     this.buildForm();
-    this.checkOAuthCallback();
+    
+    const errorParam = this.route.snapshot.queryParamMap.get('error');
+    if (errorParam) {
+      this.errorMessage.set(errorParam);
+    }
   }
 
   onGoogleSignIn() {
@@ -81,8 +82,6 @@ export class AuthComponent implements OnInit {
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
-    sessionStorage.setItem('oauth_provider', provider);
-
     this.userService.getOAuthUrl(provider)
       .pipe(
         take(1),
@@ -94,48 +93,6 @@ export class AuthComponent implements OnInit {
         },
         error: (err) => {
           this.errorMessage.set(err.message || 'Failed to initialize login.');
-        }
-      });
-  }
-
-  private checkOAuthCallback() {
-    this.route.queryParams.pipe(take(1)).subscribe(params => {
-      const code = params['code'];
-      const storedProvider = sessionStorage.getItem('oauth_provider');
-
-      if (code && storedProvider) {
-        this.handleOAuthCompletion(code, storedProvider as 'google' | 'github');
-      } else if (code && !storedProvider) {
-        this.errorMessage.set('Login session expired. Please try again.');
-        this.router.navigate([], { queryParams: { code: null, state: null }, replaceUrl: true });
-      }
-    });
-  }
-
-  private handleOAuthCompletion(code: string, provider: 'google' | 'github') {
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
-    this.userService.oauthLogin({ code, provider })
-      .pipe(
-        take(1),
-        finalize(() => {
-          this.isSubmitting.set(false);
-          // Remove query params to clean up URL
-          this.router.navigate([], {
-             queryParams: { code: null, state: null },
-             queryParamsHandling: 'merge',
-             replaceUrl: true
-          });
-        })
-      )
-      .subscribe({
-        next: ({ user }) => {
-          // possibly emit an event here (????????)
-          this.router.navigate(['/profile']); 
-        },
-        error: (err) => {
-          this.errorMessage.set(err.message || 'OAuth login failed.');
         }
       });
   }

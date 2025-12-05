@@ -24,7 +24,7 @@ import { UserService } from '@core/auth/services/user.service';
     <header
       class="sticky top-0 z-50 w-full bg-background/80 dark:bg-background/80 backdrop-blur-sm border-b border-border-light dark:border-border-dark"
     >
-      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16 md:h-20">
           <a class="flex items-center gap-3 text-text-light dark:text-text-dark" routerLink="/">
             <span class="material-symbols-outlined text-primary-custom text-2xl">draw</span>

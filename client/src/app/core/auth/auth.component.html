@@ -77,6 +77,10 @@
     {{ submitButtonText }}
   </button>
 
+  @if (mode === 'signIn') {
+    <a href="/forgot-password" class="text-primary text-sm self-end underline hover:text-primary/80"> Forgot Password? </a>
+  }
+
   <div class="relative my-2">
     <div class="absolute inset-0 flex items-center">
       <span class="w-full border-t border-border"></span>
