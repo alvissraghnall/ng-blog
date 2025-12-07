@@ -123,3 +123,13 @@ export const toggleLike = mutation(m => [
 
 export const removeLike = mutation(m => [m.removeLike({ id: $('id') }, like => [like.id])]);
 
+export const markNotificationAsRead = mutation(m => [
+  m.markNotificationAsRead({ id: $('id') }, notif => [
+    notif.message,
+    notif.resourceId,
+    notif.read,
+    notif.actor(actor => [actor.avatar, actor.username]),
+  ]),
+]);
+
+export const markAllNotificationsAsRead = mutation(m => [m.markAllNotificationsAsRead]);

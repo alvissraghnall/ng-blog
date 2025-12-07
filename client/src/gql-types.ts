@@ -126,6 +126,8 @@ export type Mutation = {
   followUser: User;
   getOAuthUrl: Scalars['String']['output'];
   login: LoginResponse;
+  markAllNotificationsAsRead: Scalars['Boolean']['output'];
+  markNotificationAsRead: Notification;
   oauthLogin: LoginResponse;
   removeComment: Comment;
   removeLike: Like;
@@ -162,6 +164,11 @@ export type MutationGetOAuthUrlArgs = {
 
 export type MutationLoginArgs = {
   loginUserInput: LoginUserInput;
+};
+
+
+export type MutationMarkNotificationAsReadArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -219,6 +226,21 @@ export type MutationUpdateUserArgs = {
   updateUserInput: UpdateUserInput;
 };
 
+export type Notification = {
+  __typename?: 'Notification';
+  actor?: Maybe<User>;
+  /** Date Entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  read: Scalars['Boolean']['output'];
+  recipient: User;
+  resourceId?: Maybe<Scalars['Int']['output']>;
+  type: Scalars['String']['output'];
+  /** Date Entity was last updated. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type OAuthInput = {
   code: Scalars['String']['input'];
   provider: Scalars['String']['input'];
@@ -254,10 +276,13 @@ export type Query = {
   comment?: Maybe<Comment>;
   comments?: Maybe<Array<Comment>>;
   findUserById: User;
+  followers: Array<User>;
+  following: Array<User>;
   hasUserLiked: Scalars['Boolean']['output'];
   like: Like;
   likeCount: Scalars['Int']['output'];
   likes: Array<Like>;
+  notifications: Array<Notification>;
   /** Get most popular posts ordered by likes */
   popularPosts?: Maybe<Array<Post>>;
   post: Post;
@@ -272,6 +297,7 @@ export type Query = {
   /** Get most recent posts */
   recentPosts?: Maybe<Array<Post>>;
   tags: Array<Tag>;
+  unreadNotificationsCount: Scalars['Int']['output'];
   user: User;
   whoami: User;
 };
@@ -291,6 +317,20 @@ export type QueryCommentsArgs = {
 
 export type QueryFindUserByIdArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  username: Scalars['String']['input'];
+};
+
+
+export type QueryFollowingArgs = {
+  limit?: Scalars['Int']['input'];
+  offset?: Scalars['Int']['input'];
+  username: Scalars['String']['input'];
 };
 
 
@@ -314,6 +354,12 @@ export type QueryLikeCountArgs = {
 export type QueryLikesArgs = {
   entity: EntityOwnsLike;
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryNotificationsArgs = {
+  limit?: Scalars['Int']['input'];
+  offset?: Scalars['Int']['input'];
 };
 
 
@@ -361,6 +407,11 @@ export type QueryRecentPostsArgs = {
 
 export type QueryUserArgs = {
   username: Scalars['String']['input'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  notificationAdded: Notification;
 };
 
 export type Tag = {
@@ -420,8 +471,11 @@ export type User = {
   email: Scalars['String']['output'];
   /** Email verification status */
   emailVerified: Scalars['Boolean']['output'];
+  followerCount: Scalars['Int']['output'];
+  followingCount: Scalars['Int']['output'];
   /** ID */
   id: Scalars['String']['output'];
+  isFollowing: Scalars['Boolean']['output'];
   /** OAuth2 ID */
   oauthId?: Maybe<Scalars['String']['output']>;
   /** OAuth2 Provider name, e.g. Google, GitHub.. */
@@ -438,6 +492,8 @@ export type UserInputType = {
   email: Scalars['String']['input'];
   /** Email verification status */
   emailVerified?: Scalars['Boolean']['input'];
+  followerCount?: Scalars['Int']['input'];
+  followingCount?: Scalars['Int']['input'];
   /** ID */
   id: Scalars['String']['input'];
   /** OAuth2 ID */
@@ -534,10 +590,12 @@ export type ResolversTypes = {
   LoginResponse: ResolverTypeWrapper<LoginResponse>;
   LoginUserInput: LoginUserInput;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Notification: ResolverTypeWrapper<Notification>;
   OAuthInput: OAuthInput;
   Post: ResolverTypeWrapper<Post>;
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Subscription: ResolverTypeWrapper<Record<PropertyKey, never>>;
   Tag: ResolverTypeWrapper<Tag>;
   UpdateCommentInput: UpdateCommentInput;
   UpdatePostInput: UpdatePostInput;
@@ -561,10 +619,12 @@ export type ResolversParentTypes = {
   LoginResponse: LoginResponse;
   LoginUserInput: LoginUserInput;
   Mutation: Record<PropertyKey, never>;
+  Boolean: Scalars['Boolean']['output'];
+  Notification: Notification;
   OAuthInput: OAuthInput;
   Post: Post;
   Query: Record<PropertyKey, never>;
-  Boolean: Scalars['Boolean']['output'];
+  Subscription: Record<PropertyKey, never>;
   Tag: Tag;
   UpdateCommentInput: UpdateCommentInput;
   UpdatePostInput: UpdatePostInput;
@@ -621,6 +681,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   followUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationFollowUserArgs, 'userToBeFollowedId'>>;
   getOAuthUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationGetOAuthUrlArgs, 'provider'>>;
   login?: Resolver<ResolversTypes['LoginResponse'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'loginUserInput'>>;
+  markAllNotificationsAsRead?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  markNotificationAsRead?: Resolver<ResolversTypes['Notification'], ParentType, ContextType, RequireFields<MutationMarkNotificationAsReadArgs, 'id'>>;
   oauthLogin?: Resolver<ResolversTypes['LoginResponse'], ParentType, ContextType, RequireFields<MutationOauthLoginArgs, 'oauthInput'>>;
   removeComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationRemoveCommentArgs, 'id'>>;
   removeLike?: Resolver<ResolversTypes['Like'], ParentType, ContextType, RequireFields<MutationRemoveLikeArgs, 'id'>>;
@@ -632,6 +694,18 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationUpdateCommentArgs, 'updateCommentInput'>>;
   updatePost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationUpdatePostArgs, 'updatePostInput'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'updateUserInput'>>;
+};
+
+export type NotificationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Notification'] = ResolversParentTypes['Notification']> = {
+  actor?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  read?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  recipient?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  resourceId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -658,10 +732,13 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   comment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<QueryCommentArgs, 'id'>>;
   comments?: Resolver<Maybe<Array<ResolversTypes['Comment']>>, ParentType, ContextType, RequireFields<QueryCommentsArgs, 'limit' | 'offset' | 'postId'>>;
   findUserById?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryFindUserByIdArgs, 'id'>>;
+  followers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryFollowersArgs, 'limit' | 'offset' | 'username'>>;
+  following?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryFollowingArgs, 'limit' | 'offset' | 'username'>>;
   hasUserLiked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<QueryHasUserLikedArgs, 'entity' | 'entityId'>>;
   like?: Resolver<ResolversTypes['Like'], ParentType, ContextType, RequireFields<QueryLikeArgs, 'id'>>;
   likeCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, RequireFields<QueryLikeCountArgs, 'entity' | 'id'>>;
   likes?: Resolver<Array<ResolversTypes['Like']>, ParentType, ContextType, RequireFields<QueryLikesArgs, 'entity' | 'id'>>;
+  notifications?: Resolver<Array<ResolversTypes['Notification']>, ParentType, ContextType, RequireFields<QueryNotificationsArgs, 'limit' | 'offset'>>;
   popularPosts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryPopularPostsArgs, 'limit'>>;
   post?: Resolver<ResolversTypes['Post'], ParentType, ContextType, Partial<QueryPostArgs>>;
   postCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryPostCountArgs>>;
@@ -670,8 +747,13 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   postsByCategory?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryPostsByCategoryArgs, 'category'>>;
   recentPosts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryRecentPostsArgs, 'limit'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
+  unreadNotificationsCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryUserArgs, 'username'>>;
   whoami?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+};
+
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  notificationAdded?: SubscriptionResolver<ResolversTypes['Notification'], "notificationAdded", ParentType, ContextType>;
 };
 
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = {
@@ -688,7 +770,10 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   emailVerified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  followerCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  followingCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isFollowing?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   oauthId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   oauthProvider?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -702,8 +787,10 @@ export type Resolvers<ContextType = any> = {
   Like?: LikeResolvers<ContextType>;
   LoginResponse?: LoginResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Notification?: NotificationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };

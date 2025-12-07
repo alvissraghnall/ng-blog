@@ -814,6 +814,30 @@ export class Mutation extends $Base<"Mutation"> {
   
 
       
+      get markAllNotificationsAsRead(): $Field<"markAllNotificationsAsRead", boolean>  {
+       return this.$_select("markAllNotificationsAsRead") as any
+      }
+
+      
+      markNotificationAsRead<Args extends VariabledInput<{
+        id: string,
+      }>,Sel extends Selection<Notification>>(args: ExactArgNames<Args, {
+        id: string,
+      }>, selectorFn: (s: Notification) => [...Sel]):$Field<"markNotificationAsRead", GetOutput<Sel> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              id: "String!"
+            },
+        args,
+
+        selection: selectorFn(new Notification)
+      };
+      return this.$_select("markNotificationAsRead", options as any) as any
+    }
+  
+
+      
       oauthLogin<Args extends VariabledInput<{
         oauthInput: OAuthInput,
       }>,Sel extends Selection<LoginResponse>>(args: ExactArgNames<Args, {
@@ -1024,6 +1048,81 @@ export class Mutation extends $Base<"Mutation"> {
 }
 
 
+export class Notification extends $Base<"Notification"> {
+  constructor() {
+    super("Notification")
+  }
+
+  
+      
+      actor<Sel extends Selection<User>>(selectorFn: (s: User) => [...Sel]):$Field<"actor", GetOutput<Sel> | null , GetVariables<Sel>> {
+      
+      const options = {
+        
+        
+
+        selection: selectorFn(new User)
+      };
+      return this.$_select("actor", options as any) as any
+    }
+  
+
+      
+/**
+ * Date Entity was created.
+ */
+      get createdAt(): $Field<"createdAt", DateTime>  {
+       return this.$_select("createdAt") as any
+      }
+
+      
+      get id(): $Field<"id", string>  {
+       return this.$_select("id") as any
+      }
+
+      
+      get message(): $Field<"message", string>  {
+       return this.$_select("message") as any
+      }
+
+      
+      get read(): $Field<"read", boolean>  {
+       return this.$_select("read") as any
+      }
+
+      
+      recipient<Sel extends Selection<User>>(selectorFn: (s: User) => [...Sel]):$Field<"recipient", GetOutput<Sel> , GetVariables<Sel>> {
+      
+      const options = {
+        
+        
+
+        selection: selectorFn(new User)
+      };
+      return this.$_select("recipient", options as any) as any
+    }
+  
+
+      
+      get resourceId(): $Field<"resourceId", number | null>  {
+       return this.$_select("resourceId") as any
+      }
+
+      
+      get type(): $Field<"type", string>  {
+       return this.$_select("type") as any
+      }
+
+      
+/**
+ * Date Entity was last updated.
+ */
+      get updatedAt(): $Field<"updatedAt", DateTime>  {
+       return this.$_select("updatedAt") as any
+      }
+}
+
+
 export type OAuthInput = {
   code: string,
 provider: string,
@@ -1228,6 +1327,56 @@ postId: "Int!"
   
 
       
+      followers<Args extends VariabledInput<{
+        limit?: number | null
+offset?: number | null
+username: string,
+      }>,Sel extends Selection<User>>(args: ExactArgNames<Args, {
+        limit?: number | null
+offset?: number | null
+username: string,
+      }>, selectorFn: (s: User) => [...Sel]):$Field<"followers", Array<GetOutput<Sel>> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              limit: "Int",
+offset: "Int",
+username: "String!"
+            },
+        args,
+
+        selection: selectorFn(new User)
+      };
+      return this.$_select("followers", options as any) as any
+    }
+  
+
+      
+      following<Args extends VariabledInput<{
+        limit?: number
+offset?: number
+username: string,
+      }>,Sel extends Selection<User>>(args: ExactArgNames<Args, {
+        limit?: number
+offset?: number
+username: string,
+      }>, selectorFn: (s: User) => [...Sel]):$Field<"following", Array<GetOutput<Sel>> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              limit: "Int!",
+offset: "Int!",
+username: "String!"
+            },
+        args,
+
+        selection: selectorFn(new User)
+      };
+      return this.$_select("following", options as any) as any
+    }
+  
+
+      
       hasUserLiked<Args extends VariabledInput<{
         entity: EntityOwnsLike
 entityId: number,
@@ -1309,6 +1458,28 @@ id: "Int!"
         selection: selectorFn(new Like)
       };
       return this.$_select("likes", options as any) as any
+    }
+  
+
+      
+      notifications<Args extends VariabledInput<{
+        limit?: number
+offset?: number,
+      }>,Sel extends Selection<Notification>>(args: ExactArgNames<Args, {
+        limit?: number
+offset?: number,
+      }>, selectorFn: (s: Notification) => [...Sel]):$Field<"notifications", Array<GetOutput<Sel>> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              limit: "Int!",
+offset: "Int!"
+            },
+        args,
+
+        selection: selectorFn(new Notification)
+      };
+      return this.$_select("notifications", options as any) as any
     }
   
 
@@ -1510,6 +1681,11 @@ recentPosts(arg1: any, arg2?: any) {
   
 
       
+      get unreadNotificationsCount(): $Field<"unreadNotificationsCount", number>  {
+       return this.$_select("unreadNotificationsCount") as any
+      }
+
+      
       user<Args extends VariabledInput<{
         username: string,
       }>,Sel extends Selection<User>>(args: ExactArgNames<Args, {
@@ -1538,6 +1714,27 @@ recentPosts(arg1: any, arg2?: any) {
         selection: selectorFn(new User)
       };
       return this.$_select("whoami", options as any) as any
+    }
+  
+}
+
+
+export class Subscription extends $Base<"Subscription"> {
+  constructor() {
+    super("Subscription")
+  }
+
+  
+      
+      notificationAdded<Sel extends Selection<Notification>>(selectorFn: (s: Notification) => [...Sel]):$Field<"notificationAdded", GetOutput<Sel> , GetVariables<Sel>> {
+      
+      const options = {
+        
+        
+
+        selection: selectorFn(new Notification)
+      };
+      return this.$_select("notificationAdded", options as any) as any
     }
   
 }
@@ -1658,11 +1855,26 @@ export class User extends $Base<"User"> {
       }
 
       
+      get followerCount(): $Field<"followerCount", number>  {
+       return this.$_select("followerCount") as any
+      }
+
+      
+      get followingCount(): $Field<"followingCount", number>  {
+       return this.$_select("followingCount") as any
+      }
+
+      
 /**
  * ID
  */
       get id(): $Field<"id", string>  {
        return this.$_select("id") as any
+      }
+
+      
+      get isFollowing(): $Field<"isFollowing", boolean>  {
+       return this.$_select("isFollowing") as any
       }
 
       
@@ -1706,6 +1918,8 @@ export type userInputType = {
 bio?: string | null,
 email: string,
 emailVerified?: boolean,
+followerCount?: number,
+followingCount?: number,
 id: string,
 oauthId?: string | null,
 oauthProvider?: string | null,
@@ -1826,6 +2040,8 @@ username: "String"
 bio: "String",
 email: "String!",
 emailVerified: "Boolean!",
+followerCount: "Int!",
+followingCount: "Int!",
 id: "String!",
 oauthId: "String",
 oauthProvider: "String",

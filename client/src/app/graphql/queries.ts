@@ -16,7 +16,7 @@ export const getCurrentUser = query(q => [
   ]),
 ]);
 
-export const getUserByUsername = query(q => [
+export const getProfile = query(q => [
   q.user({ username: $('username') }, user => [
     user.id,
     user.username,
@@ -24,6 +24,8 @@ export const getUserByUsername = query(q => [
     user.avatar,
     user.bio,
     user.emailVerified,
+    user.followerCount,
+    user.followingCount,
   ]),
 ]);
 
@@ -144,3 +146,37 @@ export const hasUserLiked = query(q => [
 ]);
 
 export const checkJwt = query(q => [q.checkJwt]);
+
+export const getFollowers = query(q => [
+  q.followers(
+    {
+      username: $('username'),
+      limit: $('limit'),
+      offset: $('offset'),
+    },
+    user => [user.username, user.avatar, user.isFollowing],
+  ),
+]);
+
+export const getFollowing = query(q => [
+  q.following(
+    {
+      username: $('username'),
+      limit: $('limit'),
+      offset: $('offset'),
+    },
+    user => [user.username, user.avatar, user.isFollowing],
+  ),
+]);
+
+export const getUnreadNotificationsCount = query(q => [q.unreadNotificationsCount]);
+
+export const getNotifications = query(q => [
+  q.notifications(
+    {
+      limit: $('limit'),
+      offset: $('offset'),
+    },
+    notif => [notif.actor(actor => [actor.avatar, actor.username]), notif.message, notif.createdAt, notif.read],
+  ),
+]);
