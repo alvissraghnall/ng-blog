@@ -144,6 +144,7 @@ type Mutation {
   updateComment(updateCommentInput: UpdateCommentInput!): Comment!
   updatePost(updatePostInput: UpdatePostInput!): Post!
   updateUser(updateUserInput: UpdateUserInput!): User!
+  uploadFile(file: Upload!, type: String!): UploadResult!
 }
 
 type Notification {
@@ -190,7 +191,6 @@ type Post {
 
   """Date Entity was last updated."""
   updatedAt: DateTime!
-  views: Int!
 }
 
 type PostAnalytics {
@@ -309,6 +309,16 @@ input UpdateUserInput {
 
   """Username"""
   username: String
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+interface UploadResult {
+  filename: String!
+  mimeType: String!
+  size: Int!
+  url: String!
 }
 
 type User {

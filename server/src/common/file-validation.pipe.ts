@@ -4,15 +4,47 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 
 @Injectable()
 export class FileValidationPipe implements PipeTransform {
-  transform(value: Express.Multer.File, metadata: ArgumentMetadata) {
-    console.log(value);
-    if (value.size > 1100000 || !value.mimetype.startsWith('image'))
+  private readonly MAX_SIZE = 0.44 * 1024 * 1024;
+  private readonly ALLOWED_MIME_TYPES = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+  ];
+
+  async transform(value: Promise<FileUpload>) {
+    const file = await value;
+    const { mimetype, filename, createReadStream } = file;
+
+    if (!this.ALLOWED_MIME_TYPES.includes(mimetype)) {
       throw new BadRequestException(
-        'File must be an image, and must not be larger than 1MB',
+        `File type ${mimetype} is not supported. Allowed: ${this.ALLOWED_MIME_TYPES.join(', ')}`,
       );
-    return value;
+    }
+
+    const originalCreateReadStream = createReadStream;
+
+    file.createReadStream = () => {
+      const stream = originalCreateReadStream();
+      let byteLength = 0;
+
+      stream.on('data', (chunk) => {
+        byteLength += chunk.length;
+        if (byteLength > this.MAX_SIZE) {
+          stream.destroy();
+          throw new BadRequestException(
+            `File ${filename} exceeds the size limit of 450kB`,
+          );
+        }
+      });
+
+      return stream;
+    };
+
+    return file;
   }
 }

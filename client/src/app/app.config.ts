@@ -15,7 +15,7 @@ import { ApolloLink, InMemoryCache, split } from '@apollo/client/core';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { setContext, SetContextLink } from '@apollo/client/link/context';
 import { Kind, OperationTypeNode } from 'graphql';
-
+import UploadHttpLink from 'apollo-upload-client/UploadHttpLink.mjs';
 import { SSELink } from './graphql/sse.link';
 
 import { provideQuillConfig } from 'ngx-quill';
@@ -41,11 +41,19 @@ export const appConfig: ApplicationConfig = {
         return {
           headers: new HttpHeaders({
             Authorization: `Bearer ${token}`,
+            'Apollo-Require-Preflight': 'true',
           }),
         };
       });
 
-      const httpLinkChain = ApolloLink.from([authLink, httpLink.create({ uri: '/graphql' })]);
+      const uploadLink = new UploadHttpLink({
+        uri: '/graphql',
+        headers: {
+          'Apollo-Require-Preflight': 'true',
+        },
+      });
+
+      const httpLinkChain = ApolloLink.from([authLink, uploadLink]);
 
       const sseLink = new SSELink({
         url: environment.graphQLStreamUrl,

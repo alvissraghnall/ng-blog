@@ -1,40 +1,32 @@
-import { Injectable, GatewayTimeoutException } from '@nestjs/common';
-import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
-import * as fs from 'fs';
-import * as cloudinary from 'cloudinary';
-import { Duplex, Readable } from 'stream';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
+import { UploadApiResponse, v2 } from 'cloudinary';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 
 @Injectable()
 export class CloudinaryService {
-  constructor(private readonly configService: ConfigService) {}
-
   async uploadImage(
-    file: Express.Multer.File,
-  ): Promise<UploadApiErrorResponse | UploadApiResponse> {
-    console.log(this.configService.get('CLOUDINARY_API_KEY'));
-
-    const stream = new Duplex();
-    stream.push(file.buffer);
-    stream.push(null);
-
+    file: FileUpload,
+    folder: string = 'sharewithlouis',
+  ): Promise<UploadApiResponse> {
     return new Promise((resolve, reject) => {
-      const upload = cloudinary.v2.uploader.upload_stream(
+      const uploadStream = v2.uploader.upload_stream(
         {
-          folder: 'ng-blog',
+          folder,
           resource_type: 'image',
+          allowed_formats: ['webp', 'jpg', 'jpeg', 'png'],
         },
-        (error, response) => {
-          if (error) {
-            console.error(error);
-            reject(error);
-            throw new GatewayTimeoutException();
-          }
-          resolve(response);
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
         },
       );
-      console.log(stream);
-      stream.pipe(upload);
+
+      const stream = file.createReadStream();
+      stream.pipe(uploadStream);
     });
+  }
+
+  async deleteImage(publicId: string): Promise<any> {
+    return v2.uploader.destroy(publicId);
   }
 }

@@ -9,6 +9,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileValidationPipe } from 'common/file-validation.pipe';
 import { CloudinaryService } from './cloudinary.service';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 
 @Controller('cloudinary')
 export class CloudinaryController {
@@ -18,7 +19,7 @@ export class CloudinaryController {
   @UseInterceptors(FileInterceptor('image'))
   async uploadFile(
     @Body() body: any,
-    @UploadedFile(FileValidationPipe) file: Express.Multer.File,
+    @UploadedFile(FileValidationPipe) file: FileUpload,
   ) {
     console.log(body);
     const res = await this.cloudinaryService.uploadImage(file);

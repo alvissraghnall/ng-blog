@@ -17,6 +17,8 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: { input: any; output: any; }
 };
 
 export enum Category {
@@ -140,6 +142,7 @@ export type Mutation = {
   updateComment: Comment;
   updatePost: Post;
   updateUser: User;
+  uploadFile: UploadResult;
 };
 
 
@@ -232,6 +235,12 @@ export type MutationUpdateUserArgs = {
   updateUserInput: UpdateUserInput;
 };
 
+
+export type MutationUploadFileArgs = {
+  file: Scalars['Upload']['input'];
+  type: Scalars['String']['input'];
+};
+
 export type Notification = {
   __typename?: 'Notification';
   actor?: Maybe<User>;
@@ -273,7 +282,6 @@ export type Post = {
   title: Scalars['String']['output'];
   /** Date Entity was last updated. */
   updatedAt: Scalars['DateTime']['output'];
-  views: Scalars['Int']['output'];
 };
 
 export type PostAnalytics = {
@@ -520,6 +528,13 @@ export type UpdateUserInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UploadResult = {
+  filename: Scalars['String']['output'];
+  mimeType: Scalars['String']['output'];
+  size: Scalars['Int']['output'];
+  url: Scalars['String']['output'];
+};
+
 export type User = {
   __typename?: 'User';
   avatar?: Maybe<Scalars['String']['output']>;
@@ -643,6 +658,10 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 
 
 
+/** Mapping of interface types */
+export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
+  UploadResult: never;
+};
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
@@ -673,6 +692,8 @@ export type ResolversTypes = {
   UpdatePostInput: UpdatePostInput;
   UpdateUserInput: UpdateUserInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
+  UploadResult: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['UploadResult']>;
   User: ResolverTypeWrapper<User>;
   UserAnalytics: ResolverTypeWrapper<UserAnalytics>;
   userInputType: UserInputType;
@@ -706,6 +727,8 @@ export type ResolversParentTypes = {
   UpdatePostInput: UpdatePostInput;
   UpdateUserInput: UpdateUserInput;
   ID: Scalars['ID']['output'];
+  Upload: Scalars['Upload']['output'];
+  UploadResult: ResolversInterfaceTypes<ResolversParentTypes>['UploadResult'];
   User: User;
   UserAnalytics: UserAnalytics;
   userInputType: UserInputType;
@@ -772,6 +795,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationUpdateCommentArgs, 'updateCommentInput'>>;
   updatePost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationUpdatePostArgs, 'updatePostInput'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'updateUserInput'>>;
+  uploadFile?: Resolver<ResolversTypes['UploadResult'], ParentType, ContextType, RequireFields<MutationUploadFileArgs, 'file' | 'type'>>;
 };
 
 export type NotificationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Notification'] = ResolversParentTypes['Notification']> = {
@@ -802,7 +826,6 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
   tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  views?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 };
 
 export type PostAnalyticsResolvers<ContextType = any, ParentType extends ResolversParentTypes['PostAnalytics'] = ResolversParentTypes['PostAnalytics']> = {
@@ -861,6 +884,14 @@ export type TrendingTagResolvers<ContextType = any, ParentType extends Resolvers
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
+export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
+  name: 'Upload';
+}
+
+export type UploadResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UploadResult'] = ResolversParentTypes['UploadResult']> = {
+  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -901,6 +932,8 @@ export type Resolvers<ContextType = any> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   TrendingTag?: TrendingTagResolvers<ContextType>;
+  Upload?: GraphQLScalarType;
+  UploadResult?: UploadResultResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserAnalytics?: UserAnalyticsResolvers<ContextType>;
 };

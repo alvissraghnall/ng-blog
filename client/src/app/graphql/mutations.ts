@@ -1,4 +1,4 @@
-import { $, mutation, Post } from '@gen';
+import { $, mutation } from '@gen';
 import { postFields } from './shared';
 
 export const signup = mutation(m => [
@@ -135,3 +135,13 @@ export const markNotificationAsRead = mutation(m => [
 export const markAllNotificationsAsRead = mutation(m => [m.markAllNotificationsAsRead]);
 
 export const trackPostView = mutation(m => [m.trackPostView({ slug: $('slug') })]);
+
+export const uploadFile = mutation(q => [
+  q.uploadFile(
+    {
+      file: $('file'),
+      type: $('type'),
+    },
+    res => [res.url, res.filename, res.size, res.mimeType],
+  ),
+]);

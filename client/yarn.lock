@@ -508,7 +508,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^4.0.9":
+"@apollo/client@npm:^4.0.0, @apollo/client@npm:^4.0.9":
   version: 4.0.9
   resolution: "@apollo/client@npm:4.0.9"
   dependencies:
@@ -4729,6 +4729,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/apollo-upload-client@npm:^19":
+  version: 19.0.0
+  resolution: "@types/apollo-upload-client@npm:19.0.0"
+  dependencies:
+    "@apollo/client": "npm:^4.0.0"
+    "@types/extract-files": "npm:*"
+    graphql: "npm:14 - 16"
+  checksum: 10c0/0886f26f50677a41ee0080253712c91cabdb01680e784d3647e91a834ea73d10132a13f7c19688ab6875c493d0baa1ef9d99efa025ab84ca1f79c73a75d5b9ee
+  languageName: node
+  linkType: hard
+
 "@types/chai@npm:^5.2.2":
   version: 5.2.3
   resolution: "@types/chai@npm:5.2.3"
@@ -4766,6 +4777,13 @@ __metadata:
   version: 1.0.8
   resolution: "@types/estree@npm:1.0.8"
   checksum: 10c0/39d34d1afaa338ab9763f37ad6066e3f349444f9052b9676a7cc0252ef9485a41c6d81c9c4e0d26e9077993354edf25efc853f3224dd4b447175ef62bdcc86a5
+  languageName: node
+  linkType: hard
+
+"@types/extract-files@npm:*":
+  version: 13.0.2
+  resolution: "@types/extract-files@npm:13.0.2"
+  checksum: 10c0/f05a296095684c15c4b7710b87c1280c4cef59eb4822b595c460150b672d37a073183ece4d51c2f612c870ca07c5b1ddd681f1f88348915970547af644705340
   languageName: node
   linkType: hard
 
@@ -5231,6 +5249,19 @@ __metadata:
     graphql: ^16.0.0
     rxjs: ^7.3.0
   checksum: 10c0/8307c52eb3e8d7e8f90edcac156fe91cb8fb8e6486a0eb26da8fe299f33c30200045d399c11f5ff2941458e4004c40d258f762d7792d20247689cd8b543b3d9c
+  languageName: node
+  linkType: hard
+
+"apollo-upload-client@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "apollo-upload-client@npm:19.0.0"
+  dependencies:
+    extract-files: "npm:^13.0.0"
+  peerDependencies:
+    "@apollo/client": ^4.0.0
+    graphql: 14 - 16
+    rxjs: ^7.3.0
+  checksum: 10c0/2a31bab3bcadae186f79d375387b8845a133d6577e96c9f91dc2f2bc099acf658707863761c8627adb10166c5b80ecbd97106f0616f7c30b3e11d72cc25b2592
   languageName: node
   linkType: hard
 
@@ -6947,6 +6978,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"extract-files@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "extract-files@npm:13.0.0"
+  dependencies:
+    is-plain-obj: "npm:^4.1.0"
+  checksum: 10c0/ee1e6e37f24fcb7de5019c0dc054f3e075664f63b5a9bd38c9ba1a32481ed1e77fd237adf826a7f6c7a1db406d9db4428f8ae4395fb2dfb602235b15f8f4bc3e
+  languageName: node
+  linkType: hard
+
 "fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
@@ -7498,7 +7538,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.12.0":
+"graphql@npm:14 - 16, graphql@npm:^16.12.0":
   version: 16.12.0
   resolution: "graphql@npm:16.12.0"
   checksum: 10c0/b6fffa4e8a4e4a9933ebe85e7470b346dbf49050c1a482fac5e03e4a1a7bed2ecd3a4c97e29f04457af929464bc5e4f2aac991090c2f320111eef26e902a5c75
@@ -7889,6 +7929,13 @@ __metadata:
   version: 7.0.0
   resolution: "is-number@npm:7.0.0"
   checksum: 10c0/b4686d0d3053146095ccd45346461bc8e53b80aeb7671cc52a4de02dbbf7dc0d1d2a986e2fe4ae206984b4d34ef37e8b795ebc4f4295c978373e6575e295d811
+  languageName: node
+  linkType: hard
+
+"is-plain-obj@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "is-plain-obj@npm:4.1.0"
+  checksum: 10c0/32130d651d71d9564dc88ba7e6fda0e91a1010a3694648e9f4f47bb6080438140696d3e3e15c741411d712e47ac9edc1a8a9de1fe76f3487b0d90be06ac9975e
   languageName: node
   linkType: hard
 
@@ -9227,11 +9274,13 @@ __metadata:
     "@rx-angular/cdk": "npm:20.0.0"
     "@rx-angular/template": "npm:20.0.0"
     "@tailwindcss/postcss": "npm:^4.1.17"
+    "@types/apollo-upload-client": "npm:^19"
     "@types/jasmine": "npm:~4.0.0"
     "@types/marked": "npm:^6.0.0"
     "@vitest/ui": "npm:^3.2.4"
     angular-toastify: "npm:^1.0.5"
     apollo-angular: "npm:^12.1.0"
+    apollo-upload-client: "npm:^19.0.0"
     autoprefixer: "npm:^10.4.13"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"

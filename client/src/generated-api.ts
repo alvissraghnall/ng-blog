@@ -1064,6 +1064,28 @@ export class Mutation extends $Base<"Mutation"> {
       return this.$_select("updateUser", options as any) as any
     }
   
+
+      
+      uploadFile<Args extends VariabledInput<{
+        file: Upload
+type: string,
+      }>,Sel extends Selection<UploadResult>>(args: ExactArgNames<Args, {
+        file: Upload
+type: string,
+      }>, selectorFn: (s: UploadResult) => [...Sel]):$Field<"uploadFile", GetOutput<Sel> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              file: "Upload!",
+type: "String!"
+            },
+        args,
+
+        selection: selectorFn(new UploadResult)
+      };
+      return this.$_select("uploadFile", options as any) as any
+    }
+  
 }
 
 
@@ -1262,11 +1284,6 @@ export class Post extends $Base<"Post"> {
  */
       get updatedAt(): $Field<"updatedAt", DateTime>  {
        return this.$_select("updatedAt") as any
-      }
-
-      
-      get views(): $Field<"views", number>  {
-       return this.$_select("views") as any
       }
 }
 
@@ -2011,6 +2028,40 @@ password?: string | null,
 username?: string | null
 }
     
+
+
+/**
+ * The `Upload` scalar type represents a file upload.
+ */
+export type Upload = string
+
+
+
+export class UploadResult extends $Interface<{}, "UploadResult"> {
+  constructor() {
+    super({}, "UploadResult")
+  }
+  
+      
+      get filename(): $Field<"filename", string>  {
+       return this.$_select("filename") as any
+      }
+
+      
+      get mimeType(): $Field<"mimeType", string>  {
+       return this.$_select("mimeType") as any
+      }
+
+      
+      get size(): $Field<"size", number>  {
+       return this.$_select("size") as any
+      }
+
+      
+      get url(): $Field<"url", string>  {
+       return this.$_select("url") as any
+      }
+}
 
 
 export class User extends $Base<"User"> {

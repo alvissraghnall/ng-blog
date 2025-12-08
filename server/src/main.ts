@@ -48,7 +48,7 @@ async function bootstrap() {
   );
   app.use(
     graphqlUploadExpress({
-      maxFileSize: 300000,
+      maxFileSize: 450000,
       maxFiles: 1,
     }),
   );
