@@ -180,3 +180,51 @@ export const getNotifications = query(q => [
     notif => [notif.actor(actor => [actor.avatar, actor.username]), notif.message, notif.createdAt, notif.read],
   ),
 ]);
+
+export const searchPosts = query(q => [
+  q.searchPosts({ query: $('query'), limit: $('limit'), offset: $('offset') }, post => [
+    post.id,
+    post.title,
+    post.slug,
+    post.desc,
+    post.author(u => [u.username, u.avatar]),
+  ]),
+]);
+
+export const searchUsers = query(q => [
+  q.searchUsers({ query: $('query'), limit: $('limit'), offset: $('offset') }, user => [
+    user.id,
+    user.username,
+    user.avatar,
+    user.bio,
+  ]),
+]);
+
+export const searchTags = query(q => [
+  q.searchTags({ query: $('query'), limit: $('limit') }, tag => [tag.id, tag.name]),
+]);
+
+export const getPostAnalytics = query(q => [
+  q.postAnalytics(
+    {
+      slug: $('slug'),
+    },
+    anal => [anal.comments, anal.engagementRate, anal.likes, anal.views],
+  ),
+]);
+
+export const getUserAnalytics = query(q => [
+  q.userAnalytics(user => [
+    user.engagementRate,
+    user.totalPosts,
+    user.postViews,
+    user.totalComments,
+    user.totalFollowers,
+    user.totalFollowing,
+    user.totalLikes,
+  ]),
+]);
+
+export const getTrendingTags = query(q => [
+  q.trendingTags({ limit: $('limit'), timeRange: $('timeRange') }, tag => [tag.count, tag.name]),
+]);

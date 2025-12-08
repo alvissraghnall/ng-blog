@@ -971,6 +971,25 @@ export class Mutation extends $Base<"Mutation"> {
   
 
       
+      trackPostView<Args extends VariabledInput<{
+        slug: string,
+      }>>(args: ExactArgNames<Args, {
+        slug: string,
+      }>):$Field<"trackPostView", boolean , GetVariables<[], Args>> {
+      
+      const options = {
+        argTypes: {
+              slug: "String!"
+            },
+        args,
+
+        
+      };
+      return this.$_select("trackPostView", options as any) as any
+    }
+  
+
+      
       unFollowUser<Args extends VariabledInput<{
         userToBeUnfollowedId: string,
       }>,Sel extends Selection<User>>(args: ExactArgNames<Args, {
@@ -1243,6 +1262,39 @@ export class Post extends $Base<"Post"> {
  */
       get updatedAt(): $Field<"updatedAt", DateTime>  {
        return this.$_select("updatedAt") as any
+      }
+
+      
+      get views(): $Field<"views", number>  {
+       return this.$_select("views") as any
+      }
+}
+
+
+export class PostAnalytics extends $Base<"PostAnalytics"> {
+  constructor() {
+    super("PostAnalytics")
+  }
+
+  
+      
+      get comments(): $Field<"comments", number>  {
+       return this.$_select("comments") as any
+      }
+
+      
+      get engagementRate(): $Field<"engagementRate", number>  {
+       return this.$_select("engagementRate") as any
+      }
+
+      
+      get likes(): $Field<"likes", number>  {
+       return this.$_select("likes") as any
+      }
+
+      
+      get views(): $Field<"views", number>  {
+       return this.$_select("views") as any
       }
 }
 
@@ -1534,6 +1586,25 @@ slug: "String"
   
 
       
+      postAnalytics<Args extends VariabledInput<{
+        slug: string,
+      }>,Sel extends Selection<PostAnalytics>>(args: ExactArgNames<Args, {
+        slug: string,
+      }>, selectorFn: (s: PostAnalytics) => [...Sel]):$Field<"postAnalytics", GetOutput<Sel> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              slug: "String!"
+            },
+        args,
+
+        selection: selectorFn(new PostAnalytics)
+      };
+      return this.$_select("postAnalytics", options as any) as any
+    }
+  
+
+      
 /**
  * Get total count of posts with optional filtering
  */
@@ -1668,6 +1739,78 @@ recentPosts(arg1: any, arg2?: any) {
   
 
       
+      searchPosts<Args extends VariabledInput<{
+        limit?: number
+offset?: number
+query: string,
+      }>,Sel extends Selection<Post>>(args: ExactArgNames<Args, {
+        limit?: number
+offset?: number
+query: string,
+      }>, selectorFn: (s: Post) => [...Sel]):$Field<"searchPosts", Array<GetOutput<Sel>> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              limit: "Int!",
+offset: "Int!",
+query: "String!"
+            },
+        args,
+
+        selection: selectorFn(new Post)
+      };
+      return this.$_select("searchPosts", options as any) as any
+    }
+  
+
+      
+      searchTags<Args extends VariabledInput<{
+        limit?: number
+query: string,
+      }>,Sel extends Selection<Tag>>(args: ExactArgNames<Args, {
+        limit?: number
+query: string,
+      }>, selectorFn: (s: Tag) => [...Sel]):$Field<"searchTags", Array<GetOutput<Sel>> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              limit: "Int!",
+query: "String!"
+            },
+        args,
+
+        selection: selectorFn(new Tag)
+      };
+      return this.$_select("searchTags", options as any) as any
+    }
+  
+
+      
+      searchUsers<Args extends VariabledInput<{
+        limit?: number
+offset?: number
+query: string,
+      }>,Sel extends Selection<User>>(args: ExactArgNames<Args, {
+        limit?: number
+offset?: number
+query: string,
+      }>, selectorFn: (s: User) => [...Sel]):$Field<"searchUsers", Array<GetOutput<Sel>> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              limit: "Int!",
+offset: "Int!",
+query: "String!"
+            },
+        args,
+
+        selection: selectorFn(new User)
+      };
+      return this.$_select("searchUsers", options as any) as any
+    }
+  
+
+      
       tags<Sel extends Selection<Tag>>(selectorFn: (s: Tag) => [...Sel]):$Field<"tags", Array<GetOutput<Sel>> , GetVariables<Sel>> {
       
       const options = {
@@ -1677,6 +1820,28 @@ recentPosts(arg1: any, arg2?: any) {
         selection: selectorFn(new Tag)
       };
       return this.$_select("tags", options as any) as any
+    }
+  
+
+      
+      trendingTags<Args extends VariabledInput<{
+        limit?: number
+timeRange?: string,
+      }>,Sel extends Selection<TrendingTag>>(args: ExactArgNames<Args, {
+        limit?: number
+timeRange?: string,
+      }>, selectorFn: (s: TrendingTag) => [...Sel]):$Field<"trendingTags", Array<GetOutput<Sel>> , GetVariables<Sel, Args>> {
+      
+      const options = {
+        argTypes: {
+              limit: "Int!",
+timeRange: "String!"
+            },
+        args,
+
+        selection: selectorFn(new TrendingTag)
+      };
+      return this.$_select("trendingTags", options as any) as any
     }
   
 
@@ -1701,6 +1866,19 @@ recentPosts(arg1: any, arg2?: any) {
         selection: selectorFn(new User)
       };
       return this.$_select("user", options as any) as any
+    }
+  
+
+      
+      userAnalytics<Sel extends Selection<UserAnalytics>>(selectorFn: (s: UserAnalytics) => [...Sel]):$Field<"userAnalytics", GetOutput<Sel> , GetVariables<Sel>> {
+      
+      const options = {
+        
+        
+
+        selection: selectorFn(new UserAnalytics)
+      };
+      return this.$_select("userAnalytics", options as any) as any
     }
   
 
@@ -1783,6 +1961,24 @@ export class Tag extends $Base<"Tag"> {
  */
       get updatedAt(): $Field<"updatedAt", DateTime>  {
        return this.$_select("updatedAt") as any
+      }
+}
+
+
+export class TrendingTag extends $Base<"TrendingTag"> {
+  constructor() {
+    super("TrendingTag")
+  }
+
+  
+      
+      get count(): $Field<"count", number>  {
+       return this.$_select("count") as any
+      }
+
+      
+      get name(): $Field<"name", string>  {
+       return this.$_select("name") as any
       }
 }
 
@@ -1909,6 +2105,49 @@ export class User extends $Base<"User"> {
       
       get username(): $Field<"username", string>  {
        return this.$_select("username") as any
+      }
+}
+
+
+export class UserAnalytics extends $Base<"UserAnalytics"> {
+  constructor() {
+    super("UserAnalytics")
+  }
+
+  
+      
+      get engagementRate(): $Field<"engagementRate", number>  {
+       return this.$_select("engagementRate") as any
+      }
+
+      
+      get postViews(): $Field<"postViews", number>  {
+       return this.$_select("postViews") as any
+      }
+
+      
+      get totalComments(): $Field<"totalComments", number>  {
+       return this.$_select("totalComments") as any
+      }
+
+      
+      get totalFollowers(): $Field<"totalFollowers", number>  {
+       return this.$_select("totalFollowers") as any
+      }
+
+      
+      get totalFollowing(): $Field<"totalFollowing", number>  {
+       return this.$_select("totalFollowing") as any
+      }
+
+      
+      get totalLikes(): $Field<"totalLikes", number>  {
+       return this.$_select("totalLikes") as any
+      }
+
+      
+      get totalPosts(): $Field<"totalPosts", number>  {
+       return this.$_select("totalPosts") as any
       }
 }
 

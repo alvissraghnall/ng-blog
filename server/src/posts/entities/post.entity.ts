@@ -97,6 +97,10 @@ export class Post extends BaseEntity {
   })
   deletedAt: Date;
 
+  @HideField()
+  @Column({ default: 0 })
+  views: number;
+
   @BeforeInsert()
   generateSlug() {
     if (!this.slug) {

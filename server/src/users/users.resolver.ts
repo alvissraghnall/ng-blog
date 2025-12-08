@@ -1,4 +1,12 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
@@ -9,10 +17,15 @@ import { NotFoundException, UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'common/current-user.decorator';
 import { UserNotFoundException } from 'common/user-not-found.exception';
 import { UserFollow } from './entities/user-follow.entity';
+import { Public } from 'common/public.decorator';
+import { UsersLoaderService } from './users-loader.service';
 
 @Resolver(() => User)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly usersLoaders: UsersLoaderService,
+  ) {}
 
   // @Mutation(() => User)
   // createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
@@ -26,6 +39,7 @@ export class UsersResolver {
   //   return this.usersService.findAll();
   // }
 
+  @Public()
   @Query(() => User, { name: 'user' })
   async findOne(@Args('username', { type: () => String }) username: string) {
     const user = await this.usersService.findOneByUsername(username);
@@ -65,7 +79,7 @@ export class UsersResolver {
     @Args('userToBeFollowedId', { type: () => String })
     userToBeFollowedId: string,
     @CurrentUser() currUser: User,
-  ): Promise<UserFollow> {
+  ): Promise<User> {
     try {
       return await this.usersService.follow(currUser, userToBeFollowedId);
     } catch (error) {
@@ -83,7 +97,7 @@ export class UsersResolver {
     @Args('userToBeUnfollowedId', { type: () => String })
     userToBeUnfollowedId: string,
     @CurrentUser() currUser: User,
-  ) {
+  ): Promise<User> {
     try {
       return await this.usersService.unfollow(currUser, userToBeUnfollowedId);
     } catch (error) {
@@ -93,5 +107,56 @@ export class UsersResolver {
         throw error;
       }
     }
+  }
+
+  @Public()
+  @Query(() => [User], { name: 'followers' })
+  async getFollowers(
+    @Args('username', { type: () => String }) username: string,
+    @Args('limit', { type: () => Int, defaultValue: 20, nullable: true })
+    limit: number,
+    @Args('offset', { type: () => Int, defaultValue: 0, nullable: true })
+    offset: number,
+  ) {
+    try {
+      return this.usersService.getFollowers(username, limit, offset);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  @Public()
+  @Query(() => [User], { name: 'following' })
+  async getFollowing(
+    @Args('username', { type: () => String }) username: string,
+    @Args('limit', { type: () => Int, defaultValue: 20 }) limit: number,
+    @Args('offset', { type: () => Int, defaultValue: 0 }) offset: number,
+  ) {
+    try {
+      return this.usersService.getFollowing(username, limit, offset);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  @ResolveField(() => Boolean)
+  async isFollowing(
+    @Parent() profile: User,
+    @CurrentUser() currentUser?: User,
+  ): Promise<boolean> {
+    if (!currentUser) return false;
+
+    if (profile.id === currentUser.id) return false;
+
+    const loader = this.usersLoaders.init(currentUser.id);
+    return loader.load(profile.id);
   }
 }

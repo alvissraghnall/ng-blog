@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtKeyService } from 'auth/jwt/jwt-key.service';
 import { UserFollow } from './entities/user-follow.entity';
 import { SharedJwtModule } from 'common/shared-jwt.module';
+import { UsersLoaderService } from './users-loader.service';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { SharedJwtModule } from 'common/shared-jwt.module';
     HashModule,
     SharedJwtModule,
   ],
-  providers: [UsersResolver, UsersService, UserSubscriber],
+  providers: [UsersResolver, UsersService, UserSubscriber, UsersLoaderService],
   exports: [UsersService],
 })
 export class UsersModule {}

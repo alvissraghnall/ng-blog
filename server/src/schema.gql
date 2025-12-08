@@ -130,6 +130,8 @@ type Mutation {
   followUser(userToBeFollowedId: String!): User!
   getOAuthUrl(provider: String!): String!
   login(loginUserInput: LoginUserInput!): LoginResponse!
+  markAllNotificationsAsRead: Boolean!
+  markNotificationAsRead(id: String!): Notification!
   oauthLogin(oauthInput: OAuthInput!): LoginResponse!
   removeComment(id: Int!): Comment!
   removeLike(id: Int!): Like!
@@ -137,10 +139,27 @@ type Mutation {
   removeUser(id: String!): User!
   signup(createUserInput: CreateUserInput!): User!
   toggleLike(createLikeInput: CreateLikeInput!): Like!
+  trackPostView(slug: String!): Boolean!
   unFollowUser(userToBeUnfollowedId: String!): User!
   updateComment(updateCommentInput: UpdateCommentInput!): Comment!
   updatePost(updatePostInput: UpdatePostInput!): Post!
   updateUser(updateUserInput: UpdateUserInput!): User!
+}
+
+type Notification {
+  actor: User
+
+  """Date Entity was created."""
+  createdAt: DateTime!
+  id: String!
+  message: String!
+  read: Boolean!
+  recipient: User!
+  resourceId: Int
+  type: String!
+
+  """Date Entity was last updated."""
+  updatedAt: DateTime!
 }
 
 input OAuthInput {
@@ -171,6 +190,14 @@ type Post {
 
   """Date Entity was last updated."""
   updatedAt: DateTime!
+  views: Int!
+}
+
+type PostAnalytics {
+  comments: Int!
+  engagementRate: Float!
+  likes: Int!
+  views: Int!
 }
 
 type Query {
@@ -179,14 +206,18 @@ type Query {
   comment(id: Int!): Comment
   comments(limit: Int! = 20, offset: Int! = 0, postId: Int!): [Comment!]
   findUserById(id: String!): User!
+  followers(limit: Int = 20, offset: Int = 0, username: String!): [User!]!
+  following(limit: Int! = 20, offset: Int! = 0, username: String!): [User!]!
   hasUserLiked(entity: EntityOwnsLike!, entityId: Int!): Boolean!
   like(id: Int!): Like!
   likeCount(entity: EntityOwnsLike!, id: Int!): Int!
   likes(entity: EntityOwnsLike!, id: Int!): [Like!]!
+  notifications(limit: Int! = 20, offset: Int! = 0): [Notification!]!
 
   """Get most popular posts ordered by likes"""
   popularPosts(limit: Int = 10): [Post!]
   post(id: Int, slug: String): Post!
+  postAnalytics(slug: String!): PostAnalytics!
 
   """Get total count of posts with optional filtering"""
   postCount(authorId: String, category: Category): Int!
@@ -202,9 +233,19 @@ type Query {
 
   """Get most recent posts"""
   recentPosts(limit: Int = 10): [Post!]
+  searchPosts(limit: Int! = 10, offset: Int! = 0, query: String!): [Post!]!
+  searchTags(limit: Int! = 10, query: String!): [Tag!]!
+  searchUsers(limit: Int! = 10, offset: Int! = 0, query: String!): [User!]!
   tags: [Tag!]!
+  trendingTags(limit: Int! = 10, timeRange: String! = "week"): [TrendingTag!]!
+  unreadNotificationsCount: Int!
   user(username: String!): User!
+  userAnalytics: UserAnalytics!
   whoami: User!
+}
+
+type Subscription {
+  notificationAdded: Notification!
 }
 
 type Tag {
@@ -216,6 +257,11 @@ type Tag {
 
   """Date Entity was last updated."""
   updatedAt: DateTime!
+}
+
+type TrendingTag {
+  count: Int!
+  name: String!
 }
 
 input UpdateCommentInput {
@@ -275,9 +321,12 @@ type User {
 
   """Email verification status"""
   emailVerified: Boolean!
+  followerCount: Int!
+  followingCount: Int!
 
   """ID"""
   id: String!
+  isFollowing: Boolean!
 
   """OAuth2 ID"""
   oauthId: String
@@ -291,6 +340,16 @@ type User {
   username: String!
 }
 
+type UserAnalytics {
+  engagementRate: Float!
+  postViews: Int!
+  totalComments: Int!
+  totalFollowers: Int!
+  totalFollowing: Int!
+  totalLikes: Int!
+  totalPosts: Int!
+}
+
 input userInputType {
   avatar: String
   bio: String
@@ -298,6 +357,8 @@ input userInputType {
 
   """Email verification status"""
   emailVerified: Boolean! = false
+  followerCount: Int! = 0
+  followingCount: Int! = 0
 
   """ID"""
   id: String!

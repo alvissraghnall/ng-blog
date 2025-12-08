@@ -3,6 +3,11 @@ import { AppModule } from './app.module';
 import { useContainer } from 'class-validator';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
+import { createHandler } from 'graphql-sse/lib/use/express';
+import { generateSchema } from './create-resolver';
+import { AuthService } from 'auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { GraphQLSchemaHost } from '@nestjs/graphql';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -48,6 +53,32 @@ async function bootstrap() {
     }),
   );
 
+  const authService = app.get(AuthService);
+  const jwtService = app.get(JwtService);
+
+  const schema = await generateSchema();
+
+  const sseGraphqlHandler = createHandler({
+    schema,
+    authenticate: async (req) => {
+      let user = null;
+      const token = req.headers.get('Authorization').replace('Bearer ', '');
+
+      if (token) {
+        try {
+          const payload = jwtService.verify(token);
+          user = await authService.validateUserByPayload(payload);
+        } catch (e) {
+          console.error('SSE Auth failed');
+        }
+      }
+
+      return token;
+    },
+  });
+
+  app.getHttpAdapter().use('/graphql/stream', sseGraphqlHandler);
+
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   await app.listen(3000);
@@ -56,13 +87,3 @@ async function bootstrap() {
   console.log('sucker!');
 }
 bootstrap();
-
-/**
- * 
- * <ul>
-  <li *ngFor="let user of users; let i = index; let odd = odd"
-      [class.odd]="odd">
-    {{i + 1}}. {{ user.name }}
-  </li>
-</ul>
- */

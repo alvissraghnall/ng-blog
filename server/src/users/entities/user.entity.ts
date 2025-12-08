@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int, InputType } from '@nestjs/graphql';
+import { ObjectType, Field, Int, InputType, HideField } from '@nestjs/graphql';
 import { IsUnique } from '../../common/is-unique';
 import {
   Column,
@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from 'common/entities/base.entity';
+import { UserFollow } from './user-follow.entity';
 
 @ObjectType()
 @InputType('userInputType')
@@ -60,6 +61,20 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
   bio?: string;
+
+  @HideField()
+  @OneToMany(() => UserFollow, (follow) => follow.following)
+  followers: UserFollow[];
+
+  @HideField()
+  @OneToMany(() => UserFollow, (follow) => follow.follower)
+  following: UserFollow[];
+
+  @Field(() => Int)
+  followerCount: number = 0;
+
+  @Field(() => Int)
+  followingCount: number = 0;
 
   isOAuthUser(): boolean {
     return !!this.oauthProvider && !!this.oauthId;

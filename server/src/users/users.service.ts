@@ -25,13 +25,8 @@ export class UsersService {
   ) {}
 
   async create(createUserInput: CreateUserInput): Promise<User> {
-    /* const hashedPassword = await this.hashService.hashPassword(
-      createUserInput.password,
-    ); */
-
     const user = this.usersRepository.create({
       ...createUserInput,
-      //password: hashedPassword,
       emailVerified: false,
     });
 
@@ -85,10 +80,19 @@ export class UsersService {
     return this.usersRepository.save(updatedUser);
   }
 
+  // async findOneByUsername(username: string): Promise<User | null> {
+  //   return this.usersRepository.findOne({
+  //     where: { username },
+  //   });
+  // }
+
   async findOneByUsername(username: string): Promise<User | null> {
-    return this.usersRepository.findOne({
-      where: { username },
-    });
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username })
+      .loadRelationCountAndMap('user.followerCount', 'user.followers')
+      .loadRelationCountAndMap('user.followingCount', 'user.following')
+      .getOne();
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
@@ -164,7 +168,7 @@ export class UsersService {
     return username;
   }
 
-  async follow(currUser: User, followUserId: string) {
+  async follow(currUser: User, followUserId: string): Promise<User> {
     if (currUser.id === followUserId)
       throw new BadRequestException('You cannot follow yourself.');
 
@@ -180,38 +184,78 @@ export class UsersService {
       },
     });
 
-    if (existing) return existing;
+    if (!existing) {
+      const follow = this.userFollowRepository.create({
+        follower: currUser,
+        following: userToFollow,
+      });
+      await this.userFollowRepository.save(follow);
+    }
 
-    const follow = this.userFollowRepository.create({
-      follower: currUser,
-      following: userToFollow,
-    });
-
-    return this.userFollowRepository.save(follow);
+    return userToFollow;
   }
 
-  async unfollow(currUser: User, unfollowUserId: string) {
+  async unfollow(currUser: User, unfollowUserId: string): Promise<User> {
+    const userToUnfollow = await this.usersRepository.findOne({
+      where: { id: unfollowUserId },
+    });
+    if (!userToUnfollow) throw new UserNotFoundException(unfollowUserId);
+
     await this.userFollowRepository.delete({
       follower: { id: currUser.id },
       following: { id: unfollowUserId },
     });
 
-    return { success: true };
+    return userToUnfollow;
   }
 
-  async getFollowers(userId: string): Promise<User[]> {
+  async getFollowers(
+    username: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<User[]> {
+    const user = await this.findOneByUsername(username);
+    if (!user)
+      throw new UserNotFoundException(
+        'User with username: ' + username + ' not found',
+      );
+
     const follows = await this.userFollowRepository.find({
-      where: { following: { id: userId } },
+      where: { following: { id: user.id } },
       relations: ['follower'],
+      take: limit,
+      skip: offset,
+      order: { createdAt: 'DESC' },
     });
     return follows.map((f) => f.follower);
   }
 
-  async getFollowing(userId: string): Promise<User[]> {
+  async getFollowing(
+    username: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<User[]> {
+    const user = await this.findOneByUsername(username);
+    if (!user)
+      throw new UserNotFoundException(
+        'User with username: ' + username + ' not found',
+      );
     const follows = await this.userFollowRepository.find({
-      where: { follower: { id: userId } },
+      where: { follower: { id: user.id } },
       relations: ['following'],
+      take: limit,
+      skip: offset,
+      order: { createdAt: 'DESC' },
     });
     return follows.map((f) => f.following);
+  }
+
+  async checkFollowStatus(followerId: string, followingId: string) {
+    return this.userFollowRepository.findOne({
+      where: {
+        follower: { id: followerId },
+        following: { id: followingId },
+      },
+    });
   }
 }

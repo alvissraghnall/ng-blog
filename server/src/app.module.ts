@@ -15,6 +15,9 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphQLExceptionFilter } from 'common/filters/graphql-exception.filter';
 import { SharedJwtModule } from 'common/shared-jwt.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { SearchModule } from './search/search.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -84,6 +87,9 @@ import { SharedJwtModule } from 'common/shared-jwt.module';
     AuthModule,
     CloudinaryModule,
     CommonModule,
+    NotificationsModule,
+    SearchModule,
+    AnalyticsModule,
   ],
   controllers: [],
   providers: [

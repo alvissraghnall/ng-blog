@@ -135,6 +135,7 @@ export type Mutation = {
   removeUser: User;
   signup: User;
   toggleLike: Like;
+  trackPostView: Scalars['Boolean']['output'];
   unFollowUser: User;
   updateComment: Comment;
   updatePost: Post;
@@ -207,6 +208,11 @@ export type MutationToggleLikeArgs = {
 };
 
 
+export type MutationTrackPostViewArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
 export type MutationUnFollowUserArgs = {
   userToBeUnfollowedId: Scalars['String']['input'];
 };
@@ -267,6 +273,15 @@ export type Post = {
   title: Scalars['String']['output'];
   /** Date Entity was last updated. */
   updatedAt: Scalars['DateTime']['output'];
+  views: Scalars['Int']['output'];
+};
+
+export type PostAnalytics = {
+  __typename?: 'PostAnalytics';
+  comments: Scalars['Int']['output'];
+  engagementRate: Scalars['Float']['output'];
+  likes: Scalars['Int']['output'];
+  views: Scalars['Int']['output'];
 };
 
 export type Query = {
@@ -286,6 +301,7 @@ export type Query = {
   /** Get most popular posts ordered by likes */
   popularPosts?: Maybe<Array<Post>>;
   post: Post;
+  postAnalytics: PostAnalytics;
   /** Get total count of posts with optional filtering */
   postCount: Scalars['Int']['output'];
   /** Get posts with optional filtering by category and/or author */
@@ -296,9 +312,14 @@ export type Query = {
   postsByCategory?: Maybe<Array<Post>>;
   /** Get most recent posts */
   recentPosts?: Maybe<Array<Post>>;
+  searchPosts: Array<Post>;
+  searchTags: Array<Tag>;
+  searchUsers: Array<User>;
   tags: Array<Tag>;
+  trendingTags: Array<TrendingTag>;
   unreadNotificationsCount: Scalars['Int']['output'];
   user: User;
+  userAnalytics: UserAnalytics;
   whoami: User;
 };
 
@@ -374,6 +395,11 @@ export type QueryPostArgs = {
 };
 
 
+export type QueryPostAnalyticsArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
 export type QueryPostCountArgs = {
   authorId?: InputMaybe<Scalars['String']['input']>;
   category?: InputMaybe<Category>;
@@ -405,6 +431,32 @@ export type QueryRecentPostsArgs = {
 };
 
 
+export type QuerySearchPostsArgs = {
+  limit?: Scalars['Int']['input'];
+  offset?: Scalars['Int']['input'];
+  query: Scalars['String']['input'];
+};
+
+
+export type QuerySearchTagsArgs = {
+  limit?: Scalars['Int']['input'];
+  query: Scalars['String']['input'];
+};
+
+
+export type QuerySearchUsersArgs = {
+  limit?: Scalars['Int']['input'];
+  offset?: Scalars['Int']['input'];
+  query: Scalars['String']['input'];
+};
+
+
+export type QueryTrendingTagsArgs = {
+  limit?: Scalars['Int']['input'];
+  timeRange?: Scalars['String']['input'];
+};
+
+
 export type QueryUserArgs = {
   username: Scalars['String']['input'];
 };
@@ -423,6 +475,12 @@ export type Tag = {
   posts?: Maybe<Array<Post>>;
   /** Date Entity was last updated. */
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type TrendingTag = {
+  __typename?: 'TrendingTag';
+  count: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type UpdateCommentInput = {
@@ -484,6 +542,17 @@ export type User = {
   /** Date Entity was last updated. */
   updatedAt: Scalars['DateTime']['output'];
   username: Scalars['String']['output'];
+};
+
+export type UserAnalytics = {
+  __typename?: 'UserAnalytics';
+  engagementRate: Scalars['Float']['output'];
+  postViews: Scalars['Int']['output'];
+  totalComments: Scalars['Int']['output'];
+  totalFollowers: Scalars['Int']['output'];
+  totalFollowing: Scalars['Int']['output'];
+  totalLikes: Scalars['Int']['output'];
+  totalPosts: Scalars['Int']['output'];
 };
 
 export type UserInputType = {
@@ -594,14 +663,18 @@ export type ResolversTypes = {
   Notification: ResolverTypeWrapper<Notification>;
   OAuthInput: OAuthInput;
   Post: ResolverTypeWrapper<Post>;
+  PostAnalytics: ResolverTypeWrapper<PostAnalytics>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   Subscription: ResolverTypeWrapper<Record<PropertyKey, never>>;
   Tag: ResolverTypeWrapper<Tag>;
+  TrendingTag: ResolverTypeWrapper<TrendingTag>;
   UpdateCommentInput: UpdateCommentInput;
   UpdatePostInput: UpdatePostInput;
   UpdateUserInput: UpdateUserInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   User: ResolverTypeWrapper<User>;
+  UserAnalytics: ResolverTypeWrapper<UserAnalytics>;
   userInputType: UserInputType;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
 };
@@ -623,14 +696,18 @@ export type ResolversParentTypes = {
   Notification: Notification;
   OAuthInput: OAuthInput;
   Post: Post;
+  PostAnalytics: PostAnalytics;
+  Float: Scalars['Float']['output'];
   Query: Record<PropertyKey, never>;
   Subscription: Record<PropertyKey, never>;
   Tag: Tag;
+  TrendingTag: TrendingTag;
   UpdateCommentInput: UpdateCommentInput;
   UpdatePostInput: UpdatePostInput;
   UpdateUserInput: UpdateUserInput;
   ID: Scalars['ID']['output'];
   User: User;
+  UserAnalytics: UserAnalytics;
   userInputType: UserInputType;
   String: Scalars['String']['output'];
 };
@@ -690,6 +767,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRemoveUserArgs, 'id'>>;
   signup?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'createUserInput'>>;
   toggleLike?: Resolver<ResolversTypes['Like'], ParentType, ContextType, RequireFields<MutationToggleLikeArgs, 'createLikeInput'>>;
+  trackPostView?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationTrackPostViewArgs, 'slug'>>;
   unFollowUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUnFollowUserArgs, 'userToBeUnfollowedId'>>;
   updateComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationUpdateCommentArgs, 'updateCommentInput'>>;
   updatePost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationUpdatePostArgs, 'updatePostInput'>>;
@@ -724,6 +802,14 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
   tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  views?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
+export type PostAnalyticsResolvers<ContextType = any, ParentType extends ResolversParentTypes['PostAnalytics'] = ResolversParentTypes['PostAnalytics']> = {
+  comments?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  engagementRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  likes?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  views?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -741,14 +827,20 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   notifications?: Resolver<Array<ResolversTypes['Notification']>, ParentType, ContextType, RequireFields<QueryNotificationsArgs, 'limit' | 'offset'>>;
   popularPosts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryPopularPostsArgs, 'limit'>>;
   post?: Resolver<ResolversTypes['Post'], ParentType, ContextType, Partial<QueryPostArgs>>;
+  postAnalytics?: Resolver<ResolversTypes['PostAnalytics'], ParentType, ContextType, RequireFields<QueryPostAnalyticsArgs, 'slug'>>;
   postCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryPostCountArgs>>;
   posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, Partial<QueryPostsArgs>>;
   postsByAuthor?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryPostsByAuthorArgs, 'authorId'>>;
   postsByCategory?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryPostsByCategoryArgs, 'category'>>;
   recentPosts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType, RequireFields<QueryRecentPostsArgs, 'limit'>>;
+  searchPosts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QuerySearchPostsArgs, 'limit' | 'offset' | 'query'>>;
+  searchTags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QuerySearchTagsArgs, 'limit' | 'query'>>;
+  searchUsers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QuerySearchUsersArgs, 'limit' | 'offset' | 'query'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
+  trendingTags?: Resolver<Array<ResolversTypes['TrendingTag']>, ParentType, ContextType, RequireFields<QueryTrendingTagsArgs, 'limit' | 'timeRange'>>;
   unreadNotificationsCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryUserArgs, 'username'>>;
+  userAnalytics?: Resolver<ResolversTypes['UserAnalytics'], ParentType, ContextType>;
   whoami?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
 };
 
@@ -762,6 +854,11 @@ export type TagResolvers<ContextType = any, ParentType extends ResolversParentTy
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+};
+
+export type TrendingTagResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrendingTag'] = ResolversParentTypes['TrendingTag']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -781,6 +878,16 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
+export type UserAnalyticsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserAnalytics'] = ResolversParentTypes['UserAnalytics']> = {
+  engagementRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  postViews?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalComments?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalFollowers?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalFollowing?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalLikes?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalPosts?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   Comment?: CommentResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
@@ -789,10 +896,13 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   Notification?: NotificationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
+  PostAnalytics?: PostAnalyticsResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
+  TrendingTag?: TrendingTagResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UserAnalytics?: UserAnalyticsResolvers<ContextType>;
 };
 
 export type DirectiveResolvers<ContextType = any> = {

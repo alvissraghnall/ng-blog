@@ -133,3 +133,5 @@ export const markNotificationAsRead = mutation(m => [
 ]);
 
 export const markAllNotificationsAsRead = mutation(m => [m.markAllNotificationsAsRead]);
+
+export const trackPostView = mutation(m => [m.trackPostView({ slug: $('slug') })]);
