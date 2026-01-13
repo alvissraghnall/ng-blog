@@ -20,6 +20,8 @@ import { SSELink } from './graphql/sse.link';
 
 import { provideQuillConfig } from 'ngx-quill';
 import { environment } from '@/environments/environment';
+import extractFiles from 'extract-files/extractFiles.mjs';
+import isExtractableFile from 'extract-files/isExtractableFile.mjs';
 
 export function initAuth(jwtService: JwtService, userService: UserService) {
   return () => (jwtService.getToken() ? userService.getCurrentUser() : EMPTY);
@@ -41,7 +43,6 @@ export const appConfig: ApplicationConfig = {
         return {
           headers: new HttpHeaders({
             Authorization: `Bearer ${token}`,
-            'Apollo-Require-Preflight': 'true',
           }),
         };
       });
@@ -53,7 +54,10 @@ export const appConfig: ApplicationConfig = {
         },
       });
 
-      const httpLinkChain = ApolloLink.from([authLink, uploadLink]);
+      const httpLinkChain = ApolloLink.from([
+        authLink,
+        httpLink.create({ uri: '/graphql', extractFiles: body => extractFiles(body, isExtractableFile) }),
+      ]);
 
       const sseLink = new SSELink({
         url: environment.graphQLStreamUrl,
@@ -65,10 +69,12 @@ export const appConfig: ApplicationConfig = {
       });
 
       const link = ApolloLink.split(
-        ({ query, operationType }) => {
-          // const definition = getMainDefinition(query);
-          return operationType === OperationTypeNode.SUBSCRIPTION;
-          // definition.kind === Kind.OPERATION_DEFINITION && definition.operation === OperationTypeNode.SUBSCRIPTION
+        ({ query }) => {
+          const definition = getMainDefinition(query);
+          // return operationType === OperationTypeNode.SUBSCRIPTION;
+          return (
+            definition.kind === Kind.OPERATION_DEFINITION && definition.operation === OperationTypeNode.SUBSCRIPTION
+          );
         },
         sseLink,
         httpLinkChain,

@@ -4780,7 +4780,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/extract-files@npm:*":
+"@types/extract-files@npm:*, @types/extract-files@npm:^13":
   version: 13.0.2
   resolution: "@types/extract-files@npm:13.0.2"
   checksum: 10c0/f05a296095684c15c4b7710b87c1280c4cef59eb4822b595c460150b672d37a073183ece4d51c2f612c870ca07c5b1ddd681f1f88348915970547af644705340
@@ -9275,6 +9275,7 @@ __metadata:
     "@rx-angular/template": "npm:20.0.0"
     "@tailwindcss/postcss": "npm:^4.1.17"
     "@types/apollo-upload-client": "npm:^19"
+    "@types/extract-files": "npm:^13"
     "@types/jasmine": "npm:~4.0.0"
     "@types/marked": "npm:^6.0.0"
     "@vitest/ui": "npm:^3.2.4"
@@ -9284,6 +9285,7 @@ __metadata:
     autoprefixer: "npm:^10.4.13"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
+    extract-files: "npm:^13.0.0"
     graphql: "npm:^16.12.0"
     graphql-sse: "npm:^2.6.0"
     graphql-tag: "npm:^2.12.6"

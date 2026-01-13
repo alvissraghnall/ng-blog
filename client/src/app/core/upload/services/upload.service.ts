@@ -12,6 +12,21 @@ export interface UploadResult {
   mimeType: string;
 }
 
+type UploadResponse = {
+  uploadFile: UploadResult;
+};
+
+const UPLOAD_FILE = gql<UploadResponse, { file: File; type: string }>`
+  mutation uploadFile($file: Upload!, $type: String) {
+    uploadFile(file: $file, type: $type) {
+      url
+      filename
+      size
+      mimeType
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class UploadService {
   private readonly MAX_FILE_SIZE = 0.44 * 1024 * 1024;
@@ -34,16 +49,7 @@ export class UploadService {
 
     return this.apollo
       .mutate({
-        mutation: gql`
-          mutation uploadFile($file: Upload!, $type: String) {
-            uploadFile(file: $file, type: $type) {
-              url
-              filename
-              size
-              mimeType
-            }
-          }
-        `,
+        mutation: UPLOAD_FILE,
         variables: {
           file: file,
           type,
@@ -54,10 +60,10 @@ export class UploadService {
       })
       .pipe(
         map(result => {
-          if (!(result.data as any).uploadFile) {
+          if (!result.data?.uploadFile) {
             throw new NetworkError('Upload failed.');
           }
-          return (result.data as any).uploadFile as UploadResult;
+          return result.data.uploadFile as UploadResult;
         }),
         catchError(error => {
           return throwError(() => new NetworkError(error.message));
