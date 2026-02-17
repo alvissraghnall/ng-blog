@@ -1,56 +1,135 @@
-@if (profile) {
-  <div class="profile-page">
-    <div class="user-info">
-      <div class="container">
-        <div class="row">
-          <div class="col-xs-12 col-md-10 offset-md-1">
-            <img [src]="profile.image" class="user-img" />
-            <h4>{{ profile.username }}</h4>
-            <p>{{ profile.bio }}</p>
-            @if (!isUser) {
-              <app-follow-button [profile]="profile" (toggle)="onToggleFollowing($event)" />
-            }
-            @if (isUser) {
-              <a [routerLink]="['/settings']" class="btn btn-sm btn-outline-secondary action-btn">
-                <i class="ion-gear-a"></i> Edit Profile Settings
-              </a>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="min-h-screen bg-background text-foreground">
+  <div class="flex items-center justify-end whitespace-nowrap px-6 md:px-10 lg:px-20 py-3 bg-card sticky top-0 z-10">
 
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12 col-md-10 offset-md-1">
-          <div class="articles-toggle">
-            <ul class="nav nav-pills outline-active">
-              <li class="nav-item">
-                <a
-                  class="nav-link"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  [routerLink]="['/profile', profile.username]"
-                >
-                  My Posts
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  [routerLink]="['/profile', profile.username, 'favorites']"
-                >
-                  Favorited Posts
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <router-outlet></router-outlet>
-        </div>
-      </div>
+    <div class="flex items-center gap-4">
+      <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary-custom text-primary-foreground text-sm font-bold leading-normal tracking-[0.015em] hover:opacity-90">
+        <span class="truncate">Write a Post</span>
+      </button>
     </div>
   </div>
-}
+  
+  <main class="flex flex-1 justify-center py-5 lg:py-10 px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row gap-8 max-w-7xl flex-1">
+      <!-- Left Column: Profile Card -->
+      <aside class="w-full lg:w-1/3 lg:max-w-sm shrink-0">
+        <div class="sticky top-28 flex flex-col gap-6 p-6 bg-card rounded-xl border border-border shadow-sm">
+          <!-- ProfileHeader -->
+          <div class="flex flex-col gap-4 items-center text-center">
+            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-32 h-32" data-alt="Headshot of Alexandria Chen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCcT73ZKFppGp_3F_QmRYsU0SCk7VbiXqzPeFkQKfsT_A61LNxy9Eh6AwnlQ5602ee7AB9g4Gswpn0RK2UCckfyfmDNQic3Gy9py0QnCnlhJUBZ0HOa9jwZ5h8gsaBJsy4ZbKNqRLt6HA7uEZ39z6LtRI1XPh9LZk2Gr-YKPGOJWHLnQO4P-FEUTp5fDVwzixjtrSMq9xIfwEdDwCFRQDGf1Cb5QeGoVfYnAIvOp3ATDepr3sepTdpwLkd_P-IfbtbLovwQRwR35V8");'></div>
+            <div class="flex flex-col justify-center gap-1">
+              <p class="text-foreground text-2xl font-bold leading-tight">Alexandria Chen</p>
+              <p class="text-muted-foreground text-base font-normal leading-normal">
+                Senior Content Strategist & Tech Enthusiast. Exploring the intersection of AI, design, and human-computer interaction. Coffee-powered writer.
+              </p>
+              <p class="text-muted-foreground text-sm font-normal leading-normal pt-2">Joined on Jan 15, 2023</p>
+            </div>
+          </div>
+          
+          <!-- ActionsBar -->
+          <div class="flex justify-center gap-4">
+            <a class="flex flex-col items-center gap-2 py-2.5 text-center w-20 social-icon-wrapper" href="#">
+              <div class="rounded-full bg-secondary p-3">
+                <span class="material-symbols-outlined text-muted-foreground social-icon transition-colors">alternate_email</span>
+              </div>
+              <p class="text-muted-foreground text-sm font-medium leading-normal">Email</p>
+            </a>
+            <a class="flex flex-col items-center gap-2 py-2.5 text-center w-20 social-icon-wrapper" href="#">
+              <div class="rounded-full bg-secondary p-3">
+                <span class="material-symbols-outlined text-muted-foreground social-icon transition-colors">link</span>
+              </div>
+              <p class="text-muted-foreground text-sm font-medium leading-normal">Website</p>
+            </a>
+          </div>
+          
+          <button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-secondary text-secondary-foreground text-sm font-bold leading-normal tracking-[0.015em] hover:bg-accent transition-colors">
+            <span class="truncate">Edit Profile</span>
+          </button>
+        </div>
+      </aside>
+      
+      <!-- Right Column: Contributions Section -->
+      <div class="w-full lg:w-2/3">
+        <div class="flex flex-col gap-6">
+          <!-- Tabs -->
+          <div class="pb-3">
+            <div class="flex border-b border-border gap-8">
+              @for (tab of tabs; track tab.id) {
+                <a class="flex flex-col items-center justify-center border-b-[3px] pb-[13px] pt-4"
+                   [class.border-b-primary]="tab.active"
+                   [class.border-b-transparent]="!tab.active"
+                   [class.text-foreground]="tab.active"
+                   [class.text-muted-foreground]="!tab.active"
+                   (click)="selectTab(tab.id)">
+                  <p class="text-sm font-bold leading-normal tracking-[0.015em]">{{ tab.label }}</p>
+                </a>
+              } @empty {
+                <div class="py-4 text-muted-foreground">No tabs available.</div>
+              }
+            </div>
+          </div>
+          
+          <!-- Posts List -->
+          <div class="flex flex-col gap-6">
+
+            <div class="flex flex-col gap-6">
+              @for (post of posts; track $index) {
+                <!-- Card -->
+                <div class="p-4 bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow">
+                  <div class="flex flex-col-reverse sm:flex-row items-stretch justify-between gap-6">
+                    <div class="flex flex-[2_2_0px] flex-col gap-4">
+                      <div class="flex flex-col gap-1">
+                        <p class="text-muted-foreground text-sm font-normal leading-normal">Published on {{ post.date }}</p>
+                        <p class="text-foreground text-xl font-bold leading-tight">{{ post.title }}</p>
+                        <p class="text-muted-foreground text-sm font-normal leading-normal mt-1">
+                          {{ post.excerpt }}
+                        </p>
+                      </div>
+                      <a class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-secondary text-secondary-foreground text-sm font-medium leading-normal w-fit hover:bg-accent transition-colors" href="#">
+                        <span class="truncate">Read More</span>
+                      </a>
+                    </div>
+                    <div class="w-full sm:w-auto bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex-1" 
+                         [attr.data-alt]="'Image for ' + post.title"
+                         [style.background-image]="'url(' + post.image + ')'"></div>
+                  </div>
+                </div>
+              } @empty {
+                <div class="p-6 bg-card rounded-xl border border-border text-muted-foreground">No posts yet.</div>
+              }
+            </div>
+          </div>
+          
+          <!-- Pagination -->
+          <nav class="flex items-center justify-between border-t border-border px-4 sm:px-0 pt-6">
+            <div class="flex w-0 flex-1">
+              <a class="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-muted-foreground hover:border-primary-custom hover:text-foreground" 
+                 (click)="prevPage()">
+                <span class="material-symbols-outlined mr-3 h-5 w-5">arrow_back</span>
+                Previous
+              </a>
+            </div>
+            <div class="hidden md:flex">
+                @for (page of [1, 2, 3, totalPages]; track page) {
+                  <a [class]="(page !== currentPage ? 'hover:border-primary-custom/50 hover:text-foreground' : '') + 'inline-flex items-center border-t-2 px-4 pt-4 text-sm font-medium'"
+                     [class.border-primary-custom]="page === currentPage"
+                     [class.border-transparent]="page !== currentPage"
+                     [class.text-primary-custom]="page === currentPage"
+                     [class.text-muted-foreground]="page !== currentPage"
+                     (click)="goToPage(page)">
+                    {{ page === totalPages && currentPage < 3 ? '...' : page }}
+                  </a>
+                }
+              </div>
+            <div class="flex w-0 flex-1 justify-end">
+              <a class="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-muted-foreground hover:border-primary-custom hover:text-foreground" 
+                 (click)="nextPage()">
+                Next
+                <span class="material-symbols-outlined ml-3 h-5 w-5">arrow_forward</span>
+              </a>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

@@ -9,6 +9,9 @@ export const getCurrentUser = query(q => [
     user.avatar,
     user.bio,
     user.emailVerified,
+    user.followerCount,
+    user.followingCount,
+    user.isFollowing,
     user.createdAt,
     user.oauthId,
     user.oauthProvider,
@@ -26,6 +29,7 @@ export const getProfile = query(q => [
     user.emailVerified,
     user.followerCount,
     user.followingCount,
+    user.isFollowing,
   ]),
 ]);
 
@@ -37,6 +41,9 @@ export const findUserById = query(q => [
     user.avatar,
     user.bio,
     user.emailVerified,
+    user.followerCount,
+    user.followingCount,
+    user.isFollowing,
   ]),
 ]);
 
@@ -197,6 +204,9 @@ export const searchUsers = query(q => [
     user.username,
     user.avatar,
     user.bio,
+    user.followerCount,
+    user.followingCount,
+    user.isFollowing,
   ]),
 ]);
 
