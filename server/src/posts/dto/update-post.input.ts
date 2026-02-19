@@ -14,6 +14,7 @@ import {
 import { CreatePostInput } from './create-post.input';
 import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 import { Category } from 'posts/enum/category.enum';
+import GraphQLUpload, { FileUpload } from 'graphql-upload/GraphQLUpload.mjs';
 
 @InputType()
 export class UpdatePostInput extends PartialType(CreatePostInput) {
@@ -44,12 +45,12 @@ export class UpdatePostInput extends PartialType(CreatePostInput) {
   @MaxLength(30000)
   content?: string;
 
-  @Field(() => String, { description: 'Blog post image URL', nullable: true })
-  @IsString()
-  @IsUrl()
+  @Field(() => GraphQLUpload, { 
+    description: 'Blog post image', 
+    nullable: true 
+  })
   @IsOptional()
-  @MaxLength(1000)
-  image?: string;
+  image?: FileUpload;
 
   @Field(() => String, {
     description: 'Blog post short description',

@@ -13,6 +13,8 @@ import { JwtPayload } from '../auth/jwt/jwt.payload';
 import { UserFollow } from './entities/user-follow.entity';
 import { UserNotFoundException } from 'common/user-not-found.exception';
 import { UpdateUserInput } from './dto/update-user.input';
+import { CloudinaryService } from 'cloudinary/cloudinary.service';
+import { FileUpload } from 'graphql-upload/processRequest.mjs';
 
 @Injectable()
 export class UsersService {
@@ -22,11 +24,30 @@ export class UsersService {
     private readonly hashService: HashService,
     @InjectRepository(UserFollow)
     private readonly userFollowRepository: Repository<UserFollow>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(createUserInput: CreateUserInput): Promise<User> {
+
+    const { avatar, ...userData } = createUserInput;
+    
+    let avatarUrl: string | undefined;
+
+    // Upload avatar if provided
+    if (avatar) {
+      try {
+        const uploadResult = await this.cloudinaryService.uploadImage(
+          avatar,
+          'sharewithlouis/avatars',
+        );
+        avatarUrl = uploadResult.secure_url;
+      } catch (error) {
+        throw new BadRequestException(`Failed to upload avatar: ${error.message}`);
+      }
+    }
     const user = this.usersRepository.create({
-      ...createUserInput,
+      ...userData,
+      avatar: avatarUrl,
       emailVerified: false,
     });
 
@@ -76,8 +97,44 @@ export class UsersService {
   }
 
   async update(user: User, updateUserInput: UpdateUserInput) {
-    const updatedUser: Partial<User> = { ...updateUserInput, id: user.id };
+    const { avatar, ...userData } = updateUserInput;
+    
+    let avatarUrl = user.avatar;
+
+    if (avatar) {
+      try {
+        const uploadResult = await this.cloudinaryService.uploadImage(
+          avatar,
+          'sharewithlouis/avatars',
+        );
+        avatarUrl = uploadResult.secure_url;
+      } catch (error) {
+        throw new BadRequestException(`Failed to upload avatar: ${error.message}`);
+      }
+    }
+
+    const updatedUser: Partial<User> = { 
+      ...userData, 
+      id: user.id,
+      avatar: avatarUrl,
+    };
+    
     return this.usersRepository.save(updatedUser);
+  }
+
+  async uploadAvatar(user: User, avatar: FileUpload): Promise<User> {
+    try {
+      const uploadResult = await this.cloudinaryService.uploadImage(
+        avatar,
+        'sharewithlouis/avatars',
+      );
+      
+      // Update user with new avatar URL
+      user.avatar = uploadResult.secure_url;
+      return this.usersRepository.save(user);
+    } catch (error) {
+      throw new BadRequestException(`Failed to upload avatar: ${error.message}`);
+    }
   }
 
   // async findOneByUsername(username: string): Promise<User | null> {

@@ -23,6 +23,10 @@ export class Comment extends BaseEntity {
   @Column()
   text: string;
 
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  image: string;
+
   @Field(() => Post, { description: 'Post that was commented on' })
   @ManyToOne(() => Post, (post) => post.comments, {
     nullable: false,

@@ -26,15 +26,15 @@ export default class ProfileArticlesComponent implements OnInit {
       .get(this.route.snapshot.params['username'])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (profile: Profile) => {
-          this.profile = profile;
-          this.articlesConfig = {
-            type: 'all',
-            filters: {
-              author: this.profile.username,
-            },
-          };
-        },
+        // next: (profile: Profile) => {
+        //   this.profile = profile;
+        //   this.articlesConfig = {
+        //     type: 'all',
+        //     filters: {
+        //       author: this.profile.username,
+        //     },
+        //   };
+        // },
       });
   }
 }

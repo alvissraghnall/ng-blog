@@ -13,12 +13,15 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { GqlJwtAuthGuard as JwtAuthGuard } from '../auth/guards/gql-jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { NotFoundException, UseGuards } from '@nestjs/common';
+import { BadRequestException, NotFoundException, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CurrentUser } from 'common/current-user.decorator';
 import { UserNotFoundException } from 'common/user-not-found.exception';
 import { UserFollow } from './entities/user-follow.entity';
 import { Public } from 'common/public.decorator';
 import { UsersLoaderService } from './users-loader.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import GraphQLUpload, { FileUpload } from 'graphql-upload/GraphQLUpload.mjs';
+import { FileValidationPipe } from 'common/file-validation.pipe';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -59,12 +62,28 @@ export class UsersResolver {
   }
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
   @Mutation(() => User)
   updateUser(
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
     @CurrentUser() currUser: User,
   ) {
     return this.usersService.update(currUser, updateUserInput);
+  }
+
+  @Mutation(() => User)
+  @UseInterceptors(FileInterceptor('avatar'))
+  @UseGuards(JwtAuthGuard)
+  async uploadAvatar(
+    @Args('avatar', { type: () => GraphQLUpload }, FileValidationPipe)
+    avatar: FileUpload,
+    @CurrentUser() user: User,
+  ): Promise<User> {
+    try {
+      return await this.usersService.uploadAvatar(user, avatar);
+    } catch (error) {
+      throw new BadRequestException(error.message || 'Avatar upload failed');
+    }
   }
 
   @UseGuards(JwtAuthGuard)

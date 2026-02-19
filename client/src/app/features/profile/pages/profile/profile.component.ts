@@ -7,6 +7,8 @@ import { Profile } from '../../models/profile.model';
 import { ProfileService } from '../../services/profile.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FollowButtonComponent } from '../../components/follow-button.component';
+import { User } from '@/gql-types';
+import { GraphQLOmitType } from '@utils/graphql-omit-type';
 
 @Component({
   selector: 'app-profile-page',
@@ -14,7 +16,7 @@ import { FollowButtonComponent } from '../../components/follow-button.component'
   imports: [FollowButtonComponent, RouterLink, RouterLinkActive, RouterOutlet, FollowButtonComponent],
 })
 export class ProfileComponent implements OnInit {
-  profile!: Profile;
+  profile!: GraphQLOmitType<User, "createdAt" | "isFollowing">;
   isUser: boolean = false;
   destroyRef = inject(DestroyRef);
 
@@ -44,7 +46,7 @@ export class ProfileComponent implements OnInit {
       });
   }
 
-  onToggleFollowing(profile: Profile) {
+  onToggleFollowing(profile: User) {
     this.profile = profile;
   }
 }

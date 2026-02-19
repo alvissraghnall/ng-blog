@@ -38,6 +38,20 @@ export class PostsService {
   async create(createPostInput: CreatePostInput, user: User): Promise<Post> {
     const { title, content, category, desc, image, tags } = createPostInput;
 
+    let imageUrl: string | undefined;
+
+    if (image) {
+      try {
+        const uploadResult = await this.cloudinaryService.uploadImage(
+          image,
+          'sharewithlouis/posts',
+        );
+        imageUrl = uploadResult.secure_url;
+      } catch (error) {
+        throw new BadRequestException(`Failed to upload image: ${error.message}`);
+      }
+    }
+
     let allTags: Tag[];
 
     if (tags && tags.length > 0) {
@@ -66,7 +80,7 @@ export class PostsService {
       .withAuthor(user)
       .withTitle(title.trim())
       .withContent(content)
-      .withImage(image)
+      .withImage(imageUrl)
       .withDesc(desc?.trim() || '')
       .withCategory(category)
       .withTags(allTags || [])
@@ -154,6 +168,20 @@ export class PostsService {
   ): Promise<Post> {
     const { id, title, image, desc, content, category, tags } = updatePostInput;
 
+    let imageUrl = existingPost.image;
+
+    if (image) {
+      try {
+        const uploadResult = await this.cloudinaryService.uploadImage(
+          image,
+          'sharewithlouis/posts',
+        );
+        imageUrl = uploadResult.secure_url;
+      } catch (error) {
+        throw new BadRequestException(`Failed to upload image: ${error.message}`);
+      }
+    }
+
     let updatedTags = existingPost.tags;
 
     if (tags && tags.length > 0) {
@@ -183,7 +211,7 @@ export class PostsService {
       .withAuthor(existingPost.author)
       .withTitle(title ?? existingPost.title)
       .withContent(content ?? existingPost.content)
-      .withImage(image ?? existingPost.image)
+      .withImage(imageUrl)
       .withDesc(desc ?? existingPost.desc)
       .withCategory(category ?? existingPost.category)
       .withTags(updatedTags)

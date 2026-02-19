@@ -3,6 +3,7 @@ import { Match } from 'auth/validator/match.validator';
 import { User } from '../entities/user.entity';
 import { IsAlphanumeric, IsAscii, IsEmail, MinLength } from 'class-validator';
 import { IsUnique } from 'common/is-unique';
+import GraphQLUpload, { FileUpload } from 'graphql-upload/GraphQLUpload.mjs';
 
 @InputType()
 export class CreateUserInput {
@@ -31,9 +32,9 @@ export class CreateUserInput {
   @Match<CreateUserInput>('password')
   confirmPassword: string;
 
-  @Field(() => String, {
+  @Field(() => GraphQLUpload, {
     description: 'User display photo (avatar)',
     nullable: true,
   })
-  avatar?: string;
+  avatar?: FileUpload;
 }

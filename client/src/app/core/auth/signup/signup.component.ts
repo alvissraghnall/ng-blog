@@ -5,12 +5,12 @@ import { ZardIconComponent } from '@ui/icon/icon.component';
 import { AuthComponent, SignUpForm } from '../auth.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserService } from '../services/user.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthenticationError, Errors, NetworkError } from '@core/models/errors.model';
 
 @Component({
   selector: 'app-signup',
-  imports: [ZardDividerComponent, ZardIconComponent, AuthComponent],
+  imports: [ZardDividerComponent, ZardIconComponent, AuthComponent, RouterLink],
   templateUrl: './signup.component.html',
   styles: ``,
 })

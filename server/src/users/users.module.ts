@@ -13,14 +13,17 @@ import { JwtKeyService } from 'auth/jwt/jwt-key.service';
 import { UserFollow } from './entities/user-follow.entity';
 import { SharedJwtModule } from 'common/shared-jwt.module';
 import { UsersLoaderService } from './users-loader.service';
+import { CloudinaryModule } from 'cloudinary/cloudinary.module';
+import { UploadResolver } from './upload.resolver';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, UserFollow]),
     HashModule,
     SharedJwtModule,
+    CloudinaryModule,
   ],
-  providers: [UsersResolver, UsersService, UserSubscriber, UsersLoaderService],
+  providers: [UsersResolver, UsersService, UserSubscriber, UsersLoaderService, UploadResolver],
   exports: [UsersService],
 })
 export class UsersModule {}

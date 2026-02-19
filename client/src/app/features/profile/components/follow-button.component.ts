@@ -61,7 +61,7 @@ export class FollowButtonComponent {
       .subscribe({
         next: profile => {
           this.isSubmitting = false;
-          this.toggle.emit(profile);
+          // this.toggle.emit(profile);
         },
         error: () => (this.isSubmitting = false),
       });

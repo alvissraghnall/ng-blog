@@ -12,7 +12,7 @@ import { Post } from './entities/post.entity';
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
 import { Category } from './enum/category.enum';
-import { BadRequestException, UseGuards } from '@nestjs/common';
+import { BadRequestException, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Public } from 'common/public.decorator';
 import { User } from 'users/entities/user.entity';
 import { CurrentUser } from 'common/current-user.decorator';
@@ -22,17 +22,19 @@ import {
   OwnedEntity,
 } from 'common/decorators/entity-owner.decorator';
 import { Tag } from './entities/tag.entity';
+import GraphQLUpload, { FileUpload } from 'graphql-upload/GraphQLUpload.mjs';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Resolver(() => Post)
 export class PostsResolver {
   constructor(private readonly postsService: PostsService) {}
 
   @Mutation(() => Post)
+  @UseInterceptors(FileInterceptor('image'))
   createPost(
     @Args('createPostInput') createPostInput: CreatePostInput,
     @CurrentUser() user: User,
   ) {
-    // console.log(createPostInput.desc);
     console.log(user);
     return this.postsService.create(createPostInput, user);
   }
@@ -144,6 +146,7 @@ export class PostsResolver {
   }
 
   @Mutation(() => Post)
+  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(EntityOwnerGuard)
   @CheckEntityOwner({
     entity: Post,

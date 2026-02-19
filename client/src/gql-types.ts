@@ -476,13 +476,9 @@ export type Subscription = {
 
 export type Tag = {
   __typename?: 'Tag';
-  /** Date Entity was created. */
-  createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   posts?: Maybe<Array<Post>>;
-  /** Date Entity was last updated. */
-  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type TrendingTag = {
@@ -568,24 +564,6 @@ export type UserAnalytics = {
   totalFollowing: Scalars['Int']['output'];
   totalLikes: Scalars['Int']['output'];
   totalPosts: Scalars['Int']['output'];
-};
-
-export type UserInputType = {
-  avatar?: InputMaybe<Scalars['String']['input']>;
-  bio?: InputMaybe<Scalars['String']['input']>;
-  email: Scalars['String']['input'];
-  /** Email verification status */
-  emailVerified?: Scalars['Boolean']['input'];
-  followerCount?: Scalars['Int']['input'];
-  followingCount?: Scalars['Int']['input'];
-  /** ID */
-  id: Scalars['String']['input'];
-  /** OAuth2 ID */
-  oauthId?: InputMaybe<Scalars['String']['input']>;
-  /** OAuth2 Provider name, e.g. Google, GitHub.. */
-  oauthProvider?: InputMaybe<Scalars['String']['input']>;
-  password?: InputMaybe<Scalars['String']['input']>;
-  username: Scalars['String']['input'];
 };
 
 
@@ -696,7 +674,6 @@ export type ResolversTypes = {
   UploadResult: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['UploadResult']>;
   User: ResolverTypeWrapper<User>;
   UserAnalytics: ResolverTypeWrapper<UserAnalytics>;
-  userInputType: UserInputType;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
 };
 
@@ -731,7 +708,6 @@ export type ResolversParentTypes = {
   UploadResult: ResolversInterfaceTypes<ResolversParentTypes>['UploadResult'];
   User: User;
   UserAnalytics: UserAnalytics;
-  userInputType: UserInputType;
   String: Scalars['String']['output'];
 };
 
@@ -872,11 +848,9 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = {
-  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<ResolversTypes['Post']>>, ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
 };
 
 export type TrendingTagResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrendingTag'] = ResolversParentTypes['TrendingTag']> = {

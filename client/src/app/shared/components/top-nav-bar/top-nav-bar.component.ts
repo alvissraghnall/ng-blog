@@ -35,7 +35,7 @@ import { UserService } from '@core/auth/services/user.service';
           <nav class="hidden md:flex flex-1 justify-center items-center gap-8">
             <a
               class="text-text-light dark:text-text-dark hover:text-primary-custom transition-colors text-sm font-medium"
-              routerLink="/home"
+              routerLink="/"
               >Home</a
             >
             <a

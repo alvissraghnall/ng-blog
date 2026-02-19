@@ -16,7 +16,7 @@ import { BaseEntity } from 'common/entities/base.entity';
 import { UserFollow } from './user-follow.entity';
 
 @ObjectType()
-@InputType('userInputType')
+// @InputType('userInputType')
 @Entity()
 export class User extends BaseEntity {
   @Field(() => String, { description: 'ID' })

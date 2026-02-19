@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from 'posts/entities/post.entity';
 import { Repository } from 'typeorm';
@@ -7,12 +7,14 @@ import { CreateCommentInput } from './dto/create-comment.input';
 import { UpdateCommentInput } from './dto/update-comment.input';
 import { Comment } from './entities/comment.entity';
 import { CommentBuilder } from './builders/comment.builder';
+import { CloudinaryService } from 'cloudinary/cloudinary.service';
 
 @Injectable()
 export class CommentsService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentsRepository: Repository<Comment>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(
@@ -20,10 +22,26 @@ export class CommentsService {
     post: Post,
     author: User,
   ): Promise<Comment> {
+    const { text, image } = createCommentInput;
+
+    let imageUrl: string | undefined;
+
+    if (image) {
+      try {
+        const uploadResult = await this.cloudinaryService.uploadImage(
+          image,
+          'sharewithlouis/comments',
+        );
+        imageUrl = uploadResult.secure_url;
+      } catch (error) {
+        throw new BadRequestException(`Failed to upload image: ${error.message}`);
+      }
+    }
     const newComment = new CommentBuilder()
       .withAuthor(author)
-      .withText(createCommentInput.text)
+      .withText(text)
       .withPost(post)
+      .withImage(imageUrl)
       .build();
 
     return this.commentsRepository.save(newComment);
@@ -63,7 +81,26 @@ export class CommentsService {
     updateCommentInput: UpdateCommentInput,
     comment: Comment,
   ): Promise<Comment> {
-    Object.assign(comment, updateCommentInput);
+    const { image, text } = updateCommentInput;
+
+    let imageUrl = comment.image;
+
+    if (image) {
+      try {
+        const uploadResult = await this.cloudinaryService.uploadImage(
+          image,
+          'sharewithlouis/comments',
+        );
+        imageUrl = uploadResult.secure_url;
+      } catch (error) {
+        throw new BadRequestException(`Failed to upload image: ${error.message}`);
+      }
+    }
+
+
+    if (text) comment.text = text;
+    comment.image = imageUrl;
+
     return this.commentsRepository.save(comment);
   }
 

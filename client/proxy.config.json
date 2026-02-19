@@ -1,6 +1,6 @@
 {
   "/graphql": {
-    "target": "https://ngblogapi.piree.xyz",
+    "target": "http://localhost:3000",
 	"changeOrigin": true,
     "secure": false,
     "logLevel": "debug"

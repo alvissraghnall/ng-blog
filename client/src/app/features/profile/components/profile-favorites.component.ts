@@ -26,15 +26,15 @@ export default class ProfileFavoritesComponent implements OnInit {
       .get(this.route.parent?.snapshot.params['username'])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (profile: Profile) => {
-          this.profile = profile;
-          this.favoritesConfig = {
-            type: 'all',
-            filters: {
-              favorited: this.profile.username,
-            },
-          };
-        },
+        // next: (profile: Profile) => {
+        //   this.profile = profile;
+        //   this.favoritesConfig = {
+        //     type: 'all',
+        //     filters: {
+        //       favorited: this.profile.username,
+        //     },
+        //   };
+        // },
       });
   }
 }

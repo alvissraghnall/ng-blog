@@ -13,6 +13,9 @@ export const getCurrentUser = query(q => [
     user.oauthId,
     user.oauthProvider,
     user.updatedAt,
+    user.followerCount,
+    user.followingCount,
+    user.isFollowing,
   ]),
 ]);
 

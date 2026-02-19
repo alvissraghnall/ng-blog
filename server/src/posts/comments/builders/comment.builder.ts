@@ -15,6 +15,11 @@ export class CommentBuilder {
     return this;
   }
 
+  withImage(image: string): this {
+    this.comment.image = image;
+    return this;
+  }
+
   withAuthor(author: User): this {
     this.comment.author = author;
     return this;

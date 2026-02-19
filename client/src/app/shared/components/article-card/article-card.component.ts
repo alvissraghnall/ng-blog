@@ -1,14 +1,15 @@
+import { Comment, Post, User } from '@/gql-types';
 import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-article-card',
   imports: [],
   template: `
-    <div class="flex flex-col gap-3 group">
+    <div class="flex flex-col gap-3 group cursor-pointer">
       <div
         class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg overflow-hidden transform group-hover:scale-105 transition-transform duration-300"
-        [style.background-image]="'url(' + article.imageUrl + ')'"
-        [attr.data-alt]="article.imageAlt"
+        [style.background-image]="'url(' + article.image + ')'"
+        [attr.data-alt]="article.image"
       ></div>
       <div>
         <h3
@@ -16,11 +17,11 @@ import { Component, Input } from '@angular/core';
         >
           {{ article.title }}
         </h3>
-        <p class="text-text-muted-light dark:text-text-muted-dark text-sm font-normal leading-normal mb-2">
-          {{ article.description }}
+        <p class="text-text-muted-light dark:text-text-muted-dark text-sm font-normal leading-normal mb-2 cursor-text">
+          {{ article.desc }}
         </p>
         <p class="text-text-muted-light/70 dark:text-text-muted-dark/70 text-xs font-normal leading-normal">
-          {{ article.author }} - {{ article.date }}
+          {{ article.author }} - {{ article.createdAt }}
         </p>
       </div>
     </div>
@@ -28,7 +29,7 @@ import { Component, Input } from '@angular/core';
   styles: ``,
 })
 export class ArticleCardComponent {
-  @Input({ required: true }) article!: Article;
+  @Input({ required: true }) article!: Omit<Post, 'author' | 'comments'> & { author: Partial<User>, comments: Partial<Comment[]>};
 }
 
 export interface Article {

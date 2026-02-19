@@ -8,6 +8,7 @@ import {
   NotFoundException,
   Request,
   UseGuards,
+  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { CurrentUser } from 'common/current-user.decorator';
@@ -27,12 +28,14 @@ import {
   FoundEntity,
 } from 'common/decorators/entity-exists.decorator';
 import { Public } from 'common/public.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Resolver(() => Comment)
 export class CommentsResolver {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Mutation(() => Comment)
+  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(GqlJwtAuthGuard, EntityExistsGuard)
   @CheckEntityExistsFor<
     {
@@ -69,6 +72,7 @@ export class CommentsResolver {
   }
 
   @Mutation(() => Comment)
+  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(GqlJwtAuthGuard, EntityOwnerGuard)
   @CheckEntityOwner({
     entity: Comment,

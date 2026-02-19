@@ -7,6 +7,7 @@ import { Like } from 'posts/likes/entities/like.entity';
 import { Post } from 'posts/entities/post.entity';
 import { EntityOwnerGuard } from 'common/guards/entity-owner.guard';
 import { EntityExistsGuard } from 'common/guards/entity-exists.guard';
+import { CloudinaryModule } from 'cloudinary/cloudinary.module';
 
 @Module({
   providers: [
@@ -16,7 +17,7 @@ import { EntityExistsGuard } from 'common/guards/entity-exists.guard';
     EntityOwnerGuard,
     EntityExistsGuard,
   ],
-  imports: [TypeOrmModule.forFeature([Comment, Post])],
+  imports: [TypeOrmModule.forFeature([Comment, Post]), CloudinaryModule],
   exports: [CommentsService],
 })
 export class CommentsModule {}

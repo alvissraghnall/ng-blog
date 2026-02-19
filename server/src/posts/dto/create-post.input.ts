@@ -13,6 +13,7 @@ import {
   IsOptional,
   Matches,
 } from 'class-validator';
+import GraphQLUpload, { FileUpload } from 'graphql-upload/GraphQLUpload.mjs';
 import { Category } from 'posts/enum/category.enum';
 
 @InputType()
@@ -31,12 +32,10 @@ export class CreatePostInput {
   @MaxLength(30000)
   content: string;
 
-  @Field(() => String, { description: 'Blog post image URL' })
-  @IsString()
-  @IsNotEmpty()
-  @IsUrl()
-  @MaxLength(1000)
-  image: string;
+  @Field(() => GraphQLUpload, { 
+    description: 'Blog post image', 
+  })
+  image: FileUpload;
 
   @Field(() => String, { description: 'Blog post short description' })
   @IsString()

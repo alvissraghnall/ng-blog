@@ -8,6 +8,7 @@ import { getOAuthUrl, login as gqlLogin, oauthLogin, signup, updateUser } from '
 import { MutationOauthLoginArgs, User } from '@/gql-types';
 import { getCurrentUser as getCurrUser } from '@graphql/queries';
 import { AuthenticationError, NetworkError, ValidationError } from '@core/models/errors.model';
+import { ResultOf } from '@graphql-typed-document-node/core';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -74,7 +75,7 @@ export class UserService {
     email: string;
     password: string;
     confirmPassword: string;
-  }): Observable<Omit<User, 'createdAt' | 'updatedAt'>> {
+  }): Observable<ResultOf<typeof signup>['signup']> {
     return this.apollo
       .mutate({
         mutation: signup,
