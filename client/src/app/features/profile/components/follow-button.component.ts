@@ -1,10 +1,10 @@
-import { Component, DestroyRef, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, DestroyRef, inject, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { ProfileService } from '../services/profile.service';
 import { UserService } from '../../../core/auth/services/user.service';
-import { Profile } from '../models/profile.model';
+import { User } from '@/gql-types';
 import { NgClass } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -15,21 +15,21 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
       class="btn btn-sm action-btn"
       [ngClass]="{
         disabled: isSubmitting,
-        'btn-outline-secondary': !profile.following,
-        'btn-secondary': profile.following,
+        'btn-outline-secondary': !profile.isFollowing,
+        'btn-secondary': profile.isFollowing,
       }"
       (click)="toggleFollowing()"
     >
       <i class="ion-plus-round"></i>
       &nbsp;
-      {{ profile.following ? 'Unfollow' : 'Follow' }} {{ profile.username }}
+      {{ profile.isFollowing ? 'Unfollow' : 'Follow' }} {{ profile.username }}
     </button>
   `,
   imports: [NgClass],
 })
 export class FollowButtonComponent {
-  @Input() profile!: Profile;
-  @Output() toggle = new EventEmitter<Profile>();
+  @Input() profile!: User;
+  @Output() toggle = new EventEmitter<User>();
   isSubmitting = false;
   destroyRef = inject(DestroyRef);
 
@@ -49,19 +49,15 @@ export class FollowButtonComponent {
             void this.router.navigate(['/login']);
             return EMPTY;
           }
-
-          if (!this.profile.following) {
-            return this.profileService.follow(this.profile.username);
-          } else {
-            return this.profileService.unfollow(this.profile.username);
-          }
+          return this.profileService.toggleFollow(this.profile);
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: profile => {
           this.isSubmitting = false;
-          // this.toggle.emit(profile);
+          this.profile = profile;
+          this.toggle.emit(profile);
         },
         error: () => (this.isSubmitting = false),
       });

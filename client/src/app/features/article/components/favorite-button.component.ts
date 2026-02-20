@@ -2,9 +2,9 @@ import { Component, DestroyRef, EventEmitter, inject, Input, Output } from '@ang
 import { Router } from '@angular/router';
 import { EMPTY, switchMap } from 'rxjs';
 import { NgClass } from '@angular/common';
-import { ArticlesService } from '../services/articles.service';
+import { PostsService } from '../../post/services/posts.service';
 import { UserService } from '../../../core/auth/services/user.service';
-import { Article } from '../models/article.model';
+import { Post } from '@/gql-types';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -14,8 +14,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
       class="btn btn-sm"
       [ngClass]="{
         disabled: isSubmitting,
-        'btn-outline-primary': !article.favorited,
-        'btn-primary': article.favorited,
+        'btn-outline-primary': !isLiked,
+        'btn-primary': isLiked,
       }"
       (click)="toggleFavorite()"
     >
@@ -27,12 +27,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class FavoriteButtonComponent {
   destroyRef = inject(DestroyRef);
   isSubmitting = false;
+  isLiked = false;
 
-  @Input() article!: Article;
+  @Input() post!: Post;
   @Output() toggle = new EventEmitter<boolean>();
 
   constructor(
-    private readonly articleService: ArticlesService,
+    private readonly postsService: PostsService,
     private readonly router: Router,
     private readonly userService: UserService,
   ) {}
@@ -47,19 +48,15 @@ export class FavoriteButtonComponent {
             void this.router.navigate(['/register']);
             return EMPTY;
           }
-
-          if (!this.article.favorited) {
-            return this.articleService.favorite(this.article.slug);
-          } else {
-            return this.articleService.unfavorite(this.article.slug);
-          }
+          return this.postsService.toggleLike(this.post);
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: () => {
+        next: (liked) => {
           this.isSubmitting = false;
-          this.toggle.emit(!this.article.favorited);
+          this.isLiked = liked;
+          this.toggle.emit(liked);
         },
         error: () => (this.isSubmitting = false),
       });

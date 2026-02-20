@@ -1,13 +1,13 @@
-@if (article) {
+@if (post) {
   <div class="article-page">
     <div class="banner">
       <div class="container">
-        <h1>{{ article.title }}</h1>
+        <h1>{{ post.title }}</h1>
 
-        <app-article-meta [article]="article">
+        <app-article-meta [post]="post">
           @if (canModify) {
             <span>
-              <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/editor', article.slug]">
+              <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/editor', post.slug]">
                 <i class="ion-edit"></i> Edit Article
               </a>
 
@@ -21,11 +21,11 @@
             </span>
           } @else {
             <span>
-              <app-follow-button [profile]="article.author" (toggle)="toggleFollowing($event)"> </app-follow-button>
+              <app-follow-button [profile]="post.author" />
 
-              <app-favorite-button [article]="article" (toggle)="onToggleFavorite($event)">
-                {{ article.favorited ? 'Unfavorite' : 'Favorite' }} Article
-                <span class="counter">({{ article.favoritesCount }})</span>
+              <app-favorite-button [post]="post" (toggle)="onToggleFavorite($event)">
+                Like Article
+                <span class="counter">({{ post.likeCount }})</span>
               </app-favorite-button>
             </span>
           }
@@ -36,12 +36,12 @@
     <div class="container page">
       <div class="row article-content">
         <div class="col-md-12">
-          <div [innerHTML]="article.body | markdown | async"></div>
+          <div [innerHTML]="post.content | markdown | async"></div>
 
           <ul class="tag-list">
-            @for (tag of article.tagList; track tag) {
+            @for (tag of post.tags; track tag.id) {
               <li class="tag-default tag-pill tag-outline">
-                {{ tag }}
+                {{ tag.name }}
               </li>
             }
           </ul>
@@ -51,10 +51,10 @@
       <hr />
 
       <div class="article-actions">
-        <app-article-meta [article]="article">
+        <app-article-meta [post]="post">
           @if (canModify) {
             <span>
-              <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/editor', article.slug]">
+              <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/editor', post.slug]">
                 <i class="ion-edit"></i> Edit Article
               </a>
 
@@ -68,11 +68,11 @@
             </span>
           } @else {
             <span>
-              <app-follow-button [profile]="article.author" (toggle)="toggleFollowing($event)" />
+              <app-follow-button [profile]="post.author" />
 
-              <app-favorite-button [article]="article" (toggle)="onToggleFavorite($event)">
-                {{ article.favorited ? 'Unfavorite' : 'Favorite' }} Article
-                <span class="counter">({{ article.favoritesCount }})</span>
+              <app-favorite-button [post]="post" (toggle)="onToggleFavorite($event)">
+                Like Article
+                <span class="counter">({{ post.likeCount }})</span>
               </app-favorite-button>
             </span>
           }
@@ -94,7 +94,6 @@
                   ></textarea>
                 </div>
                 <div class="card-footer">
-                  <img [src]="currentUser?.image === null ? '' : currentUser?.image" class="comment-author-img" />
                   <button class="btn btn-sm btn-primary" type="submit">Post Comment</button>
                 </div>
               </fieldset>
@@ -106,7 +105,7 @@
             this article.
           </div>
 
-          @for (comment of comments; track comment) {
+          @for (comment of comments; track comment.id) {
             <app-article-comment [comment]="comment" (delete)="deleteComment(comment)" />
           }
         </div>

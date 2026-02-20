@@ -2,9 +2,8 @@ import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { UserService } from '../../../core/auth/services/user.service';
 import { RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { Comment } from '../models/comment.model';
+import { Comment, User } from '@/gql-types';
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { User } from '@/gql-types';
 
 @Component({
   selector: 'app-article-comment',
@@ -13,12 +12,12 @@ import { User } from '@/gql-types';
       <div class="card">
         <div class="card-block">
           <p class="card-text">
-            {{ comment.body }}
+            {{ comment.text }}
           </p>
         </div>
         <div class="card-footer">
           <a class="comment-author" [routerLink]="['/profile', comment.author.username]">
-            <img [src]="comment.author.image" class="comment-author-img" />
+            <img [src]="comment.author.avatar || 'assets/images/default-avatar.png'" class="comment-author-img" />
           </a>
           &nbsp;
           <a class="comment-author" [routerLink]="['/profile', comment.author.username]">
@@ -43,6 +42,6 @@ export class ArticleCommentComponent {
   @Output() delete = new EventEmitter<boolean>();
 
   canModify$ = inject(UserService).currentUser.pipe(
-    map((userData: User | null) => userData?.username === this.comment.author.username),
+    map((userData: User | null) => userData?.id === this.comment.author.id),
   );
 }

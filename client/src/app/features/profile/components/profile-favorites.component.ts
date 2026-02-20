@@ -2,8 +2,8 @@ import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ArticleListComponent } from '../../article/components/article-list.component';
 import { ProfileService } from '../services/profile.service';
-import { Profile } from '../models/profile.model';
-import { ArticleListConfig } from '../../article/models/article-list-config.model';
+import { User } from '@/gql-types';
+import { PostListConfig } from '../../post/services/posts.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -12,8 +12,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [ArticleListComponent],
 })
 export default class ProfileFavoritesComponent implements OnInit {
-  profile!: Profile;
-  favoritesConfig!: ArticleListConfig;
+  profile!: User;
+  favoritesConfig!: PostListConfig;
   destroyRef = inject(DestroyRef);
 
   constructor(
@@ -26,15 +26,13 @@ export default class ProfileFavoritesComponent implements OnInit {
       .get(this.route.parent?.snapshot.params['username'])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        // next: (profile: Profile) => {
-        //   this.profile = profile;
-        //   this.favoritesConfig = {
-        //     type: 'all',
-        //     filters: {
-        //       favorited: this.profile.username,
-        //     },
-        //   };
-        // },
+        next: (profile) => {
+          this.profile = profile as User;
+          this.favoritesConfig = {
+            type: 'all',
+            filters: {},
+          };
+        },
       });
   }
 }

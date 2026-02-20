@@ -2,8 +2,7 @@ import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { catchError, switchMap } from 'rxjs/operators';
 import { combineLatest, of, throwError } from 'rxjs';
-import { UserService } from '../../../../core/auth/services/user.service';
-import { Profile } from '../../models/profile.model';
+import { UserService } from '@core/auth/services/user.service';
 import { ProfileService } from '../../services/profile.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FollowButtonComponent } from '../../components/follow-button.component';
@@ -13,7 +12,7 @@ import { GraphQLOmitType } from '@utils/graphql-omit-type';
 @Component({
   selector: 'app-profile-page',
   templateUrl: './profile.component.html',
-  imports: [FollowButtonComponent, RouterLink, RouterLinkActive, RouterOutlet, FollowButtonComponent],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
 })
 export class ProfileComponent implements OnInit {
   profile!: GraphQLOmitType<User, "createdAt" | "isFollowing">;

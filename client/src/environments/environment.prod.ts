@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  graphQLStreamUrl: 'https://your-production-url/graphql/stream',
 };

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Article } from '../models/article.model';
+import { Post } from '@/gql-types';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 
@@ -7,16 +7,16 @@ import { DatePipe } from '@angular/common';
   selector: 'app-article-meta',
   template: `
     <div class="article-meta">
-      <a [routerLink]="['/profile', article.author.username]">
-        <img [src]="article.author.image" />
+      <a [routerLink]="['/profile', post.author.username]">
+        <img [src]="post.author.avatar || 'assets/images/default-avatar.png'" />
       </a>
 
       <div class="info">
-        <a class="author" [routerLink]="['/profile', article.author.username]">
-          {{ article.author.username }}
+        <a class="author" [routerLink]="['/profile', post.author.username]">
+          {{ post.author.username }}
         </a>
         <span class="date">
-          {{ article.createdAt | date: 'longDate' }}
+          {{ post.createdAt | date: 'longDate' }}
         </span>
       </div>
 
@@ -27,5 +27,5 @@ import { DatePipe } from '@angular/common';
   imports: [RouterLink, DatePipe],
 })
 export class ArticleMetaComponent {
-  @Input() article!: Article;
+  @Input() post!: Post;
 }

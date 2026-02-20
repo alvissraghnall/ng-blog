@@ -1,18 +1,23 @@
+@if (isLoading) {
+  <div class="flex items-center justify-center h-64">
+    <p class="text-muted-foreground">Loading post...</p>
+  </div>
+} @else {
 <form [formGroup]="postForm" (ngSubmit)="onPublish()">
   <main class="flex-1 px-4 sm:px-6 lg:px-10 py-8">
     <div class="layout-content-container flex flex-col max-w-7xl mx-auto">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
         <h1 class="text-foreground text-4xl lg:text-5xl font-black font-display tracking-[-0.033em]">
-          Create New Post
+          {{ isEditMode ? 'Edit Post' : 'Create New Post' }}
         </h1>
         <div class="flex items-center gap-3">
-          <z-button zType="secondary" (click)="onSaveDraft()" type="button">
+          <z-button zType="secondary" (click)="onSaveDraft()" type="button" [zLoading]="isSubmitting">
             <z-icon [zType]="draftIcon" class="text-lg" />
             <span>Save Draft</span>
           </z-button>
-          <z-button type="submit">
+          <z-button type="submit" [zLoading]="isSubmitting">
             <z-icon [zType]="publishIcon" class="text-lg" />
-            <span>Publish</span>
+            <span>{{ isSubmitting ? '' : (isEditMode ? 'Update' : 'Publish') }}</span>
           </z-button>
         </div>
       </div>
@@ -20,13 +25,35 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 flex flex-col gap-6">
           <div class="flex flex-col w-full">
-            <label for="title" class="pb-2">Post Title</label>
+            <label for="title" class="pb-2">Post Title *</label>
             <z-input
               id="title"
               formControlName="title"
               placeholder="Enter your post title here..."
               class="h-14 text-lg"
             />
+          </div>
+
+          <div class="flex flex-col w-full">
+            <label for="desc" class="pb-2">Short Description *</label>
+            <z-input
+              id="desc"
+              formControlName="desc"
+              placeholder="Brief description for preview..."
+            />
+          </div>
+
+          <div class="flex flex-col w-full">
+            <label for="category" class="pb-2">Category *</label>
+            <select
+              id="category"
+              formControlName="category"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
           </div>
 
           <div class="flex flex-col">
@@ -60,3 +87,4 @@
     </div>
   </main>
 </form>
+}

@@ -24,7 +24,8 @@
     "seed:run": "ts-node --project ./tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js --configName seederconfig.json seed",
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
     "schema:drop": "ts-node ./node_modules/typeorm/cli.js schema:drop",
-    "schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync"
+    "schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync",
+    "seed:test": "ts-node -r tsconfig-paths/register src/database/seed-test-data.ts"
   },
   "dependencies": {
     "@apollo/server": "^5.1.0",

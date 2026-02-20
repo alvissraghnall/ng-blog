@@ -1,10 +1,8 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { User } from '../../../../core/auth/user.model';
-import { Article } from '../../models/article.model';
-import { ArticlesService } from '../../services/articles.service';
-import { CommentsService } from '../../services/comments.service';
+import { PostsService } from '../../../post/services/posts.service';
+import { CommentsService } from '../../../post/services/comments.service';
 import { UserService } from '../../../../core/auth/services/user.service';
 import { ArticleMetaComponent } from '../../components/article-meta.component';
 import { AsyncPipe, NgClass } from '@angular/common';
@@ -13,13 +11,12 @@ import { ListErrorsComponent } from '../../../../shared/components/list-errors.c
 import { ArticleCommentComponent } from '../../components/article-comment.component';
 import { catchError } from 'rxjs/operators';
 import { combineLatest, throwError } from 'rxjs';
-import { Comment } from '../../models/comment.model';
 import { IfAuthenticatedDirective } from '../../../../core/auth/if-authenticated.directive';
 import { Errors } from '../../../../core/models/errors.model';
-import { Profile } from '../../../profile/models/profile.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FavoriteButtonComponent } from '../../components/favorite-button.component';
 import { FollowButtonComponent } from '../../../profile/components/follow-button.component';
+import { Post, Comment } from '@/gql-types';
 
 @Component({
   selector: 'app-article-page',
@@ -40,10 +37,9 @@ import { FollowButtonComponent } from '../../../profile/components/follow-button
   ],
 })
 export default class ArticleComponent implements OnInit {
-  article!: Article;
-  currentUser!: User | null;
+  post!: Post;
   comments: Comment[] = [];
-  canModify: boolean = false;
+  canModify = false;
 
   commentControl = new FormControl<string>('', { nonNullable: true });
   commentFormErrors: Errors | null = null;
@@ -54,7 +50,7 @@ export default class ArticleComponent implements OnInit {
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly articleService: ArticlesService,
+    private readonly postsService: PostsService,
     private readonly commentsService: CommentsService,
     private readonly router: Router,
     private readonly userService: UserService,
@@ -62,7 +58,10 @@ export default class ArticleComponent implements OnInit {
 
   ngOnInit(): void {
     const slug = this.route.snapshot.params['slug'];
-    combineLatest([this.articleService.get(slug), this.commentsService.getAll(slug), this.userService.currentUser])
+    combineLatest([
+      this.postsService.get(slug),
+      this.userService.currentUser,
+    ])
       .pipe(
         catchError(err => {
           void this.router.navigate(['/']);
@@ -70,33 +69,34 @@ export default class ArticleComponent implements OnInit {
         }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(([article, comments, currentUser]) => {
-        this.article = article;
-        this.comments = comments;
-        // this.currentUser = currentUser;
-        this.canModify = currentUser?.username === article.author.username;
+      .subscribe(([post, currentUser]) => {
+        this.post = post;
+        this.canModify = currentUser?.id === post.author.id;
+        this.loadComments(post.id);
       });
   }
 
-  onToggleFavorite(favorited: boolean): void {
-    this.article.favorited = favorited;
-
-    if (favorited) {
-      this.article.favoritesCount++;
-    } else {
-      this.article.favoritesCount--;
-    }
+  private loadComments(postId: number): void {
+    this.commentsService.getAll(postId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(comments => {
+        this.comments = comments;
+      });
   }
 
-  toggleFollowing(profile: Profile): void {
-    this.article.author.following = profile.following;
+  onToggleFavorite(liked: boolean): void {
+    if (liked) {
+      this.post.likeCount++;
+    } else {
+      this.post.likeCount--;
+    }
   }
 
   deleteArticle(): void {
     this.isDeleting = true;
 
-    this.articleService
-      .delete(this.article.slug)
+    this.postsService
+      .delete(this.post.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         void this.router.navigate(['/']);
@@ -108,7 +108,7 @@ export default class ArticleComponent implements OnInit {
     this.commentFormErrors = null;
 
     this.commentsService
-      .add(this.article.slug, this.commentControl.value)
+      .create(this.post.id, this.commentControl.value)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: comment => {
@@ -125,7 +125,7 @@ export default class ArticleComponent implements OnInit {
 
   deleteComment(comment: Comment): void {
     this.commentsService
-      .delete(comment.id, this.article.slug)
+      .delete(comment.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.comments = this.comments.filter(item => item !== comment);

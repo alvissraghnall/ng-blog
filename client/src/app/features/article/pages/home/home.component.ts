@@ -1,15 +1,12 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TagsService } from '../../services/tags.service';
-import { ArticleListConfig } from '../../models/article-list-config.model';
-import { NgClass } from '@angular/common';
-import { ArticleListComponent } from '../../components/article-list.component';
+import { TagsService } from '../../../post/services/tags.service';
+import { PostListConfig } from '../../../post/services/posts.service';
 import { tap } from 'rxjs/operators';
-import { UserService } from '../../../../core/auth/services/user.service';
+import { UserService } from '@core/auth/services/user.service';
 import { RxLet } from '@rx-angular/template/let';
-import { IfAuthenticatedDirective } from '../../../../core/auth/if-authenticated.directive';
+import { IfAuthenticatedDirective } from '@core/auth/if-authenticated.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TopNavBar } from '@components/top-nav-bar/top-nav-bar.component';
 import { CallToActionComponent } from '@components/call-to-action/call-to-action.component';
 import { HeroSectionComponent } from '@components/hero-section/hero-section.component';
 import { LatestPostsComponent } from '@components/latest-posts/latest-posts.component';
@@ -19,8 +16,6 @@ import { LatestPostsComponent } from '@components/latest-posts/latest-posts.comp
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   imports: [
-    NgClass,
-    ArticleListComponent,
     RxLet,
     IfAuthenticatedDirective,
     CallToActionComponent,
@@ -30,7 +25,7 @@ import { LatestPostsComponent } from '@components/latest-posts/latest-posts.comp
 })
 export default class HomeComponent implements OnInit {
   isAuthenticated = false;
-  listConfig: ArticleListConfig = {
+  listConfig: PostListConfig = {
     type: 'all',
     filters: {},
   };
@@ -61,13 +56,11 @@ export default class HomeComponent implements OnInit {
   }
 
   setListTo(type: string = '', filters: Object = {}): void {
-    // If feed is requested but user is not authenticated, redirect to login
     if (type === 'feed' && !this.isAuthenticated) {
       void this.router.navigate(['/login']);
       return;
     }
 
-    // Otherwise, set the list object
-    this.listConfig = { type: type, filters: filters };
+    this.listConfig = { type: type as PostListConfig['type'], filters };
   }
 }

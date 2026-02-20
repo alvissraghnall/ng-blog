@@ -2,9 +2,10 @@ import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ArticleListComponent } from '../../article/components/article-list.component';
 import { ProfileService } from '../services/profile.service';
-import { Profile } from '../models/profile.model';
-import { ArticleListConfig } from '../../article/models/article-list-config.model';
+import { User } from '@/gql-types';
+import { PostListConfig } from '../../post/services/posts.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { GraphQLOmitType } from '@utils/graphql-omit-type';
 
 @Component({
   selector: 'app-profile-articles',
@@ -12,8 +13,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [ArticleListComponent],
 })
 export default class ProfileArticlesComponent implements OnInit {
-  profile!: Profile;
-  articlesConfig!: ArticleListConfig;
+  profile!: GraphQLOmitType<User, "createdAt" | "isFollowing">;
+  articlesConfig!: PostListConfig;
   destroyRef = inject(DestroyRef);
 
   constructor(
@@ -26,15 +27,15 @@ export default class ProfileArticlesComponent implements OnInit {
       .get(this.route.snapshot.params['username'])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        // next: (profile: Profile) => {
-        //   this.profile = profile;
-        //   this.articlesConfig = {
-        //     type: 'all',
-        //     filters: {
-        //       author: this.profile.username,
-        //     },
-        //   };
-        // },
+        next: (profile) => {
+          this.profile = profile;
+          this.articlesConfig = {
+            type: 'user',
+            filters: {
+              authorId: this.profile.id,
+            },
+          };
+        },
       });
   }
 }
