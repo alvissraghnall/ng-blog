@@ -10,9 +10,9 @@ import { User } from '@/gql-types';
 import { GraphQLOmitType } from '@utils/graphql-omit-type';
 
 @Component({
-  selector: 'app-profile-page',
+  selector: 'app-user-profile',
   templateUrl: './profile.component.html',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [FollowButtonComponent, RouterLink, RouterLinkActive, RouterOutlet, FollowButtonComponent],
 })
 export class ProfileComponent implements OnInit {
   profile!: GraphQLOmitType<User, "createdAt" | "isFollowing">;

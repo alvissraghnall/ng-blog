@@ -48,7 +48,7 @@ export const routes: Routes = [
   },
   {
     path: 'article/:slug',
-    loadComponent: () => import('./features/article/pages/article/article.component'),
+    loadComponent: () => import('./features/post/pages/article/article.component'),
   },
   {
     path: 'oauth/:provider/callback',

@@ -12,7 +12,7 @@ import { GraphQLOmitType } from '@utils/graphql-omit-type';
 export class ProfileService {
   constructor(private readonly apollo: Apollo) {}
 
-  get(username: string): Observable<GraphQLOmitType<Profile, 'createdAt' | 'isFollowing'>> {
+  get(username: string): Observable<GraphQLOmitType<Profile, 'createdAt'>> {
     return this.apollo
       .query({
         query: getProfile,

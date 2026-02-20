@@ -254,11 +254,11 @@ export class UserService {
       );
   }
 
-  private setAuth(user: User, token?: string): void {
+  private setAuth(user: Omit<User, 'followerCount' | 'followingCount' | 'isFollowing'> | User, token?: string): void {
     if (token) {
       this.jwtService.saveToken(token);
     }
-    this.currentUserSubject.next(user);
+    this.currentUserSubject.next(user as User);
   }
 
   private purgeAuth(): void {

@@ -33,14 +33,14 @@ export class FollowButtonComponent {
   isSubmitting = false;
   destroyRef = inject(DestroyRef);
 
-  constructor(
-    private readonly profileService: ProfileService,
-    private readonly router: Router,
-    private readonly userService: UserService,
-  ) {}
+//   constructor(
+//     private readonly profileService: ProfileService,
+//     private readonly router: Router,
+//     private readonly userService: UserService,
+//   ) {}
 
-  toggleFollowing(): void {
-    this.isSubmitting = true;
+//   toggleFollowing(): void {
+//     this.isSubmitting = true;
 
     this.userService.isAuthenticated
       .pipe(

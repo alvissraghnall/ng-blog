@@ -8,18 +8,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-profile-favorites',
-  template: `<app-article-list [limit]="10" [config]="favoritesConfig" />`,
-  imports: [ArticleListComponent],
+  template: `<div></div>`,
+  imports: [],
 })
 export default class ProfileFavoritesComponent implements OnInit {
   profile!: User;
   favoritesConfig!: PostListConfig;
   destroyRef = inject(DestroyRef);
 
-  constructor(
-    private route: ActivatedRoute,
-    private readonly profileService: ProfileService,
-  ) {}
+//   constructor(
+//     private route: ActivatedRoute,
+//     private readonly profileService: ProfileService,
+//   ) {}
 
   ngOnInit() {
     this.profileService
