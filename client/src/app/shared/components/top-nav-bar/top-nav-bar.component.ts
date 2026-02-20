@@ -21,9 +21,7 @@ import { UserService } from '@core/auth/services/user.service';
     IfAuthenticatedDirective
   ],
   template: `
-    <header
-      class="sticky top-0 z-50 w-full bg-background/80 dark:bg-background/80 backdrop-blur-sm border-b border-border-light dark:border-border-dark"
-    >
+    <header class="sticky top-0 z-50 w-full bg-background/80 dark:bg-background/80 backdrop-blur-sm border-b border-border-light dark:border-border-dark">
       <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16 md:h-20">
           <a class="flex items-center gap-3 text-text-light dark:text-text-dark" routerLink="/">
@@ -33,58 +31,32 @@ import { UserService } from '@core/auth/services/user.service';
 
           <!-- Desktop Navigation -->
           <nav class="hidden md:flex flex-1 justify-center items-center gap-8">
-            <a
-              class="text-text-light dark:text-text-dark hover:text-primary-custom transition-colors text-sm font-medium"
-              routerLink="/"
-              >Home</a
-            >
-            <a
-              class="text-text-muted-light dark:text-text-muted-dark hover:text-primary-custom transition-colors text-sm font-medium"
-              routerLink="/blog"
-              >Blog</a
-            >
-            <a
-              class="text-text-muted-light dark:text-text-muted-dark hover:text-primary-custom transition-colors text-sm font-medium"
-              routerLink="/about"
-              >About</a
-            >
-            <a
-              class="text-text-muted-light dark:text-text-muted-dark hover:text-primary-custom transition-colors text-sm font-medium"
-              routerLink="/contribute"
-              >Contribute</a
-            >
+            <a class="text-text-light dark:text-text-dark hover:text-primary-custom transition-colors text-sm font-medium" routerLink="/">Home</a>
+            <a class="text-text-muted-light dark:text-text-muted-dark hover:text-primary-custom transition-colors text-sm font-medium" routerLink="/blog">Blog</a>
           </nav>
 
           <!-- Desktop Actions -->
           <div class="hidden md:flex items-center gap-4">
             <app-toggle-theme></app-toggle-theme>
 
-            <!-- STATE: NOT Authenticated -->
+            <!-- NOT Authenticated -->
             <ng-container *ifAuthenticated="false">
               <a z-button routerLink="/login">Sign in</a>
             </ng-container>
 
-            <!-- STATE: Authenticated -->
+            <!-- Authenticated -->
             <ng-container *ifAuthenticated="true">
               <div class="flex items-center gap-3 pl-2 border-l border-border-light dark:border-border-dark" *ngIf="currentUser$ | async as user">
-                <div class="flex flex-col items-end">
-                  <span class="text-sm font-semibold text-text-light dark:text-text-dark">{{ user.username }}</span>
-                  <span class="text-[10px] text-muted-foreground">{{ user.email }}</span>
-                </div>
-                
-                <div class="h-9 w-9 rounded-full overflow-hidden border border-border-light dark:border-border-dark bg-muted">
-                  <img 
-                    [src]="user.avatar || 'https://api.dicebear.com/9.x/avataaars/svg?seed=' + user.username" 
-                    alt="User avatar"
-                    class="h-full w-full object-cover"
-                  >
-                </div>
-
-                <button 
-                  (click)="logout()" 
-                  class="ml-1 p-2 text-text-muted-light hover:text-destructive transition-colors rounded-md hover:bg-muted/50"
-                  title="Logout"
-                >
+                <a routerLink="/profile" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                  <div class="flex flex-col items-end">
+                    <span class="text-sm font-semibold text-text-light dark:text-text-dark">{{ user.username }}</span>
+                    <span class="text-[10px] text-muted-foreground">{{ user.email }}</span>
+                  </div>
+                  <div class="h-9 w-9 rounded-full overflow-hidden border border-border-light dark:border-border-dark bg-muted">
+                    <img [src]="user.avatar || 'https://api.dicebear.com/9.x/avataaars/svg?seed=' + user.username" alt="User avatar" class="h-full w-full object-cover">
+                  </div>
+                </a>
+                <button (click)="logout()" class="ml-1 p-2 text-text-muted-light hover:text-destructive transition-colors rounded-md hover:bg-muted/50" title="Logout">
                   <z-icon [zType]="logoutIcon" zSize="sm" />
                 </button>
               </div>
@@ -94,11 +66,7 @@ import { UserService } from '@core/auth/services/user.service';
           <!-- Mobile Menu Toggle -->
           <div class="flex md:hidden items-center gap-3">
             <app-toggle-theme></app-toggle-theme>
-            <button
-              (click)="toggleMobileMenu()"
-              class="p-2 text-text-light dark:text-text-dark hover:text-primary-custom transition-colors"
-              [attr.aria-label]="mobileMenuOpen() ? 'Close menu' : 'Open menu'"
-            >
+            <button (click)="toggleMobileMenu()" class="p-2 text-text-light dark:text-text-dark hover:text-primary-custom transition-colors" [attr.aria-label]="mobileMenuOpen() ? 'Close menu' : 'Open menu'">
               <z-icon [zType]="mobileMenuOpen() ? closeIcon : menuIcon" zSize="xl" />
             </button>
           </div>
@@ -108,53 +76,32 @@ import { UserService } from '@core/auth/services/user.service';
         @if (mobileMenuOpen()) {
           <div class="md:hidden border-t border-border-light dark:border-border-dark">
             <nav class="flex flex-col py-4 space-y-1">
-              <a
-                class="px-4 py-3 text-text-light dark:text-text-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium"
-                routerLink="/home"
-                (click)="closeMobileMenu()"
-                >Home</a
-              >
-              
-              <a
-                class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium"
-                href="#"
-                (click)="closeMobileMenu()"
-                >Blog</a
-              >
-              <a
-                class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium"
-                href="#"
-                (click)="closeMobileMenu()"
-                >About</a
-              >
-              <a
-                class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium"
-                href="#"
-                (click)="closeMobileMenu()"
-                >Contribute</a>
+              <a class="px-4 py-3 text-text-light dark:text-text-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium" routerLink="/" (click)="closeMobileMenu()">Home</a>
+              <a class="px-4 py-3 text-text-muted-light dark:text-text-muted-dark hover:bg-background hover:text-primary-custom transition-colors text-base font-medium" routerLink="/blog" (click)="closeMobileMenu()">Blog</a>
               
               <div class="px-4 pt-4 border-t border-border-light dark:border-border-dark mt-2">
                 <!-- Mobile: Not Authenticated -->
                 <ng-container *ifAuthenticated="false">
-                  <button z-button class="w-full" routerLink="/auth" (click)="closeMobileMenu()">Sign In</button>
+                  <button z-button class="w-full" routerLink="/login" (click)="closeMobileMenu()">Sign In</button>
                 </ng-container>
 
                 <!-- Mobile: Authenticated -->
                 <ng-container *ifAuthenticated="true">
                   <div class="flex items-center gap-3 mb-4" *ngIf="currentUser$ | async as user">
-                    <img 
-                      [src]="user.avatar || 'https://api.dicebear.com/9.x/avataaars/svg?seed=' + user.username" 
-                      class="h-10 w-10 rounded-full bg-muted"
-                    >
+                    <img [src]="user.avatar || 'https://api.dicebear.com/9.x/avataaars/svg?seed=' + user.username" class="h-10 w-10 rounded-full bg-muted">
                     <div class="flex flex-col">
                       <span class="font-medium">{{ user.username }}</span>
                       <span class="text-xs text-muted-foreground">{{ user.email }}</span>
                     </div>
                   </div>
-                  <button z-button zVariant="outline" class="w-full flex items-center justify-center gap-2" (click)="logout()">
-                    <z-icon [zType]="logoutIcon" zSize="sm" />
-                    Log out
-                  </button>
+                  <div class="flex flex-col gap-2">
+                    <a z-button zType="outline" class="w-full" routerLink="/profile" (click)="closeMobileMenu()">Profile</a>
+                    <a z-button zType="outline" class="w-full" routerLink="/settings" (click)="closeMobileMenu()">Settings</a>
+                    <button z-button zType="secondary" class="w-full flex items-center justify-center gap-2" (click)="logout()">
+                      <z-icon [zType]="logoutIcon" zSize="sm" />
+                      Log out
+                    </button>
+                  </div>
                 </ng-container>
               </div>
             </nav>
@@ -163,7 +110,7 @@ import { UserService } from '@core/auth/services/user.service';
       </div>
     </header>
   `,
-  styles: ``,
+  styles: [],
 })
 export class TopNavBar {
   private userService = inject(UserService);

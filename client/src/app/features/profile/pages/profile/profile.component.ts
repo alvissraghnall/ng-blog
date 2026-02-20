@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { catchError, switchMap } from 'rxjs/operators';
 import { combineLatest, of, throwError } from 'rxjs';
 import { UserService } from '@core/auth/services/user.service';
@@ -9,15 +9,27 @@ import { FollowButtonComponent } from '../../components/follow-button.component'
 import { User } from '@/gql-types';
 import { GraphQLOmitType } from '@utils/graphql-omit-type';
 
+interface Tab {
+  id: string;
+  label: string;
+  active: boolean;
+}
+
 @Component({
   selector: 'app-user-profile',
   templateUrl: './profile.component.html',
-  imports: [FollowButtonComponent, RouterLink, RouterLinkActive, RouterOutlet, FollowButtonComponent],
+  imports: [FollowButtonComponent, RouterLink, RouterOutlet],
 })
 export class ProfileComponent implements OnInit {
-  profile!: GraphQLOmitType<User, "createdAt" | "isFollowing">;
+  profile!: GraphQLOmitType<User, 'createdAt'>;
   isUser: boolean = false;
+  isLoading = true;
   destroyRef = inject(DestroyRef);
+
+  tabs: Tab[] = [
+    { id: 'posts', label: 'Posts', active: true },
+    { id: 'favorites', label: 'Favorites', active: false },
+  ];
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -31,6 +43,7 @@ export class ProfileComponent implements OnInit {
       .get(this.route.snapshot.params['username'])
       .pipe(
         catchError(error => {
+          this.isLoading = false;
           void this.router.navigate(['/']);
           return throwError(() => error);
         }),
@@ -42,10 +55,18 @@ export class ProfileComponent implements OnInit {
       .subscribe(([profile, user]) => {
         this.profile = profile;
         this.isUser = profile.username === user?.username;
+        this.isLoading = false;
       });
   }
 
-  onToggleFollowing(profile: User) {
+  selectTab(tabId: string): void {
+    this.tabs = this.tabs.map(tab => ({
+      ...tab,
+      active: tab.id === tabId,
+    }));
+  }
+
+  onToggleFollowing(profile: GraphQLOmitType<User, 'createdAt'>) {
     this.profile = profile;
   }
 }

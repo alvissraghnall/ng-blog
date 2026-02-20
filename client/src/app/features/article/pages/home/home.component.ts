@@ -4,8 +4,6 @@ import { TagsService } from '../../../post/services/tags.service';
 import { PostListConfig } from '../../../post/services/posts.service';
 import { tap } from 'rxjs/operators';
 import { UserService } from '@core/auth/services/user.service';
-import { RxLet } from '@rx-angular/template/let';
-import { IfAuthenticatedDirective } from '@core/auth/if-authenticated.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CallToActionComponent } from '@components/call-to-action/call-to-action.component';
 import { HeroSectionComponent } from '@components/hero-section/hero-section.component';
@@ -16,8 +14,6 @@ import { LatestPostsComponent } from '@components/latest-posts/latest-posts.comp
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   imports: [
-    RxLet,
-    IfAuthenticatedDirective,
     CallToActionComponent,
     HeroSectionComponent,
     LatestPostsComponent,

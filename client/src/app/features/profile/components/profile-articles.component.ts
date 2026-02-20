@@ -7,13 +7,15 @@ import { PostListConfig } from '../../post/services/posts.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GraphQLOmitType } from '@utils/graphql-omit-type';
 
+type ProfileUser = GraphQLOmitType<User, 'createdAt'>;
+
 @Component({
   selector: 'app-profile-articles',
   template: `<app-article-list [limit]="10" [config]="articlesConfig" />`,
   imports: [ArticleListComponent],
 })
 export default class ProfileArticlesComponent implements OnInit {
-  profile!: GraphQLOmitType<User, "createdAt" | "isFollowing">;
+  profile!: ProfileUser;
   articlesConfig!: PostListConfig;
   destroyRef = inject(DestroyRef);
 

@@ -7,6 +7,9 @@ import { UserService } from '../../../core/auth/services/user.service';
 import { User } from '@/gql-types';
 import { NgClass } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { GraphQLOmitType } from '@utils/graphql-omit-type';
+
+type ProfileUser = GraphQLOmitType<User, 'createdAt'>;
 
 @Component({
   selector: 'app-follow-button',
@@ -28,19 +31,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [NgClass],
 })
 export class FollowButtonComponent {
-  @Input() profile!: User;
-  @Output() toggle = new EventEmitter<User>();
+  @Input() profile!: ProfileUser;
+  @Output() toggle = new EventEmitter<ProfileUser>();
   isSubmitting = false;
   destroyRef = inject(DestroyRef);
 
-//   constructor(
-//     private readonly profileService: ProfileService,
-//     private readonly router: Router,
-//     private readonly userService: UserService,
-//   ) {}
+  constructor(
+    private readonly profileService: ProfileService,
+    private readonly router: Router,
+    private readonly userService: UserService,
+  ) {}
 
-//   toggleFollowing(): void {
-//     this.isSubmitting = true;
+  toggleFollowing(): void {
+    this.isSubmitting = true;
 
     this.userService.isAuthenticated
       .pipe(

@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { inject } from '@angular/core';
 import { UserService } from './core/auth/services/user.service';
-import { map } from 'rxjs/operators';
 
 export const routes: Routes = [
   {
@@ -9,18 +8,20 @@ export const routes: Routes = [
     loadComponent: () => import('./features/article/pages/home/home.component'),
   },
   {
-    path: 'login',
-    loadComponent: () => import('./core/auth/signin/signin.component'),
-    // canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
+    path: 'home',
+    redirectTo: '/',
   },
   {
-    path: 'post',
-    loadComponent: () => import('./features/post/pages/article/article.component'),
+    path: 'blog',
+    redirectTo: '/',
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./core/auth/signin/signin.component'),
   },
   {
     path: 'register',
     loadComponent: () => import('./core/auth/signup/signup.component'),
-    // canActivate: [() => inject(UserService).isAuthenticated.pipe(map(isAuth => !isAuth))],
   },
   {
     path: 'settings',

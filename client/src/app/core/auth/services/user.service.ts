@@ -16,6 +16,10 @@ export class UserService {
   public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
   public isAuthenticated = this.currentUser.pipe(map(user => !!user));
 
+  getCurrentUserValue(): User | null {
+    return this.currentUserSubject.getValue();
+  }
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly router: Router,
@@ -181,7 +185,7 @@ export class UserService {
     return this.apollo
       .query({
         query: getCurrUser,
-        fetchPolicy: 'cache-only',
+        fetchPolicy: 'network-only',
       })
       .pipe(
         map(result => {

@@ -8,11 +8,13 @@ import { getProfile, getFollowers, getFollowing } from '@graphql/queries';
 import { NetworkError, AuthenticationError } from '@core/models/errors.model';
 import { GraphQLOmitType } from '@utils/graphql-omit-type';
 
+type ProfileUser = GraphQLOmitType<Profile, 'createdAt'>;
+
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
   constructor(private readonly apollo: Apollo) {}
 
-  get(username: string): Observable<GraphQLOmitType<Profile, 'createdAt'>> {
+  get(username: string): Observable<ProfileUser> {
     return this.apollo
       .query({
         query: getProfile,
@@ -22,14 +24,14 @@ export class ProfileService {
       .pipe(
         map(result => {
           if (result.error || !result.data) throw new NetworkError('Profile not found');
-          return result.data.user;
+          return result.data.user as ProfileUser;
         }),
         catchError(this.handleError),
         shareReplay(1),
       );
   }
 
-  follow(id: string): Observable<Profile> {
+  follow(id: string): Observable<ProfileUser> {
     return this.apollo
       .mutate({
         mutation: followUser,
@@ -38,13 +40,13 @@ export class ProfileService {
       .pipe(
         map(result => {
           if (!result.data?.followUser) throw new NetworkError('Failed to follow');
-          return result.data.followUser as Profile;
+          return result.data.followUser as ProfileUser;
         }),
         catchError(this.handleAuthErrors),
       );
   }
 
-  unfollow(id: string): Observable<Profile> {
+  unfollow(id: string): Observable<ProfileUser> {
     return this.apollo
       .mutate({
         mutation: unfollowUser,
@@ -53,13 +55,13 @@ export class ProfileService {
       .pipe(
         map(result => {
           if (!result.data?.unFollowUser) throw new NetworkError('Failed to unfollow');
-          return result.data.unFollowUser as Profile;
+          return result.data.unFollowUser as ProfileUser;
         }),
         catchError(this.handleAuthErrors),
       );
   }
 
-  toggleFollow(profile: Profile): Observable<Profile> {
+  toggleFollow(profile: ProfileUser): Observable<ProfileUser> {
     const isFollowing = profile.isFollowing;
 
     return isFollowing ? this.unfollow(profile.id) : this.follow(profile.id);

@@ -7,7 +7,7 @@ import { UserService } from './core/auth/services/user.service';
 import { apiInterceptor } from './core/interceptors/api.interceptor';
 import { tokenInterceptor } from './core/interceptors/token.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
-import { EMPTY } from 'rxjs';
+import { EMPTY, catchError } from 'rxjs';
 
 import { provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
@@ -24,7 +24,14 @@ import extractFiles from 'extract-files/extractFiles.mjs';
 import isExtractableFile from 'extract-files/isExtractableFile.mjs';
 
 export function initAuth(jwtService: JwtService, userService: UserService) {
-  return () => (jwtService.getToken() ? userService.getCurrentUser() : EMPTY);
+  return () => {
+    if (!jwtService.getToken()) {
+      return EMPTY;
+    }
+    return userService.getCurrentUser().pipe(
+      catchError(() => EMPTY),
+    );
+  };
 }
 
 export const appConfig: ApplicationConfig = {
@@ -71,7 +78,6 @@ export const appConfig: ApplicationConfig = {
       const link = ApolloLink.split(
         ({ query }) => {
           const definition = getMainDefinition(query);
-          // return operationType === OperationTypeNode.SUBSCRIPTION;
           return (
             definition.kind === Kind.OPERATION_DEFINITION && definition.operation === OperationTypeNode.SUBSCRIPTION
           );
