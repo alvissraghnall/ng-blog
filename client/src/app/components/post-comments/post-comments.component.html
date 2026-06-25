@@ -12,7 +12,7 @@
                   formControlName="text"
                   placeholder="Write a comment..." required></textarea>
               <div *ngIf="createCommentForm.get('text')?.invalid && (createCommentForm.get('text')?.dirty || createCommentForm.get('text')?.touched)" class="text-red-500 block mt-2">
-                Password must have at least 8 characters.
+                Comment must have at least 3 characters.
               </div>
           </div>
           <button type="submit"

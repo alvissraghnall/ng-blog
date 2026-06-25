@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, take } from 'rxjs';
-import { CHECK_AUTH_USER_TOKEN, CREATE_USER, LOGIN_USER } from '../graphql/auth.queries';
+import { CHECK_AUTH_USER_TOKEN, CREATE_USER, LOGIN_USER, WHO_AM_I } from '../graphql/auth.queries';
 import { CreateUserInput } from '../models/inputs/create-user.input';
 import { LoginUserInput } from '../models/inputs/login-user.input';
 import { User } from '../models/User.model';
@@ -110,7 +110,10 @@ export class AuthService {
   }
 
   whoami() {
-    
+    return this.apollo.query({
+      query: WHO_AM_I,
+      errorPolicy: 'all',
+    });
   }
   
 }

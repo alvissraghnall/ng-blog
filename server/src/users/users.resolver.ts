@@ -1,18 +1,24 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ResolveField, Parent } from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { GqlJwtAuthGuard as JwtAuthGuard } from '../auth/guards/gql-jwt-auth.guard';
-import { AuthGuard } from '@nestjs/passport';
 import { NotFoundException, UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'common/current-user.decorator';
-import { UserNotFoundException } from 'common/user-not-found.exception';
-import { UserFollow } from './entities/user-follow.entity';
 
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
+
+  @ResolveField(() => [User])
+  async followers(@Parent() user: User): Promise<User[]> {
+    return this.usersService.getFollowers(user.id);
+  }
+
+  @ResolveField(() => [User])
+  async following(@Parent() user: User): Promise<User[]> {
+    return this.usersService.getFollowing(user.id);
+  }
 
   // @Mutation(() => User)
   // createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
@@ -65,16 +71,8 @@ export class UsersResolver {
     @Args('userToBeFollowedId', { type: () => String })
     userToBeFollowedId: string,
     @CurrentUser() currUser: User,
-  ): Promise<UserFollow> {
-    try {
-      return await this.usersService.follow(currUser, userToBeFollowedId);
-    } catch (error) {
-      if (error instanceof UserNotFoundException) {
-        throw new NotFoundException(error.message);
-      } else {
-        throw error;
-      }
-    }
+  ): Promise<User> {
+    return this.usersService.follow(currUser, userToBeFollowedId);
   }
 
   @Mutation(() => User)
@@ -83,15 +81,7 @@ export class UsersResolver {
     @Args('userToBeUnfollowedId', { type: () => String })
     userToBeUnfollowedId: string,
     @CurrentUser() currUser: User,
-  ) {
-    try {
-      return await this.usersService.unfollow(currUser, userToBeUnfollowedId);
-    } catch (error) {
-      if (error instanceof UserNotFoundException) {
-        throw new NotFoundException(error.message);
-      } else {
-        throw error;
-      }
-    }
+  ): Promise<User> {
+    return this.usersService.unfollow(currUser, userToBeUnfollowedId);
   }
 }

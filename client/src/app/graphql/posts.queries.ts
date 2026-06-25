@@ -1,106 +1,101 @@
 import { gql } from "apollo-angular";
-import { Category } from "../models/enum/category.enum";
 
 export class PostsQueries {
 
-    static GET_POSTS(cat?: Category, authorId?: string) {
-        let args = ``;
-        args += cat ? '(cat:' + cat + ')' : '';
-        args += authorId ? '(authorId:' + authorId + ')' : '';
-        return gql`
-            {
-                posts ${args} {
-                    content
-                    category
+    static GET_POSTS = gql`
+        query posts($category: Category, $authorId: String) {
+            posts(category: $category, authorId: $authorId) {
+                content
+                category
+                id
+                desc
+                image
+                title
+                author {
                     id
-                    desc
-                    image
-                    title
-                    author {
+                    username
+                }
+                createdAt
+                likes {
+                    id
+                    owner {
                         id
-                        username
-                    }
-                    createdAt
-                    likes {
                         username
                     }
                 }
             }
-        `;
-    }
+        }
+    `;
 
-    static GET_POST(id: number) {
-        return gql`
-            {
-                post (id: ${id}) {
-                    content
-                    category
+    static GET_POST = gql`
+        query post($id: Int!) {
+            post(id: $id) {
+                content
+                category
+                id
+                desc
+                title
+                image
+                author {
                     id
-                    desc
-                    title
-         	    image
-                    author {
+                    username
+                    avatar
+                }
+                createdAt
+                likes {
+                    id
+                    owner {
                         id
                         username
+                    }
+                }
+                comments {
+                    text
+                    author {
+                        username
+                        id
                         avatar
                     }
                     createdAt
+                    id
                     likes {
-                        username
-                    }
-                    comments {
-                        text
-                        author {
-                            username
-                            id
-                            avatar
-                        }
-                        createdAt
                         id
-                        likes {
+                        owner {
                             id
                             username
                         }
                     }
                 }
             }
-        `;
-    }
+        }
+    `;
 
-    static CREATE_POST() {
-        return gql`
-            mutation createPost ($input: CreatePostInput!) {
-                createPost (createPostInput: $input) {
-                    content
-                    category
+    static CREATE_POST = gql`
+        mutation createPost($input: CreatePostInput!) {
+            createPost(createPostInput: $input) {
+                content
+                category
+                id
+                desc
+                title
+                author {
                     id
-                    desc
-                    title
-                    author {
-                        id
-                        username
-                    }
-                    createdAt
+                    username
+                }
+                createdAt
+            }
+        }
+    `;
+
+    static LIKE_POST = gql`
+        mutation toggleLike($input: CreateLikeInput!) {
+            toggleLike(createLikeInput: $input) {
+                id
+                owner {
+                    id
+                    username
                 }
             }
-        `;
-    }
-
-    static LIKE_POST() {
-        return gql`
-            mutation likePost ($input: Int!) {
-                likePost(postId: $input) {
-                    author {
-                        id
-                    }
-                    id
-                    title
-                    likes {
-                        id
-                        username
-                    }
-                }
-            }
-        `;
-    }
+        }
+    `;
 }

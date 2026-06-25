@@ -1,3 +1,10 @@
+allowBuilds:
+  '@apollo/protobufjs': true
+  '@nestjs/core': true
+  '@scarf/scarf': false
+  bcrypt: true
+  core-js: true
+  unrs-resolver: false
 onlyBuiltDependencies:
   - '@apollo/protobufjs'
   - '@nestjs/core'

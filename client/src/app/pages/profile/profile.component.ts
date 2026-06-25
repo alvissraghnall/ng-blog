@@ -2,6 +2,53 @@ import { Component, OnInit } from '@angular/core';
 import { User } from "@models/User.model";
 import { Post } from "@models/Post.model";
 import { ActivatedRoute } from '@angular/router';
+import { Apollo } from 'apollo-angular';
+import { gql } from 'apollo-angular';
+import { PostService } from '@services/post.service';
+
+const GET_USER_PROFILE = gql`
+  query user($username: String!) {
+    user(username: $username) {
+      id
+      username
+      email
+      avatar
+      bio
+      followers {
+        id
+        username
+        avatar
+      }
+      following {
+        id
+        username
+        avatar
+      }
+    }
+  }
+`;
+
+const GET_USER_BY_ID = gql`
+  query findUserById($id: String!) {
+    findUserById(id: $id) {
+      id
+      username
+      email
+      avatar
+      bio
+      followers {
+        id
+        username
+        avatar
+      }
+      following {
+        id
+        username
+        avatar
+      }
+    }
+  }
+`;
 
 @Component({
   selector: 'app-profile',
@@ -65,9 +112,6 @@ import { ActivatedRoute } from '@angular/router';
 
               </ng-icon> Creative Writer
             </div>
-            <!-- <div class="mb-2 text-blueGray-600">
-              <i class="fas fa-university mr-2 text-lg text-blueGray-400"></i>University of Computer Science
-            </div> -->
           </div>
           <div class="mt-10 py-10 border-t border-blueGray-200 text-center">
             <div class="flex flex-wrap justify-center">
@@ -93,8 +137,7 @@ import { ActivatedRoute } from '@angular/router';
   </section>
 </main>
   `,
-  styles: [
-  ]
+  styles: []
 })
 export class ProfileComponent implements OnInit {
 
@@ -102,12 +145,37 @@ export class ProfileComponent implements OnInit {
   userPosts?: Post[];
 
   constructor(
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly apollo: Apollo,
+    private readonly postService: PostService,
   ) { }
 
   ngOnInit(): void {
-    const userId = Number(this.route.snapshot.paramMap.get("id"));
-    
+    const userId = this.route.snapshot.paramMap.get("id");
+    if (userId) {
+      this.fetchUser(userId);
+      this.fetchUserPosts(userId);
+    }
   }
 
+  private fetchUser(id: string): void {
+    this.apollo.query({
+      query: GET_USER_BY_ID,
+      variables: { id },
+      errorPolicy: 'all',
+    }).subscribe((result: any) => {
+      if (result.data?.findUserById) {
+        this.user = result.data.findUserById;
+      }
+    });
+  }
+
+  private fetchUserPosts(authorId: string): void {
+    this.postService.getPosts(undefined, authorId)
+      .subscribe((result: any) => {
+        if (result.data?.posts) {
+          this.userPosts = result.data.posts;
+        }
+      });
+  }
 }

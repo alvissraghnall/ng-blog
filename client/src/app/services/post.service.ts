@@ -22,24 +22,28 @@ export class PostService {
   ) { }
 
   getPosts (cat?: Category, authorId?: string) {
+    const variables: Record<string, any> = {};
+    if (cat) variables['category'] = cat;
+    if (authorId) variables['authorId'] = authorId;
     return this.apollo.query({
-      query: PostsQueries.GET_POSTS(cat, authorId),
+      query: PostsQueries.GET_POSTS,
+      variables,
       errorPolicy: "all"
     })
   }
 
   getPost (idx: number, fetchPolicy: FetchPolicy) {
     return this.apollo.query({
-      query: PostsQueries.GET_POST(idx),
+      query: PostsQueries.GET_POST,
+      variables: { id: idx },
       errorPolicy: "all",
       fetchPolicy
     });
-    // this.apollo.
   }
 
   createPost (post: CreatePostInput) {
     return this.apollo.mutate({
-      mutation: PostsQueries.CREATE_POST(),
+      mutation: PostsQueries.CREATE_POST,
       variables: {
         input: post
       },
@@ -60,13 +64,12 @@ export class PostService {
 
   likePost (id: number) {
     return this.apollo.mutate({
-      mutation: PostsQueries.LIKE_POST(),
+      mutation: PostsQueries.LIKE_POST,
       errorPolicy: 'all',
       variables: {
-        input: id
+        input: { postId: id }
       }
     })
   }
 
 }
-

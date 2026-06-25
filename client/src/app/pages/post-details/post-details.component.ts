@@ -78,7 +78,7 @@ export class PostDetailsComponent implements OnInit {
             }
           }
 
-          if (result.data?.likePost) {
+          if (result.data?.toggleLike) {
             this.getPost(postId);
           }
         }

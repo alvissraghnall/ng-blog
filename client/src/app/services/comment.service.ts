@@ -27,7 +27,7 @@ export class CommentService {
       mutation: LIKE_COMMENT,
       errorPolicy: 'all',
       variables: {
-        commentId: id
+        input: { commentId: id }
       }
     })
   }

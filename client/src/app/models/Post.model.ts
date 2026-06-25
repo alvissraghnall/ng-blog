@@ -11,6 +11,6 @@ export interface Post extends BaseModel {
     content: string;
     category: Category;
     comments: Comment[];
-    likes: User[];
+    likes: Like[];
     author: User;  
 }

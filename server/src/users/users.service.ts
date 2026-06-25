@@ -164,7 +164,7 @@ export class UsersService {
     return username;
   }
 
-  async follow(currUser: User, followUserId: string) {
+  async follow(currUser: User, followUserId: string): Promise<User> {
     if (currUser.id === followUserId)
       throw new BadRequestException('You cannot follow yourself.');
 
@@ -180,23 +180,29 @@ export class UsersService {
       },
     });
 
-    if (existing) return existing;
+    if (existing) return userToFollow;
 
     const follow = this.userFollowRepository.create({
       follower: currUser,
       following: userToFollow,
     });
 
-    return this.userFollowRepository.save(follow);
+    await this.userFollowRepository.save(follow);
+    return userToFollow;
   }
 
-  async unfollow(currUser: User, unfollowUserId: string) {
+  async unfollow(currUser: User, unfollowUserId: string): Promise<User> {
+    const userToUnfollow = await this.usersRepository.findOne({
+      where: { id: unfollowUserId },
+    });
+    if (!userToUnfollow) throw new UserNotFoundException(unfollowUserId);
+
     await this.userFollowRepository.delete({
       follower: { id: currUser.id },
       following: { id: unfollowUserId },
     });
 
-    return { success: true };
+    return userToUnfollow;
   }
 
   async getFollowers(userId: string): Promise<User[]> {
