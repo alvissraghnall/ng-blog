@@ -8,6 +8,8 @@ import { tap, catchError, of } from 'rxjs';
 
 import { ZardButtonComponent } from '@ui/button/button.component';
 import { ZardIconComponent } from '@ui/icon/icon.component';
+import { ZardFormModule } from '@ui/form/form.module';
+import { ZardInputDirective } from '@ui/input/input.directive';
 
 import {
   FileText as draftIcon,
@@ -48,6 +50,8 @@ import { Category, CreatePostInput, UpdatePostInput, Post } from '@/gql-types';
     PostStatusPanelComponent,
     ZardButtonComponent,
     ZardIconComponent,
+    ZardFormModule,
+    ZardInputDirective,
   ],
   templateUrl: './editor.component.html',
 })

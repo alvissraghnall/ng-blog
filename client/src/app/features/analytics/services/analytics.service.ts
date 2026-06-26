@@ -68,35 +68,6 @@ export class AnalyticsService {
       );
   }
 
-  async getPostAnalytics(slug: string, userId: string): Promise<PostAnalytics> {
-    const post = await this.postsRepo.findOne({
-      where: { slug },
-      relations: ['author', 'likes', 'comments'],
-    });
-
-    if (!post) throw new NotFoundException('Post not found');
-
-    if (post.author.id !== userId) {
-      throw new ForbiddenException(
-        'You are not authorized to view analytics for this post.',
-      );
-    }
-
-    const views = post.views || 0;
-    const likes = post.likes.length;
-    const comments = post.comments.length;
-
-    const interactions = likes + comments;
-    const engagementRate = views > 0 ? (interactions / views) * 100 : 0;
-
-    return {
-      views,
-      likes,
-      comments,
-      engagementRate: parseFloat(engagementRate.toFixed(2)),
-    };
-  }
-
   getTrendingTags(
     limit = 10,
     timeRange: 'day' | 'week' | 'month' = 'week',

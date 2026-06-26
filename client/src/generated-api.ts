@@ -549,7 +549,8 @@ export class Comment extends $Base<"Comment"> {
 
 
 export type CreateCommentInput = {
-  postId: number,
+  image?: string | null,
+postId: number,
 text: string
 }
     
@@ -2002,6 +2003,7 @@ export class TrendingTag extends $Base<"TrendingTag"> {
 
 export type UpdateCommentInput = {
   id: number,
+image?: string | null,
 text: string
 }
     
@@ -2273,7 +2275,8 @@ export function mutation<Sel extends Selection<$RootTypes.query>>(name: any, sel
 
 const $InputTypes: {[key: string]: {[key: string]: string}} = {
     CreateCommentInput: {
-    postId: "Int!",
+    image: "Upload",
+postId: "Int!",
 text: "String!"
   },
   CreateLikeInput: {
@@ -2306,6 +2309,7 @@ redirectUri: "String"
   },
   UpdateCommentInput: {
     id: "Int!",
+image: "Upload",
 text: "String!"
   },
   UpdatePostInput: {

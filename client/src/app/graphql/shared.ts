@@ -12,6 +12,6 @@ export const postFields = (post: Post) => [
   post.commentCount,
   post.createdAt,
   post.updatedAt,
-  post.author(author => [author.id, author.username, author.avatar]),
+  post.author(author => [author.id, author.username, author.avatar, author.bio]),
   post.tags(tag => [tag.id, tag.name]),
 ];

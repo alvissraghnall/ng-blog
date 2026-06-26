@@ -31,8 +31,6 @@ export class CommentOrPostConstraint implements ValidatorConstraintInterface {
   ): boolean | Promise<boolean> {
     const [fn] = validationArguments.constraints;
     const propertyBValue = fn(validationArguments.object);
-    console.log(value, propertyBValue);
-
     if ((value && propertyBValue) || (!value && !propertyBValue)) return false;
     return true;
   }

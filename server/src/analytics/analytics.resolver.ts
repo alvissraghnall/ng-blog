@@ -22,6 +22,7 @@ export class AnalyticsResolver {
   }
 
   @Query(() => PostAnalytics, { name: 'postAnalytics' })
+  @UseGuards(GqlJwtAuthGuard)
   getPostAnalytics(@Args('slug') slug: string, @CurrentUser() user: User) {
     return this.analyticsService.getPostAnalytics(slug, user.id);
   }

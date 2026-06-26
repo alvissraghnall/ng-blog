@@ -48,7 +48,7 @@ export class PostsService {
           }
           const data = result.data as any;
           // Find the array key dynamically (posts, feedPosts, etc)
-          const key = Object.keys(data).find(k => k.includes('Post'));
+          const key = Object.keys(data).find(k => k.toLowerCase().includes('post'));
           const posts = data[key!] || [];
 
           return { posts, postsCount: posts.length };

@@ -15,18 +15,16 @@ import { EntityOwnerGuard } from 'common/guards/entity-owner.guard';
 import { Public } from 'common/public.decorator';
 
 @Resolver(() => Like)
-@UseGuards(GqlJwtAuthGuard)
 export class LikesResolver {
   constructor(private readonly likesService: LikesService) {}
 
   @Mutation(() => Like)
+  @UseGuards(GqlJwtAuthGuard)
   async toggleLike(
     @Args('createLikeInput') createLikeInput: CreateLikeInput,
     @CurrentUser() user: User,
   ) {
-    const like = await this.likesService.toggleLike(createLikeInput, user);
-    console.log(like);
-    return like;
+    return this.likesService.toggleLike(createLikeInput, user);
   }
 
   @Query(() => [Like], { name: 'likes' })
@@ -48,15 +46,18 @@ export class LikesResolver {
   }
 
   @Query(() => Boolean, { name: 'hasUserLiked' })
+  @Public()
   hasUserLiked(
     @Args('entityId', { type: () => Int }) entityId: number,
     @Args('entity', { type: () => EntityOwnsLike }) entity: EntityOwnsLike,
-    @CurrentUser() user: User,
+    @CurrentUser() user?: User,
   ) {
+    if (!user) return false;
     return this.likesService.hasUserLikedEntity(user.id, entityId, entity);
   }
 
   @Query(() => Like, { name: 'like' })
+  @Public()
   findOne(@Args('id', { type: () => Int }) id: number) {
     return this.likesService.findOne(id);
   }

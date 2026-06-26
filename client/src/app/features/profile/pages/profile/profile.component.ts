@@ -6,6 +6,7 @@ import { UserService } from '@core/auth/services/user.service';
 import { ProfileService } from '../../services/profile.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FollowButtonComponent } from '../../components/follow-button.component';
+import { ZardButtonComponent } from '@ui/button/button.component';
 import { User } from '@/gql-types';
 import { GraphQLOmitType } from '@utils/graphql-omit-type';
 
@@ -18,7 +19,7 @@ interface Tab {
 @Component({
   selector: 'app-user-profile',
   templateUrl: './profile.component.html',
-  imports: [FollowButtonComponent, RouterLink, RouterOutlet],
+  imports: [FollowButtonComponent, RouterLink, RouterOutlet, ZardButtonComponent],
 })
 export class ProfileComponent implements OnInit {
   profile!: GraphQLOmitType<User, 'createdAt'>;

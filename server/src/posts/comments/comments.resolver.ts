@@ -6,16 +6,11 @@ import { UpdateCommentInput } from './dto/update-comment.input';
 import { User } from 'users/entities/user.entity';
 import {
   NotFoundException,
-  Request,
   UseGuards,
-  UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { CurrentUser } from 'common/current-user.decorator';
 import { Post } from 'posts/entities/post.entity';
-import { FunctionExpression } from 'typescript';
 import { GqlJwtAuthGuard } from 'auth/guards/gql-jwt-auth.guard';
-import { BaseEntity } from 'common/entities/base.entity';
 import {
   CheckEntityOwner,
   OwnedEntity,
@@ -23,19 +18,16 @@ import {
 import { EntityOwnerGuard } from 'common/guards/entity-owner.guard';
 import { EntityExistsGuard } from 'common/guards/entity-exists.guard';
 import {
-  CheckEntityExists,
   CheckEntityExistsFor,
   FoundEntity,
 } from 'common/decorators/entity-exists.decorator';
 import { Public } from 'common/public.decorator';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Resolver(() => Comment)
 export class CommentsResolver {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Mutation(() => Comment)
-  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(GqlJwtAuthGuard, EntityExistsGuard)
   @CheckEntityExistsFor<
     {
@@ -45,7 +37,6 @@ export class CommentsResolver {
   >({
     entity: Post,
     idExtractor: 'createCommentInput.postId',
-    // idExtractor: (args) => args.createCommentInput.postId,
   })
   createComment(
     @Args('createCommentInput') createCommentInput: CreateCommentInput,
@@ -72,7 +63,6 @@ export class CommentsResolver {
   }
 
   @Mutation(() => Comment)
-  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(GqlJwtAuthGuard, EntityOwnerGuard)
   @CheckEntityOwner({
     entity: Comment,

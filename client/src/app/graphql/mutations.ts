@@ -26,9 +26,6 @@ export const login = mutation(m => [
       user.isFollowing,
       user.createdAt,
       user.updatedAt,
-      user.followerCount,
-      user.followingCount,
-      user.isFollowing,
     ]),
   ]),
 ]);
@@ -50,9 +47,6 @@ export const oauthLogin = mutation(m => [
       user.updatedAt,
       user.oauthId,
       user.oauthProvider,
-      user.followerCount,
-      user.followingCount,
-      user.isFollowing,
     ]),
   ]),
 ]);
@@ -72,9 +66,6 @@ export const updateUser = mutation(m => [
     user.isFollowing,
     user.createdAt,
     user.updatedAt,
-    user.followerCount,
-    user.followingCount,
-    user.isFollowing,
   ]),
 ]);
 

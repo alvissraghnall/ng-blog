@@ -168,6 +168,10 @@ body {
   font-optical-sizing: auto;
 }
 
+button, [role="button"], input[type="submit"], input[type="button"] {
+  cursor: pointer;
+}
+
 .error-messages {
   list-style-type: none;
   padding: 0;

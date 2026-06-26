@@ -92,10 +92,10 @@ export class Post extends BaseEntity {
 
   @DeleteDateColumn()
   @Field(() => Date, {
-    nullable: false,
+    nullable: true,
     description: 'Date Entity was deleted.',
   })
-  deletedAt: Date;
+  deletedAt?: Date;
 
   @HideField()
   @Column({ default: 0 })

@@ -68,7 +68,6 @@ export class LikesService extends CrudService(Like) {
 
     if (existingLike) {
       const existingLikeId = existingLike.id;
-      console.log(existingLike);
       await this.likesRepository.remove(existingLike);
       return { ...existingLike, id: existingLikeId };
     }
@@ -79,7 +78,6 @@ export class LikesService extends CrudService(Like) {
       ...(commentId && { comment }),
     });
 
-    console.log(newLike);
     return this.likesRepository.save(newLike);
   }
 

@@ -1,14 +1,19 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { User } from '../../core/auth/user.model';
+
+import type { User } from '@/gql-types';
 import { UserService } from '../../core/auth/services/user.service';
-import { ListErrorsComponent } from '../../shared/components/list-errors.component';
-import { Errors } from '../../core/models/errors.model';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { ZardFormModule } from '@ui/form/form.module';
+import { ZardInputDirective } from '@ui/input/input.directive';
+import { ZardButtonComponent } from '@ui/button/button.component';
+import { ZardDividerComponent } from '@ui/divider/divider.component';
+
 interface SettingsForm {
-  image: FormControl<string>;
+  avatar: FormControl<string>;
   username: FormControl<string>;
   bio: FormControl<string>;
   email: FormControl<string>;
@@ -18,21 +23,24 @@ interface SettingsForm {
 @Component({
   selector: 'app-settings-page',
   templateUrl: './settings.component.html',
-  imports: [ListErrorsComponent, ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    ZardFormModule,
+    ZardInputDirective,
+    ZardButtonComponent,
+    ZardDividerComponent,
+  ],
 })
 export default class SettingsComponent implements OnInit {
-  user!: User;
+  user = signal<User | null>(null);
   settingsForm = new FormGroup<SettingsForm>({
-    image: new FormControl('', { nonNullable: true }),
+    avatar: new FormControl('', { nonNullable: true }),
     username: new FormControl('', { nonNullable: true }),
     bio: new FormControl('', { nonNullable: true }),
     email: new FormControl('', { nonNullable: true }),
-    password: new FormControl('', {
-      validators: [Validators.required],
-      nonNullable: true,
-    }),
+    password: new FormControl('', { nonNullable: true }),
   });
-  errors: Errors | null = null;
+  errorMessage = signal<string | null>(null);
   isSubmitting = false;
   destroyRef = inject(DestroyRef);
 
@@ -42,7 +50,21 @@ export default class SettingsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.settingsForm.patchValue(this.userService.getCurrentUser() as Partial<User>);
+    const currentUser = this.userService.getCurrentUserValue();
+    if (currentUser) {
+      this.user.set(currentUser);
+      this.settingsForm.patchValue({
+        avatar: currentUser.avatar ?? '',
+        username: currentUser.username,
+        bio: currentUser.bio ?? '',
+        email: currentUser.email,
+        password: '',
+      });
+    }
+  }
+
+  get isOAuthUser(): boolean {
+    return !!this.user()?.oauthProvider;
   }
 
   logout(): void {
@@ -52,13 +74,18 @@ export default class SettingsComponent implements OnInit {
   submitForm() {
     this.isSubmitting = true;
 
+    const values = this.settingsForm.value;
     this.userService
-      .update(this.settingsForm.value)
+      .update({
+        avatar: values.avatar ?? undefined,
+        bio: values.bio ?? undefined,
+        password: values.password || undefined,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: user => void this.router.navigate(['/profile/', user.username]),
         error: err => {
-          this.errors = err;
+          this.errorMessage.set(err.message || 'An error occurred');
           this.isSubmitting = false;
         },
       });

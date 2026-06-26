@@ -116,23 +116,38 @@ export class PostsService {
   }
 
   async findOne(id: number): Promise<Post> {
-    const query = this.postsRepository
+    const post = await this.postsRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.author', 'author')
       .leftJoinAndSelect('post.tags', 'tags')
+      .where('post.id = :id', { id })
+      .getOne();
 
-      .loadRelationCountAndMap('post.likeCount', 'post.likes')
-
-      .loadRelationCountAndMap('post.commentCount', 'post.comments');
-
-    query.andWhere('id = :id', { id });
-
-    const post = query.getOne();
     if (!post) {
       throw new NotFoundException(`Post with id ${id} not found`);
     }
 
     return post;
+  }
+
+  async getLikeCount(postId: number): Promise<number> {
+    const result = await this.postsRepository
+      .createQueryBuilder('post')
+      .where('post.id = :id', { id: postId })
+      .loadRelationCountAndMap('post.likeCount', 'post.likes')
+      .getOne();
+
+    return result?.likeCount ?? 0;
+  }
+
+  async getCommentCount(postId: number): Promise<number> {
+    const result = await this.postsRepository
+      .createQueryBuilder('post')
+      .where('post.id = :id', { id: postId })
+      .loadRelationCountAndMap('post.commentCount', 'post.comments')
+      .getOne();
+
+    return result?.commentCount ?? 0;
   }
 
   async findByAuthor(authorId: string, limit?: number): Promise<Post[]> {

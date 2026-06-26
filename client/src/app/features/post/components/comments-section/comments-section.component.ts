@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ZardAvatarComponent } from '@ui/avatar/avatar.component';
 import { ZardButtonComponent } from '@ui/button/button.component';
 import { ZardInputDirective } from '@ui/input/input.directive';
 
 @Component({
   selector: 'app-comments-section',
-  imports: [ZardInputDirective, ZardButtonComponent, ZardAvatarComponent],
+  imports: [RouterLink, ZardInputDirective, ZardButtonComponent, ZardAvatarComponent],
   template: `
     <section class="mt-16">
       <h2 class="text-2xl font-bold text-neutral-light dark:text-neutral-dark mb-6">
@@ -20,17 +21,21 @@ import { ZardInputDirective } from '@ui/input/input.directive';
       <div class="space-y-8">
         @for (comment of comments; track comment.id) {
           <div class="flex items-start gap-4">
-            <z-avatar
-              [zImage]="{
-                url: comment.author.avatar,
-                alt: comment.author.username + ALT_TEXT,
-                fallback: 'AA',
-              }"
-              class="w-10 h-10"
-            />
+            <a [routerLink]="['/profile', comment.author.username]" class="cursor-pointer shrink-0">
+              <z-avatar
+                [zImage]="{
+                  url: comment.author.avatar,
+                  alt: comment.author.username + ALT_TEXT,
+                  fallback: 'AA',
+                }"
+                class="w-10 h-10"
+              />
+            </a>
             <div class="flex-1">
               <div class="flex items-baseline gap-2">
-                <p class="font-semibold text-neutral-light dark:text-neutral-dark">{{ comment.author.username }}</p>
+                <a [routerLink]="['/profile', comment.author.username]" class="cursor-pointer font-semibold text-neutral-light dark:text-neutral-dark hover:text-primary-custom transition-colors">
+                  {{ comment.author.username }}
+                </a>
                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ comment.date }}</p>
               </div>
               <p class="mt-1 text-gray-700 dark:text-gray-300">{{ comment.text }}</p>
@@ -62,7 +67,7 @@ export class CommentsSectionComponent {
         avatar: 'https://picsum.photos/id/577/80/80',
       },
       date: '1 day ago',
-      text: "Loved the Saint-Exupéry quote. It’s a perfect summary of the minimalist philosophy. I'm trying to apply this more in my own work.",
+      text: "Loved the Saint-Exupéry quote. It's a perfect summary of the minimalist philosophy. I'm trying to apply this more in my own work.",
     },
     {
       id: 3,

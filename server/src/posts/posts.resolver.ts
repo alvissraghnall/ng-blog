@@ -12,7 +12,7 @@ import { Post } from './entities/post.entity';
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
 import { Category } from './enum/category.enum';
-import { BadRequestException, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Public } from 'common/public.decorator';
 import { User } from 'users/entities/user.entity';
 import { CurrentUser } from 'common/current-user.decorator';
@@ -22,20 +22,16 @@ import {
   OwnedEntity,
 } from 'common/decorators/entity-owner.decorator';
 import { Tag } from './entities/tag.entity';
-import GraphQLUpload, { FileUpload } from 'graphql-upload/GraphQLUpload.mjs';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Resolver(() => Post)
 export class PostsResolver {
   constructor(private readonly postsService: PostsService) {}
 
   @Mutation(() => Post)
-  @UseInterceptors(FileInterceptor('image'))
   createPost(
     @Args('createPostInput') createPostInput: CreatePostInput,
     @CurrentUser() user: User,
   ) {
-    console.log(user);
     return this.postsService.create(createPostInput, user);
   }
 
@@ -146,7 +142,6 @@ export class PostsResolver {
   }
 
   @Mutation(() => Post)
-  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(EntityOwnerGuard)
   @CheckEntityOwner({
     entity: Post,
@@ -175,21 +170,25 @@ export class PostsResolver {
     return this.postsService.remove(id, post);
   }
 
-  // @ResolveField(() => Int, { name: 'likeCount' })
-  // async getLikeCount(@Parent() post: Post): Promise<number> {
-  //   if (post.likes) {
-  //     return post.likes.length;
-  //   }
-  //   const fullPost = await this.postsService.findOne(post.id, true);
-  //   return fullPost.likes?.length || 0;
-  // }
+  @ResolveField(() => Int, { name: 'likeCount' })
+  async getLikeCount(@Parent() post: Post): Promise<number> {
+    if (post.likes) {
+      return post.likes.length;
+    }
+    if (post.likeCount !== undefined) {
+      return post.likeCount;
+    }
+    return this.postsService.getLikeCount(post.id);
+  }
 
-  // @ResolveField(() => Int, { name: 'commentCount' })
-  // async getCommentCount(@Parent() post: Post): Promise<number> {
-  //   if (post.comments) {
-  //     return post.comments.length;
-  //   }
-  //   const fullPost = await this.postsService.findOne(post.id, true);
-  //   return fullPost.comments?.length || 0;
-  // }
+  @ResolveField(() => Int, { name: 'commentCount' })
+  async getCommentCount(@Parent() post: Post): Promise<number> {
+    if (post.comments) {
+      return post.comments.length;
+    }
+    if (post.commentCount !== undefined) {
+      return post.commentCount;
+    }
+    return this.postsService.getCommentCount(post.id);
+  }
 }
