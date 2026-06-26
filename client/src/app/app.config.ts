@@ -19,7 +19,7 @@ import UploadHttpLink from 'apollo-upload-client/UploadHttpLink.mjs';
 import { SSELink } from './graphql/sse.link';
 
 import { provideQuillConfig } from 'ngx-quill';
-import { environment } from '@/environments/environment';
+import { environment } from '../environments/environment';
 import extractFiles from 'extract-files/extractFiles.mjs';
 import isExtractableFile from 'extract-files/isExtractableFile.mjs';
 
