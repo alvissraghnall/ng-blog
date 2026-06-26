@@ -5,13 +5,13 @@ import { QuillEditorComponent, QuillModule } from 'ngx-quill';
 
 import { ZardButtonComponent } from '@ui/button/button.component';
 import { ZardIconComponent } from '@ui/icon/icon.component';
-import { ZardTooltipComponent } from '@ui/tooltip/tooltip';
+import { ZardTooltipDirective } from '@ui/tooltip/tooltip';
 import { BoldIcon, ImageIcon, ItalicIcon, LinkIcon, ListIcon, ListOrderedIcon, UnderlineIcon } from 'lucide-angular';
 
 @Component({
   selector: 'app-rich-text-editor',
   standalone: true,
-  imports: [CommonModule, QuillModule, FormsModule, ZardButtonComponent, ZardIconComponent, ZardTooltipComponent],
+  imports: [CommonModule, QuillModule, FormsModule, ZardButtonComponent, ZardIconComponent, ZardTooltipDirective],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -20,56 +20,41 @@ import { BoldIcon, ImageIcon, ItalicIcon, LinkIcon, ListIcon, ListOrderedIcon, U
     },
   ],
   template: `
-    <div class="flex w-full flex-1 items-stretch flex-col rounded-xl border border-border bg-card">
+    <div class="flex w-full flex-1 items-stretch flex-col rounded-xl border border-border bg-card max-w-full overflow-hidden">
       <div class="flex flex-wrap items-center gap-1 p-2 border-b border-border">
-        <z-tooltip content="Bold">
-          <z-button zType="ghost" zSize="icon" (click)="format('bold')">
-            <z-icon [zType]="formatBoldIcon" class="text-xl text-muted-foreground" />
-          </z-button>
-        </z-tooltip>
-        <z-tooltip content="Italic">
-          <z-button zType="ghost" zSize="icon" (click)="format('italic')">
-            <z-icon [zType]="formatItalicIcon" class="text-xl text-muted-foreground" />
-          </z-button>
-        </z-tooltip>
-        <z-tooltip content="Underline">
-          <z-button zType="ghost" zSize="icon" (click)="format('underline')">
-            <z-icon [zType]="formatUnderlineIcon" class="text-xl text-muted-foreground" />
-          </z-button>
-        </z-tooltip>
+        <z-button zType="ghost" zSize="icon" [zTooltip]="'Bold'" (click)="format('bold')">
+          <z-icon [zType]="formatBoldIcon" class="text-xl text-muted-foreground" />
+        </z-button>
+        <z-button zType="ghost" zSize="icon" [zTooltip]="'Italic'" (click)="format('italic')">
+          <z-icon [zType]="formatItalicIcon" class="text-xl text-muted-foreground" />
+        </z-button>
+        <z-button zType="ghost" zSize="icon" [zTooltip]="'Underline'" (click)="format('underline')">
+          <z-icon [zType]="formatUnderlineIcon" class="text-xl text-muted-foreground" />
+        </z-button>
         <div class="w-px h-6 bg-border mx-1"></div>
-        <z-tooltip content="Ordered List">
-          <z-button zType="ghost" zSize="icon" (click)="format('list', 'ordered')">
-            <z-icon [zType]="formatListOrderedIcon" class="text-xl text-muted-foreground" />
-          </z-button>
-        </z-tooltip>
-        <z-tooltip content="Bullet List">
-          <z-button zType="ghost" zSize="icon" (click)="format('list', 'bullet')">
-            <z-icon [zType]="formatListUnorderedIcon" class="text-xl text-muted-foreground" />
-          </z-button>
-        </z-tooltip>
+        <z-button zType="ghost" zSize="icon" [zTooltip]="'Ordered List'" (click)="format('list', 'ordered')">
+          <z-icon [zType]="formatListOrderedIcon" class="text-xl text-muted-foreground" />
+        </z-button>
+        <z-button zType="ghost" zSize="icon" [zTooltip]="'Bullet List'" (click)="format('list', 'bullet')">
+          <z-icon [zType]="formatListUnorderedIcon" class="text-xl text-muted-foreground" />
+        </z-button>
         <div class="w-px h-6 bg-border mx-1"></div>
-        <z-tooltip content="Link">
-          <z-button zType="ghost" zSize="icon" (click)="format('link')">
-            <z-icon [zType]="linkIcon" class="text-xl text-muted-foreground" />
-          </z-button>
-        </z-tooltip>
-        <z-tooltip content="Image">
-          <z-button zType="ghost" zSize="icon" (click)="format('image')">
-            <z-icon [zType]="imageIcon" class="text-xl text-muted-foreground" />
-          </z-button>
-        </z-tooltip>
+        <z-button zType="ghost" zSize="icon" [zTooltip]="'Link'" (click)="format('link')">
+          <z-icon [zType]="linkIcon" class="text-xl text-muted-foreground" />
+        </z-button>
+        <z-button zType="ghost" zSize="icon" [zTooltip]="'Image'" (click)="format('image')">
+          <z-icon [zType]="imageIcon" class="text-xl text-muted-foreground" />
+        </z-button>
       </div>
 
       <quill-editor
         #quillEditor
-        class="flex-1"
+        class="flex-1 w-full max-w-full overflow-hidden"
         [ngModel]="value"
         (ngModelChange)="onContentChanged($event)"
         (onEditorCreated)="onEditorCreated($event)"
         [modules]="editorModules"
         [placeholder]="placeholder"
-        [style]="{ 'min-height': '384px' }"
         theme="snow"
       >
       </quill-editor>

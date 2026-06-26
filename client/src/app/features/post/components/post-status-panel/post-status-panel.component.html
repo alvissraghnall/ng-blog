@@ -1,19 +1,19 @@
 <div class="flex flex-col gap-2" [formGroup]="form">
-  <z-card class="flex items-center gap-2 p-3">
-    <z-icon zType="eye" class="text-muted-foreground" />
-    <p class="text-sm font-medium text-muted-foreground">
+  <div class="flex items-center gap-2 w-full p-3 rounded-lg border bg-card text-card-foreground shadow-sm">
+    <z-icon zType="eye" class="text-muted-foreground shrink-0" />
+    <p class="text-sm font-medium text-muted-foreground whitespace-nowrap">
       Visibility:
       <span class="font-bold text-foreground">{{ form.value.visibility }}</span>
     </p>
-    <z-button zType="link" class="ml-auto text-sm">Edit</z-button>
-  </z-card>
+    <z-button zType="link" class="ml-auto text-sm shrink-0">Edit</z-button>
+  </div>
 
-  <z-card class="flex items-center gap-2 p-3">
-    <z-icon [zType]="calendarIcon" class="text-muted-foreground" />
-    <p class="text-sm font-medium text-muted-foreground">
+  <div class="flex items-center gap-2 w-full p-3 rounded-lg border bg-card text-card-foreground shadow-sm">
+    <z-icon [zType]="calendarIcon" class="text-muted-foreground shrink-0" />
+    <p class="text-sm font-medium text-muted-foreground whitespace-nowrap">
       Publish:
       <span class="font-bold text-foreground">{{ form.value.publishDate | titlecase }}</span>
     </p>
-    <z-button zType="link" class="ml-auto text-sm">Edit</z-button>
-  </z-card>
+    <z-button zType="link" class="ml-auto text-sm shrink-0">Edit</z-button>
+  </div>
 </div>

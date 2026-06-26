@@ -205,3 +205,71 @@ button, [role="button"], input[type="submit"], input[type="button"] {
   font-weight: 700;
   font-style: italic;
 }
+
+/* Quill editor sizing */
+quill-editor {
+  display: flex;
+  flex-direction: column;
+  min-height: 384px;
+  max-width: 100%;
+}
+quill-editor .ql-container {
+  flex: 1;
+  overflow: auto;
+}
+quill-editor .ql-editor {
+  min-height: 340px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Quill editor dark mode */
+.dark .ql-toolbar.ql-snow,
+.dark .ql-container.ql-snow {
+  border-color: var(--border);
+}
+.dark .ql-toolbar.ql-snow {
+  background: var(--card);
+}
+.dark .ql-container.ql-snow {
+  background: var(--card);
+}
+.dark .ql-editor {
+  color: var(--foreground);
+}
+.dark .ql-editor.ql-blank::before {
+  color: var(--muted-foreground);
+}
+.dark .ql-snow .ql-stroke {
+  stroke: var(--muted-foreground);
+}
+.dark .ql-snow .ql-fill {
+  fill: var(--muted-foreground);
+}
+.dark .ql-snow .ql-picker {
+  color: var(--foreground);
+}
+.dark .ql-snow .ql-picker-options {
+  background: var(--popover);
+  border-color: var(--border);
+}
+.dark .ql-snow .ql-picker.ql-expanded .ql-picker-label {
+  border-color: var(--border);
+  color: var(--foreground);
+}
+.dark .ql-snow a {
+  color: var(--primary-custom);
+}
+.dark .ql-snow .ql-tooltip {
+  background: var(--popover);
+  border-color: var(--border);
+  color: var(--popover-foreground);
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+.dark .ql-snow .ql-tooltip input[type="text"] {
+  background: var(--input);
+  border-color: var(--border);
+  color: var(--foreground);
+}
