@@ -1,5 +1,5 @@
 export const environment = {
-  production: true,
+  production: false,
   graphQLUrl: 'https://ng-blog-api.onrender.com/graphql',
   graphQLStreamUrl: 'https://ng-blog-api.onrender.com/graphql/stream',
 };

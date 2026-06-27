@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.config.json",
     "build": "ng build",
+    "build:staging": "cp src/environments/environment.staging.ts src/environments/environment.ts && ng build --configuration staging",
+    "build:prod": "cp src/environments/environment.prod.ts src/environments/environment.ts && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

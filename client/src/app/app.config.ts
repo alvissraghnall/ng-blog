@@ -55,7 +55,7 @@ export const appConfig: ApplicationConfig = {
       });
 
       const uploadLink = new UploadHttpLink({
-        uri: '/graphql',
+        uri: environment.graphQLUrl,
         headers: {
           'Apollo-Require-Preflight': 'true',
         },
@@ -63,7 +63,7 @@ export const appConfig: ApplicationConfig = {
 
       const httpLinkChain = ApolloLink.from([
         authLink,
-        httpLink.create({ uri: '/graphql', extractFiles: body => extractFiles(body, isExtractableFile) }),
+        httpLink.create({ uri: environment.graphQLUrl, extractFiles: body => extractFiles(body, isExtractableFile) }),
       ]);
 
       const sseLink = new SSELink({
