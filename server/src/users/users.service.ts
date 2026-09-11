@@ -98,28 +98,22 @@ export class UsersService {
 
   async update(user: User, updateUserInput: UpdateUserInput) {
     const { avatar, ...userData } = updateUserInput;
-    
+
     let avatarUrl = user.avatar;
 
     if (avatar) {
-      try {
-        const uploadResult = await this.cloudinaryService.uploadImage(
-          avatar,
-          'sharewithlouis/avatars',
-        );
-        avatarUrl = uploadResult.secure_url;
-      } catch (error) {
-        throw new BadRequestException(`Failed to upload avatar: ${error.message}`);
-      }
+      avatarUrl = avatar;
     }
 
-    const updatedUser: Partial<User> = { 
-      ...userData, 
+    const updatedUser: Partial<User> = {
+      ...userData,
       id: user.id,
       avatar: avatarUrl,
     };
-    
-    return this.usersRepository.save(updatedUser);
+
+    await this.usersRepository.save(updatedUser);
+
+    return this.usersRepository.findOneBy({ id: user.id });
   }
 
   async uploadAvatar(user: User, avatar: FileUpload): Promise<User> {

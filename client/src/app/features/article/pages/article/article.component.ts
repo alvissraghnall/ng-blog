@@ -41,12 +41,12 @@ export default class ArticleComponent implements OnInit {
   comments: Comment[] = [];
   canModify = false;
 
-//   commentControl = new FormControl<string>('', { nonNullable: true });
-//   commentFormErrors: Errors | null = null;
+  commentControl = new FormControl<string>('', { nonNullable: true });
+  commentFormErrors: Errors | null = null;
 
-//   isSubmitting = false;
-//   isDeleting = false;
-//   destroyRef = inject(DestroyRef);
+  isSubmitting = false;
+  isDeleting = false;
+  destroyRef = inject(DestroyRef);
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -92,8 +92,8 @@ export default class ArticleComponent implements OnInit {
     }
   }
 
-//   deleteArticle(): void {
-//     this.isDeleting = true;
+deleteArticle(): void {
+    this.isDeleting = true;
 
     this.postsService
       .delete(this.post.id)
@@ -103,9 +103,9 @@ export default class ArticleComponent implements OnInit {
       });
   }
 
-//   addComment() {
-//     this.isSubmitting = true;
-//     this.commentFormErrors = null;
+addComment() {
+    this.isSubmitting = true;
+    this.commentFormErrors = null;
 
     this.commentsService
       .create(this.post.id, this.commentControl.value)

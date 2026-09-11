@@ -163,7 +163,7 @@ export default class EditorComponent implements OnInit {
       title: formValue.title,
       content: formValue.content || '',
       desc: formValue.desc,
-      image: formValue.featuredImage || '',
+      image: (formValue.featuredImage instanceof File ? formValue.featuredImage : null) as any,
       category: formValue.category,
       tags: formValue.tags,
     };
@@ -176,7 +176,7 @@ export default class EditorComponent implements OnInit {
       title: formValue.title,
       content: formValue.content || '',
       desc: formValue.desc,
-      image: formValue.featuredImage || '',
+      image: (formValue.featuredImage instanceof File ? formValue.featuredImage : null) as any,
       category: formValue.category,
       tags: formValue.tags,
     };

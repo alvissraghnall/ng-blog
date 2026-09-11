@@ -128,7 +128,8 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
   }
 
   onContentChanged(event: any): void {
-    this.value = event.html || '';
+    const html = typeof event === 'string' ? event : event?.html || '';
+    this.value = html;
     this.onChange(this.value);
     this.updateWordCount();
     this.onTouched();

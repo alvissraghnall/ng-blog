@@ -32,10 +32,12 @@ export class CreatePostInput {
   @MaxLength(30000)
   content: string;
 
-  @Field(() => GraphQLUpload, { 
-    description: 'Blog post image', 
+  @Field(() => GraphQLUpload, {
+    description: 'Blog post image',
+    nullable: true,
   })
-  image: FileUpload;
+  @IsOptional()
+  image?: FileUpload;
 
   @Field(() => String, { description: 'Blog post short description' })
   @IsString()

@@ -234,7 +234,12 @@ export class PostsService {
 
     updatedPost.id = id;
 
-    return await this.postsRepository.save(updatedPost);
+    await this.postsRepository.save(updatedPost);
+
+    return this.postsRepository.findOne({
+      where: { id },
+      relations: { author: true, tags: true },
+    });
   }
 
   async remove(id: number, post: Post): Promise<Post> {

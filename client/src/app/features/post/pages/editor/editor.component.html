@@ -15,10 +15,10 @@
             <z-icon [zType]="draftIcon" class="text-lg" />
             <span>Save Draft</span>
           </z-button>
-          <z-button type="submit" [zLoading]="isSubmitting">
+          <button z-button zType="default" type="submit" [zLoading]="isSubmitting">
             <z-icon [zType]="publishIcon" class="text-lg" />
             <span>{{ isSubmitting ? '' : (isEditMode ? 'Update' : 'Publish') }}</span>
-          </z-button>
+          </button>
         </div>
       </div>
 
@@ -61,7 +61,7 @@
           </z-form-field>
         </div>
 
-        <div class="lg:col-span-1 flex flex-col gap-6" [formGroup]="statusForm">
+        <div class="lg:col-span-1 flex flex-col gap-6">
           <z-form-field>
             <label z-form-label>Featured Image</label>
             <z-form-control>

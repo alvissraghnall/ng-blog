@@ -35,9 +35,9 @@ export class Post extends BaseEntity {
   @Column({ type: 'text' })
   content: string;
 
-  @Field(() => String)
-  @Column({ type: 'varchar', length: 1000 })
-  image: string;
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  image?: string;
 
   @Field(() => String)
   @Column({ type: 'varchar', length: 500 })

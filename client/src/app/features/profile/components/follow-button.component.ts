@@ -59,8 +59,20 @@ export class FollowButtonComponent {
       .subscribe({
         next: profile => {
           this.isSubmitting = false;
-          this.profile = profile;
-          this.toggle.emit(profile);
+          const current = this.profile;
+          const wasFollowing = !!current.isFollowing;
+          const isFollowing = !!profile.isFollowing;
+          const oldCount = typeof current.followerCount === 'number' ? current.followerCount : 0;
+          const delta = isFollowing && !wasFollowing ? 1 : wasFollowing && !isFollowing ? -1 : 0;
+
+          this.profile = {
+            ...current,
+            avatar: profile.avatar,
+            bio: profile.bio,
+            isFollowing,
+            followerCount: Math.max(0, oldCount + delta),
+          };
+          this.toggle.emit(this.profile);
         },
         error: () => (this.isSubmitting = false),
       });

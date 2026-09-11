@@ -72,11 +72,27 @@ export const updateUser = mutation(m => [
 export const removeUser = mutation(m => [m.removeUser({ id: $('id') }, user => [user.id, user.username])]);
 
 export const followUser = mutation(m => [
-  m.followUser({ userToBeFollowedId: $('userToBeFollowedId') }, user => [user.id, user.username, user.avatar]),
+  m.followUser({ userToBeFollowedId: $('userToBeFollowedId') }, user => [
+    user.id,
+    user.username,
+    user.avatar,
+    user.bio,
+    user.isFollowing,
+    user.followerCount,
+    user.followingCount,
+  ]),
 ]);
 
 export const unfollowUser = mutation(m => [
-  m.unFollowUser({ userToBeUnfollowedId: $('userToBeUnfollowedId') }, user => [user.id, user.username, user.avatar]),
+  m.unFollowUser({ userToBeUnfollowedId: $('userToBeUnfollowedId') }, user => [
+    user.id,
+    user.username,
+    user.avatar,
+    user.bio,
+    user.isFollowing,
+    user.followerCount,
+    user.followingCount,
+  ]),
 ]);
 
 export const createPost = mutation(m => [

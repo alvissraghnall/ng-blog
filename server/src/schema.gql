@@ -62,7 +62,7 @@ input CreatePostInput {
   desc: String!
 
   """Blog post image"""
-  image: Upload!
+  image: Upload
 
   """Blog post tags"""
   tags: [String!]
@@ -188,7 +188,7 @@ type Post {
   deletedAt: DateTime
   desc: String!
   id: Int!
-  image: String!
+  image: String
   likeCount: Int!
   slug: String!
   tags: [Tag!]
@@ -297,8 +297,11 @@ input UpdatePostInput {
 }
 
 input UpdateUserInput {
-  """User display photo (avatar)"""
-  avatar: Upload
+  """User display photo (avatar) URL"""
+  avatar: String
+
+  """Short user bio"""
+  bio: String
 
   """User confirm password"""
   confirmPassword: String
