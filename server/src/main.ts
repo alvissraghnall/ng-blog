@@ -9,11 +9,18 @@ import { AuthService } from 'auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { GraphQLSchemaHost } from '@nestjs/graphql';
 
+function resolveAllowedOrigins(): string[] {
+  const raw = process.env.ALLOWED_ORIGINS?.trim();
+  if (!raw) return ['http://localhost:4200'];
+  return raw.split(',').map((origin) => origin.trim()).filter(Boolean);
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const allowedOrigins = resolveAllowedOrigins();
   app.enableCors({
-    origin: 'http://localhost:4200',
-    credentials: true,
+    origin: allowedOrigins,
+    credentials: allowedOrigins[0] !== '*',
   });
   // app.setGlobalPrefix('/api/v1');
   app.useGlobalPipes(

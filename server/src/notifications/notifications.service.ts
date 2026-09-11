@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification, NotificationType } from './entities/notification.entity';
 import { User } from 'users/entities/user.entity';
-import { RedisPubSub } from 'graphql-redis-subscriptions';
+import { PubSubEngine } from 'graphql-subscriptions';
+import { PubSubAdapter } from 'common/pubsub.module';
 import { PUB_SUB } from 'common/pubsub.module';
 
 export const NOTIFICATION_ADDED_EVENT = 'notificationAdded';
@@ -13,7 +14,7 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private readonly repo: Repository<Notification>,
-    @Inject(PUB_SUB) private readonly pubSub: RedisPubSub,
+    @Inject(PUB_SUB) private readonly pubSub: PubSubAdapter,
   ) {}
 
   async create(

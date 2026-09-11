@@ -1,8 +1,13 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
+import { PubSub, PubSubEngine } from 'graphql-subscriptions';
 
 export const PUB_SUB = 'PUB_SUB';
+
+export interface PubSubAdapter extends PubSubEngine {
+  asyncIterator<T>(triggers: string | string[]): AsyncIterableIterator<T>;
+}
 
 @Global()
 @Module({
@@ -10,9 +15,13 @@ export const PUB_SUB = 'PUB_SUB';
     {
       provide: PUB_SUB,
       useFactory: (configService: ConfigService) => {
-        return new RedisPubSub({
-          connection: configService.getOrThrow<string>('REDIS_URL'),
-        });
+        const redisUrl = configService.get<string>('REDIS_URL');
+
+        if (redisUrl) {
+          return new RedisPubSub({ connection: redisUrl });
+        }
+
+        return new PubSub();
       },
       inject: [ConfigService],
     },

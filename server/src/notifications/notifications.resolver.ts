@@ -17,6 +17,8 @@ import {
 } from './notifications.service';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { ConfigService } from '@nestjs/config';
+import { PubSubEngine } from 'graphql-subscriptions';
+import { PubSubAdapter } from 'common/pubsub.module';
 import { PUB_SUB } from 'common/pubsub.module';
 
 @Resolver(() => Notification)
@@ -25,7 +27,7 @@ export class NotificationsResolver {
   constructor(
     private readonly service: NotificationsService,
     private readonly configService: ConfigService,
-    @Inject(PUB_SUB) private readonly pubSub: RedisPubSub,
+    @Inject(PUB_SUB) private readonly pubSub: PubSubAdapter,
   ) {}
 
   @Query(() => [Notification], { name: 'notifications' })

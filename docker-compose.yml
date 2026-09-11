@@ -26,18 +26,27 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USERNAME: ${POSTGRES_USER:-blog_user}      
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_DATABASE: ${POSTGRES_DB:-sharewithalviss_db}
-      
-      NODE_ENV: development
+
+      REDIS_URL: redis://redis:6379
+
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:4200}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+
+      NODE_ENV: production
 
     labels:
     - traefik.enable=true
-    - traefik.http.routers.ngblog-api.rule=Host(`ngblogapi.piree.xyz`)
+    - traefik.http.routers.ngblog-api.rule=Host(`api.sharewithalviss.xyz`)
     - traefik.http.routers.ngblog-api.entryPoints=https
     - traefik.http.routers.ngblog-api.tls=true
     - traefik.http.routers.ngblog-api.tls.certresolver=letsencrypt
@@ -45,6 +54,33 @@ services:
     # ports:
     #   - "6789:3000"
     # command: pnpm start:dev
+
+  redis:
+    image: redis:7-alpine
+    container_name: ng_blog_redis
+    # restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: ng_blog_client
+    # restart: always
+    depends_on:
+      api:
+        condition: service_started
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.ngblog-web.rule=Host(`${FRONTEND_HOST:-sharewithalviss.xyz}`)
+    - traefik.http.routers.ngblog-web.entryPoints=https
+    - traefik.http.routers.ngblog-web.tls=true
+    - traefik.http.routers.ngblog-web.tls.certresolver=letsencrypt
+    - traefik.http.services.ngblog-web.loadbalancer.server.port=80
 
 volumes:
   postgres_data:
